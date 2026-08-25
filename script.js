@@ -1,1405 +1,579 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* =========================================================
+   Z-NAME STYLE
+   COMPLETE WORKING SCRIPT.JS
+   ========================================================= */
 
-    "use strict";
+"use strict";
 
-    /* =========================================================
-       Z-STYLE NAME
-       NEW GENERATOR
-       PART 1 — CORE ENGINE
-       ========================================================= */
+/* =========================================================
+   DOM ELEMENTS
+   ========================================================= */
 
+const nameForm = document.getElementById("nameForm");
+const nameInput = document.getElementById("nameInput");
+const clearName = document.getElementById("clearName");
+const generateButton = document.getElementById("generateButton");
 
-    /* =========================================================
-       DOM ELEMENTS
-       ========================================================= */
+const previewSection = document.getElementById("previewSection");
+const previewName = document.getElementById("previewName");
 
-    const nameForm =
-        document.getElementById("nameForm");
+const resultsSection = document.getElementById("resultsSection");
+const resultsContainer = document.getElementById("resultsContainer");
+const resultsTitle = document.getElementById("resultsTitle");
 
-    const nameInput =
-        document.getElementById("nameInput");
+const styleFilters = document.getElementById("styleFilters");
 
-    const clearName =
-        document.getElementById("clearName");
+const symbolsGrid = document.getElementById("symbolsGrid");
 
-    const previewSection =
-        document.getElementById("previewSection");
+const mobileMenuButton = document.getElementById("mobileMenuButton");
+const mobileMenu = document.getElementById("mobileMenu");
 
-    const previewName =
-        document.getElementById("previewName");
+const bottomMenuButton = document.getElementById("bottomMenuButton");
 
-    const resultsSection =
-        document.getElementById("resultsSection");
-
-    const resultsContainer =
-        document.getElementById("resultsContainer");
-
-    const resultsTitle =
-        document.getElementById("resultsTitle");
-
-    const styleFilters =
-        document.getElementById("styleFilters");
-
-    const symbolsGrid =
-        document.getElementById("symbolsGrid");
-
-    const toast =
-        document.getElementById("toast");
-
-    const toastMessage =
-        document.getElementById("toastMessage");
-
-    const mobileMenuButton =
-        document.getElementById("mobileMenuButton");
-
-    const mobileMenu =
-        document.getElementById("mobileMenu");
-
-    const bottomMenuButton =
-        document.getElementById("bottomMenuButton");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
 
 
-    /* =========================================================
-       STATE
-       ========================================================= */
+/* =========================================================
+   STATE
+   ========================================================= */
 
-    let currentName = "";
-
-    let activeFilter = "all";
-
-    let generatedStyles = [];
+let currentName = "";
+let currentFilter = "all";
+let toastTimer = null;
 
 
-    /* =========================================================
-       BASIC HELPERS
-       ========================================================= */
+/* =========================================================
+   STYLISH FONT MAPS
+   ========================================================= */
 
-    function cleanName(value) {
+const fontStyles = {
 
-        return String(value || "")
-            .replace(/\s+/g, " ")
-            .trim()
-            .slice(0, 30);
+    bold: {
+        name: "Bold",
+        category: "fancy",
+        transform: text => convertMathText(text, "bold")
+    },
 
+    boldItalic: {
+        name: "Bold Italic",
+        category: "fancy",
+        transform: text => convertMathText(text, "boldItalic")
+    },
+
+    italic: {
+        name: "Italic",
+        category: "fancy",
+        transform: text => convertMathText(text, "italic")
+    },
+
+    script: {
+        name: "Script",
+        category: "fancy",
+        transform: text => convertMathText(text, "script")
+    },
+
+    boldScript: {
+        name: "Bold Script",
+        category: "fancy",
+        transform: text => convertMathText(text, "boldScript")
+    },
+
+    fraktur: {
+        name: "Fraktur",
+        category: "dark",
+        transform: text => convertMathText(text, "fraktur")
+    },
+
+    boldFraktur: {
+        name: "Bold Fraktur",
+        category: "dark",
+        transform: text => convertMathText(text, "boldFraktur")
+    },
+
+    doubleStruck: {
+        name: "Double Struck",
+        category: "cool",
+        transform: text => convertMathText(text, "doubleStruck")
+    },
+
+    sans: {
+        name: "Sans",
+        category: "cool",
+        transform: text => convertMathText(text, "sans")
+    },
+
+    sansBold: {
+        name: "Sans Bold",
+        category: "cool",
+        transform: text => convertMathText(text, "sansBold")
+    },
+
+    sansItalic: {
+        name: "Sans Italic",
+        category: "cool",
+        transform: text => convertMathText(text, "sansItalic")
+    },
+
+    sansBoldItalic: {
+        name: "Sans Bold Italic",
+        category: "cool",
+        transform: text => convertMathText(text, "sansBoldItalic")
+    },
+
+    monospace: {
+        name: "Monospace",
+        category: "gaming",
+        transform: text => convertMathText(text, "monospace")
     }
 
+};
 
-    function escapeHTML(value) {
 
-        const element =
-            document.createElement("div");
+/* =========================================================
+   UNICODE FONT CONVERTER
+   ========================================================= */
 
-        element.textContent = value;
+const normalUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const normalLower = "abcdefghijklmnopqrstuvwxyz";
+const normalNumbers = "0123456789";
 
-        return element.innerHTML;
+const unicodeSets = {
 
+    bold: {
+        upper: "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙",
+        lower: "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳",
+        numbers: "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"
+    },
+
+    boldItalic: {
+        upper: "𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁",
+        lower: "𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛",
+        numbers: "0123456789"
+    },
+
+    italic: {
+        upper: "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍",
+        lower: "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧",
+        numbers: "0123456789"
+    },
+
+    script: {
+        upper: "𝒜𝐵𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵",
+        lower: "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏",
+        numbers: "0123456789"
+    },
+
+    boldScript: {
+        upper: "𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩".toUpperCase(),
+        lower: "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃",
+        numbers: "0123456789"
+    },
+
+    fraktur: {
+        upper: "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ",
+        lower: "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷",
+        numbers: "0123456789"
+    },
+
+    boldFraktur: {
+        upper: "𝕬𝕭𝕮𝕯𝕰𝕱𝕲𝕳𝕴𝕵𝕶𝕷𝕸𝕹𝕺𝕻𝕼𝕽𝕾𝕿𝖀𝖁𝖂𝖃𝖄𝖅",
+        lower: "𝖆𝖇𝖈𝖉𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟",
+        numbers: "0123456789"
+    },
+
+    doubleStruck: {
+        upper: "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ",
+        lower: "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫",
+        numbers: "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"
+    },
+
+    sans: {
+        upper: "𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹",
+        lower: "𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓",
+        numbers: "0123456789"
+    },
+
+    sansBold: {
+        upper: "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭",
+        lower: "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇",
+        numbers: "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"
+    },
+
+    sansItalic: {
+        upper: "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡",
+        lower: "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻",
+        numbers: "0123456789"
+    },
+
+    sansBoldItalic: {
+        upper: "𝘼𝘽𝘾𝘿𝙀𝙁𝙂𝙃𝙄𝙅𝙆𝙇𝙈𝙉𝙊𝙋𝙌𝙍𝙎𝙏𝙐𝙑𝙒𝙓𝙔𝙕",
+        lower: "𝙖𝙗𝙘𝙙𝙚𝙛𝙜𝙝𝙞𝙟𝙠𝙡𝙢𝙣𝙤𝙥𝙦𝙧𝙨𝙩𝙪𝙫𝙬𝙭𝙮𝙯",
+        numbers: "0123456789"
+    },
+
+    monospace: {
+        upper: "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉",
+        lower: "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣",
+        numbers: "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"
     }
 
+};
 
-    function capitalize(value) {
 
-        value = String(value || "");
+/* =========================================================
+   CONVERT TEXT TO UNICODE STYLE
+   ========================================================= */
 
-        return value.charAt(0).toUpperCase() +
-            value.slice(1);
+function convertMathText(text, style) {
 
+    const set = unicodeSets[style];
+
+    if (!set) {
+        return text;
     }
 
+    let output = "";
 
-    /* =========================================================
-       UNICODE FONT MAPS
-       ========================================================= */
+    for (const character of text) {
 
-    const boldUpper = [
-        "𝐀","𝐁","𝐂","𝐃","𝐄","𝐅","𝐆","𝐇","𝐈","𝐉",
-        "𝐊","𝐋","𝐌","𝐍","𝐎","𝐏","𝐐","𝐑","𝐒","𝐓",
-        "𝐔","𝐕","𝐖","𝐗","𝐘","𝐙"
-    ];
+        const upperIndex = normalUpper.indexOf(character);
 
-    const boldLower = [
-        "𝐚","𝐛","𝐜","𝐝","𝐞","𝐟","𝐠","𝐡","𝐢","𝐣",
-        "𝐤","𝐥","𝐦","𝐧","𝐨","𝐩","𝐪","𝐫","𝐬","𝐭",
-        "𝐮","𝐯","𝐰","𝐱","𝐲","𝐳"
-    ];
-
-
-    const italicUpper = [
-        "𝐴","𝐵","𝐶","𝐷","𝐸","𝐹","𝐺","𝐻","𝐼","𝐽",
-        "𝐾","𝐿","𝑀","𝑁","𝑂","𝑃","𝑄","𝑅","𝑆","𝑇",
-        "𝑈","𝑉","𝑊","𝑋","𝑌","𝑍"
-    ];
-
-    const italicLower = [
-        "𝑎","𝑏","𝑐","𝑑","𝑒","𝑓","𝑔","ℎ","𝑖","𝑗",
-        "𝑘","𝑙","𝑚","𝑛","𝑜","𝑝","𝑞","𝑟","𝑠","𝑡",
-        "𝑢","𝑣","𝑤","𝑥","𝑦","𝑧"
-    ];
-
-
-    const monoUpper = [
-        "𝙰","𝙱","𝙲","𝙳","𝙴","𝙵","𝙶","𝙷","𝙸","𝙹",
-        "𝙺","𝙻","𝙼","𝙽","𝙾","𝙿","𝚀","𝚁","𝚂","𝚃",
-        "𝚄","𝚅","𝚆","𝚇","𝚈","𝚉"
-    ];
-
-    const monoLower = [
-        "𝚊","𝚋","𝚌","𝚍","𝚎","𝚏","𝚐","𝚑","𝚒","𝚓",
-        "𝚔","𝚕","𝚖","𝚗","𝚘","𝚙","𝚚","𝚛","𝚜","𝚝",
-        "𝚞","𝚟","𝚠","𝚡","𝚢","𝚣"
-    ];
-
-
-    const doubleUpper = [
-        "𝔸","𝔹","ℂ","𝔻","𝔼","𝔽","𝔾","ℍ","𝕀","𝕁",
-        "𝕂","𝕃","𝕄","ℕ","𝕆","ℙ","ℚ","ℝ","𝕊","𝕋",
-        "𝕌","𝕍","𝕎","𝕏","𝕐","ℤ"
-    ];
-
-    const doubleLower = [
-        "𝕒","𝕓","𝕔","𝕕","𝕖","𝕗","𝕘","𝕙","𝕚","𝕛",
-        "𝕜","𝕝","𝕞","𝕟","𝕠","𝕡","𝕢","𝕣","𝕤","𝕥",
-        "𝕦","𝕧","𝕨","𝕩","𝕪","𝕫"
-    ];
-
-
-    const scriptUpper = [
-        "𝒜","ℬ","𝒞","𝒟","ℰ","ℱ","𝒢","ℋ","ℐ","𝒥",
-        "𝒦","ℒ","ℳ","𝒩","𝒪","𝒫","𝒬","ℛ","𝒮","𝒯",
-        "𝒰","𝒱","𝒲","𝒳","𝒴","𝒵"
-    ];
-
-    const scriptLower = [
-        "𝒶","𝒷","𝒸","𝒹","ℯ","𝒻","ℊ","𝒽","𝒾","𝒿",
-        "𝓀","𝓁","𝓂","𝓃","ℴ","𝓅","𝓆","𝓇","𝓈","𝓉",
-        "𝓊","𝓋","𝓌","𝓍","𝓎","𝓏"
-    ];
-
-
-    const sansBoldUpper = [
-        "𝗔","𝗕","𝗖","𝗗","𝗘","𝗙","𝗚","𝗛","𝗜","𝗝",
-        "𝗞","𝗟","𝗠","𝗡","𝗢","𝗣","𝗤","𝗥","𝗦","𝗧",
-        "𝗨","𝗩","𝗪","𝗫","𝗬","𝗭"
-    ];
-
-    const sansBoldLower = [
-        "𝗮","𝗯","𝗰","𝗱","𝗲","𝗳","𝗴","𝗵","𝗶","𝗷",
-        "𝗸","𝗹","𝗺","𝗻","𝗼","𝗽","𝗾","𝗿","𝘀","𝘁",
-        "𝘂","𝘃","𝘄","𝘅","𝘆","𝘇"
-    ];
-
-
-    const sansItalicUpper = [
-        "𝘈","𝘉","𝘊","𝘋","𝘌","𝘍","𝘎","𝘏","𝘐","𝘑",
-        "𝘒","𝘓","𝘔","𝘕","𝘖","𝘗","𝘘","𝘙","𝘚","𝘛",
-        "𝘜","𝘝","𝘞","𝘟","𝘠","𝘡"
-    ];
-
-    const sansItalicLower = [
-        "𝘢","𝘣","𝘤","𝘥","𝘦","𝘧","𝘨","𝘩","𝘪","𝘫",
-        "𝘬","𝘭","𝘮","𝘯","𝘰","𝘱","𝘲","𝘳","𝘴","𝘵",
-        "𝘶","𝘷","𝘸","𝘹","𝘺","𝘻"
-    ];
-
-
-    const fullUpper = [
-        "Ａ","Ｂ","Ｃ","Ｄ","Ｅ","Ｆ","Ｇ","Ｈ","Ｉ","Ｊ",
-        "Ｋ","Ｌ","Ｍ","Ｎ","Ｏ","Ｐ","Ｑ","Ｒ","Ｓ","Ｔ",
-        "Ｕ","Ｖ","Ｗ","Ｘ","Ｙ","Ｚ"
-    ];
-
-    const fullLower = [
-        "ａ","ｂ","ｃ","ｄ","ｅ","ｆ","ｇ","ｈ","ｉ","ｊ",
-        "ｋ","ｌ","ｍ","ｎ","ｏ","ｐ","ｑ","ｒ","ｓ","ｔ",
-        "ｕ","ｖ","ｗ","ｘ","ｙ","ｚ"
-    ];
-
-
-    /* =========================================================
-       SMALL CAPS
-       ========================================================= */
-
-    const smallCaps = {
-
-        a:"ᴀ",
-        b:"ʙ",
-        c:"ᴄ",
-        d:"ᴅ",
-        e:"ᴇ",
-        f:"ғ",
-        g:"ɢ",
-        h:"ʜ",
-        i:"ɪ",
-        j:"ᴊ",
-        k:"ᴋ",
-        l:"ʟ",
-        m:"ᴍ",
-        n:"ɴ",
-        o:"ᴏ",
-        p:"ᴘ",
-        q:"ǫ",
-        r:"ʀ",
-        s:"s",
-        t:"ᴛ",
-        u:"ᴜ",
-        v:"ᴠ",
-        w:"ᴡ",
-        x:"x",
-        y:"ʏ",
-        z:"ᴢ"
-
-    };
-
-
-    /* =========================================================
-       FONT CONVERTER
-       ========================================================= */
-
-    function convertFont(
-        text,
-        upperMap,
-        lowerMap
-    ) {
-
-        return String(text)
-            .split("")
-            .map(function (character) {
-
-                const code =
-                    character.charCodeAt(0);
-
-                if (
-                    code >= 65 &&
-                    code <= 90
-                ) {
-
-                    return upperMap[code - 65];
-
-                }
-
-                if (
-                    code >= 97 &&
-                    code <= 122
-                ) {
-
-                    return lowerMap[code - 97];
-
-                }
-
-                return character;
-
-            })
-            .join("");
-
-    }
-
-
-    function toBold(text) {
-
-        return convertFont(
-            text,
-            boldUpper,
-            boldLower
-        );
-
-    }
-
-
-    function toItalic(text) {
-
-        return convertFont(
-            text,
-            italicUpper,
-            italicLower
-        );
-
-    }
-
-
-    function toMono(text) {
-
-        return convertFont(
-            text,
-            monoUpper,
-            monoLower
-        );
-
-    }
-
-
-    function toDouble(text) {
-
-        return convertFont(
-            text,
-            doubleUpper,
-            doubleLower
-        );
-
-    }
-
-
-    function toScript(text) {
-
-        return convertFont(
-            text,
-            scriptUpper,
-            scriptLower
-        );
-
-    }
-
-
-    function toSansBold(text) {
-
-        return convertFont(
-            text,
-            sansBoldUpper,
-            sansBoldLower
-        );
-
-    }
-
-
-    function toSansItalic(text) {
-
-        return convertFont(
-            text,
-            sansItalicUpper,
-            sansItalicLower
-        );
-
-    }
-
-
-    function toFullWidth(text) {
-
-        return convertFont(
-            text,
-            fullUpper,
-            fullLower
-        );
-
-    }
-
-
-    function toSmallCaps(text) {
-
-        return String(text)
-            .toLowerCase()
-            .split("")
-            .map(function (character) {
-
-                return (
-                    smallCaps[character] ||
-                    character
-                );
-
-            })
-            .join("");
-
-    }
-
-
-    /* =========================================================
-       TEXT EFFECTS
-       ========================================================= */
-
-    function addStrike(text) {
-
-        return String(text)
-            .split("")
-            .map(function (character) {
-
-                return character + "̶";
-
-            })
-            .join("");
-
-    }
-
-
-    function addUnderline(text) {
-
-        return String(text)
-            .split("")
-            .map(function (character) {
-
-                return character + "̲";
-
-            })
-            .join("");
-
-    }
-
-
-    function addDoubleUnderline(text) {
-
-        return String(text)
-            .split("")
-            .map(function (character) {
-
-                return character + "̳";
-
-            })
-            .join("");
-
-    }
-
-
-    function spaced(text) {
-
-        return String(text)
-            .split("")
-            .join(" ");
-
-    }
-
-
-    function dotted(text) {
-
-        return String(text)
-            .split("")
-            .join("・");
-
-    }
-
-
-    function starSpaced(text) {
-
-        return String(text)
-            .split("")
-            .join("★");
-
-    }
-
-
-    function slashSpaced(text) {
-
-        return String(text)
-            .split("")
-            .join("乂");
-
-    }
-
-
-    /* =========================================================
-       STYLE STORAGE
-       ========================================================= */
-
-    function addStyle(
-        category,
-        title,
-        value
-    ) {
-
-        if (!value) {
-            return;
+        if (upperIndex !== -1) {
+            output += set.upper[upperIndex] || character;
+            continue;
         }
 
-        generatedStyles.push({
+        const lowerIndex = normalLower.indexOf(character);
 
-            category: category,
+        if (lowerIndex !== -1) {
+            output += set.lower[lowerIndex] || character;
+            continue;
+        }
 
-            title: title,
+        const numberIndex = normalNumbers.indexOf(character);
 
-            value: value
+        if (numberIndex !== -1) {
+            output += set.numbers[numberIndex] || character;
+            continue;
+        }
 
+        output += character;
+    }
+
+    return output;
+}
+
+
+/* =========================================================
+   EXTRA STYLE GENERATORS
+   ========================================================= */
+
+function createDecoratedStyles(name) {
+
+    return [
+
+        {
+            text: `꧁༺ ${name} ༻꧂`,
+            category: "symbols",
+            label: "Royal Frame"
+        },
+
+        {
+            text: `★彡 ${name} 彡★`,
+            category: "gaming",
+            label: "Star Gaming"
+        },
+
+        {
+            text: `亗 ${name} 亗`,
+            category: "gaming",
+            label: "Warrior"
+        },
+
+        {
+            text: `『${name}』`,
+            category: "cool",
+            label: "Box Style"
+        },
+
+        {
+            text: `乂 ${name} 乂`,
+            category: "gaming",
+            label: "X Warrior"
+        },
+
+        {
+            text: `ツ ${name} ツ`,
+            category: "gaming",
+            label: "Smile Gaming"
+        },
+
+        {
+            text: `♛ ${name} ♛`,
+            category: "royal",
+            label: "King Style"
+        },
+
+        {
+            text: `♡ ${name} ♡`,
+            category: "love",
+            label: "Love Style"
+        },
+
+        {
+            text: `༺ ${name} ༻`,
+            category: "fancy",
+            label: "Elegant"
+        },
+
+        {
+            text: `彡 ${name} 彡`,
+            category: "cool",
+            label: "Speed Style"
+        },
+
+        {
+            text: `࿐ ${name} ࿐`,
+            category: "fancy",
+            label: "Classic"
+        },
+
+        {
+            text: `☠︎ ${name} ☠︎`,
+            category: "dark",
+            label: "Dark Style"
+        },
+
+        {
+            text: `⚡ ${name} ⚡`,
+            category: "cool",
+            label: "Electric"
+        },
+
+        {
+            text: `♥ ${name} ♥`,
+            category: "love",
+            label: "Heart"
+        },
+
+        {
+            text: `♚ ${name} ♚`,
+            category: "royal",
+            label: "Crown"
+        },
+
+        {
+            text: `乂『${name}』乂`,
+            category: "gaming",
+            label: "Pro Gamer"
+        },
+
+        {
+            text: `꧁${name}꧂`,
+            category: "fancy",
+            label: "Fancy Frame"
+        },
+
+        {
+            text: `『亗 ${name} 亗』`,
+            category: "gaming",
+            label: "Elite"
+        }
+
+    ];
+}
+
+
+/* =========================================================
+   CREATE ALL RESULTS
+   ========================================================= */
+
+function generateStyles(name) {
+
+    const styles = [];
+
+    Object.keys(fontStyles).forEach(key => {
+
+        const style = fontStyles[key];
+
+        styles.push({
+            text: style.transform(name),
+            category: style.category,
+            label: style.name
         });
 
-    }
+    });
 
+    styles.push(...createDecoratedStyles(name));
 
-    /* =========================================================
-       CORE FANCY FONT STYLES
-       ========================================================= */
+    return styles;
+}
 
-    function createFancyStyles(name) {
 
-        addStyle(
-            "fancy",
-            "𝐁𝐨𝐥𝐝",
-            toBold(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝑰𝒕𝒂𝒍𝒊𝒄",
-            toItalic(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝙼𝚘𝚗𝚘",
-            toMono(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝔻𝕠𝕦𝕓𝕝𝕖",
-            toDouble(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝓢𝓬𝓻𝓲𝓹𝓽",
-            toScript(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝗦𝗮𝗻𝘀 𝗕𝗼𝗹𝗱",
-            toSansBold(name)
-        );
-
-        addStyle(
-            "fancy",
-            "𝘚𝘢𝘯𝘴 𝘐𝘵𝘢𝘭𝘪𝘤",
-            toSansItalic(name)
-        );
-
-        addStyle(
-            "fancy",
-            "Ｆｕｌｌｗｉｄｔｈ",
-            toFullWidth(name)
-        );
-
-        addStyle(
-            "fancy",
-            "Small Caps",
-            toSmallCaps(name)
-        );
-
-        addStyle(
-            "fancy",
-            "Bold Spaced",
-            toBold(spaced(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Italic Spaced",
-            toItalic(spaced(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Double Spaced",
-            toDouble(spaced(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Script Spaced",
-            toScript(spaced(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Bold Dotted",
-            toBold(dotted(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Bold Underline",
-            addUnderline(toBold(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Bold Double Underline",
-            addDoubleUnderline(toBold(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Italic Underline",
-            addUnderline(toItalic(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Double Underline",
-            addDoubleUnderline(toDouble(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Strike Bold",
-            addStrike(toBold(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Strike Script",
-            addStrike(toScript(name))
-        );
-
-        addStyle(
-            "fancy",
-            "Small Caps Spaced",
-            spaced(toSmallCaps(name))
-        );
-
-    }
-
-
-    /* =========================================================
-       FANCY MIXED STYLES
-       ========================================================= */
-
-    function createMixedFancyStyles(name) {
-
-        const styles = [
-
-            toBold(name) + " ✦",
-
-            "✦ " + toBold(name),
-
-            toBold(name) + " ★",
-
-            "★ " + toBold(name),
-
-            toScript(name) + " ✧",
-
-            "✧ " + toScript(name),
-
-            toDouble(name) + " ❖",
-
-            "❖ " + toDouble(name),
-
-            toSansBold(name) + " ⚡",
-
-            "⚡ " + toSansBold(name),
-
-            toItalic(name) + " ✯",
-
-            "✯ " + toItalic(name),
-
-            toMono(name) + " ⟡",
-
-            "⟡ " + toMono(name),
-
-            toSmallCaps(name) + " 亗",
-
-            "亗 " + toSmallCaps(name),
-
-            "★彡 " + toBold(name) + " 彡★",
-
-            "✦彡 " + toScript(name) + " 彡✦",
-
-            "亗 " + toDouble(name) + " 亗",
-
-            "⚡ " + toBold(name) + " ⚡",
-
-            "♛ " + toScript(name) + " ♛",
-
-            "♡ " + toScript(name) + " ♡",
-
-            "☠ " + toDouble(name) + " ☠",
-
-            "༒ " + toBold(name) + " ༒",
-
-            "꧁ " + toScript(name) + " ꧂",
-
-            "『 " + toDouble(name) + " 』",
-
-            "【 " + toBold(name) + " 】",
-
-            "〆 " + toSansBold(name) + " 〆",
-
-            "乂 " + toDouble(name) + " 乂",
-
-            "ツ " + toScript(name) + " ツ",
-
-            "彡 " + toBold(name) + " 彡"
-
-        ];
-
-        styles.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "fancy",
-                    "Premium Fancy " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       DUPLICATE PROTECTION
-       ========================================================= */
-
-    function removeDuplicateStyles() {
-
-        const seen = new Set();
-
-        generatedStyles =
-            generatedStyles.filter(
-                function (style) {
-
-                    if (
-                        seen.has(style.value)
-                    ) {
-
-                        return false;
-
-                    }
-
-                    seen.add(style.value);
-
-                    return true;
-
-                }
-            );
-
-    }
-
-
-    /* =========================================================
-       PART 1 END
-       
-       IMPORTANT:
-       DO NOT ADD ANYTHING AFTER THIS.
-       DO NOT ADD "});"
-       
-       PART 2 WILL CONTINUE DIRECTLY HERE.
-       =========================================================
-        /* =========================================================
-       SYMBOL DECORATION SETS
-       ========================================================= */
-
-    const decorations = [
-
-        ["★", "★"],
-        ["☆", "☆"],
-        ["✦", "✦"],
-        ["✧", "✧"],
-        ["✪", "✪"],
-        ["✯", "✯"],
-        ["✰", "✰"],
-        ["⚡", "⚡"],
-        ["亗", "亗"],
-        ["乂", "乂"],
-        ["ツ", "ツ"],
-        ["彡", "彡"],
-        ["〆", "〆"],
-        ["么", "么"],
-        ["々", "々"],
-        ["メ", "メ"],
-        ["シ", "シ"],
-        ["乛", "乛"],
-        ["♛", "♛"],
-        ["♕", "♕"],
-        ["♔", "♔"],
-        ["♚", "♚"],
-        ["♡", "♡"],
-        ["♥", "♥"],
-        ["☠", "☠"],
-        ["☾", "☽"],
-        ["☽", "☾"],
-        ["❖", "❖"],
-        ["◆", "◆"],
-        ["◇", "◇"],
-        ["●", "●"],
-        ["○", "○"],
-        ["✿", "✿"],
-        ["❀", "❀"],
-        ["❁", "❁"],
-        ["🌸", "🌸"],
-        ["🔥", "🔥"],
-        ["👑", "👑"],
-        ["⚔", "⚔"],
-        ["♠", "♠"],
-        ["♣", "♣"],
-        ["♦", "♦"],
-        ["☯", "☯"],
-        ["☮", "☮"],
-        ["∞", "∞"],
-        ["⚜", "⚜"],
-        ["༺", "༻"],
-        ["༒", "༒"],
-        ["࿐", "࿐"]
-
-    ];
-
-
-    /* =========================================================
-       BOX AND FRAME SETS
-       ========================================================= */
-
-    const boxes = [
-
-        ["『", "』"],
-        ["【", "】"],
-        ["〖", "〗"],
-        ["〘", "〙"],
-        ["〚", "〛"],
-        ["〈", "〉"],
-        ["《", "》"],
-        ["「", "」"],
-        ["〔", "〕"],
-        ["〝", "〞"],
-        ["⟦", "⟧"],
-        ["⟨", "⟩"],
-        ["❲", "❳"],
-        ["❬", "❭"],
-        ["꧁", "꧂"],
-        ["༺", "༻"],
-        ["༼", "༽"],
-        ["╰", "╯"],
-        ["╭", "╮"],
-        ["╔", "╗"],
-        ["╚", "╝"],
-        ["▌", "▐"],
-        ["◥", "◤"],
-        ["◢", "◣"],
-        ["⫷", "⫸"],
-        ["⧼", "⧽"],
-        ["⟪", "⟫"],
-        ["⦗", "⦘"],
-        ["⟬", "⟭"],
-        ["⸢", "⸣"]
-
-    ];
-
-
-    /* =========================================================
-       CREATE DECORATION STYLES
-       ========================================================= */
-
-    function createDecorationStyles(name) {
-
-        decorations.forEach(
-            function (pair, index) {
-
-                addStyle(
-                    "symbols",
-                    "Decorated " + (index + 1),
-                    pair[0] +
-                    " " +
-                    toBold(name) +
-                    " " +
-                    pair[1]
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       CREATE FRAME STYLES
-       ========================================================= */
-
-    function createBoxStyles(name) {
-
-        boxes.forEach(
-            function (pair, index) {
-
-                const fontVersions = [
-
-                    toBold(name),
-                    toScript(name),
-                    toDouble(name),
-                    toSansBold(name)
-
-                ];
-
-                const styledName =
-                    fontVersions[
-                        index %
-                        fontVersions.length
-                    ];
-
-                addStyle(
-                    "symbols",
-                    "Frame " + (index + 1),
-                    pair[0] +
-                    " " +
-                    styledName +
-                    " " +
-                    pair[1]
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       GAMING STYLES
-       ========================================================= */
-
-    function createGamingStyles(name) {
-
-        const gaming = [
-
-            "亗 " + toBold(name) + " 亗",
-            "乂 " + toBold(name) + " 乂",
-            "〆 " + toBold(name) + " 〆",
-            "么 " + toBold(name) + " 么",
-            "メ " + toBold(name) + " メ",
-            "シ " + toBold(name) + " シ",
-            "ツ " + toBold(name) + " ツ",
-            "彡 " + toBold(name) + " 彡",
-            "乛 " + toBold(name) + " 乛",
-            "々 " + toBold(name) + " 々",
-            "⚔ " + toDouble(name) + " ⚔",
-            "☠ " + toDouble(name) + " ☠",
-            "♠ " + toBold(name) + " ♠",
-            "⚡ " + toBold(name) + " ⚡",
-            "🔥 " + toBold(name) + " 🔥",
-            "🎯 " + toBold(name) + " 🎯",
-            "👑 " + toBold(name) + " 👑",
-            "☢ " + toDouble(name) + " ☢",
-            "☣ " + toDouble(name) + " ☣",
-            "༒ " + toBold(name) + " ༒",
-            "꧁༺ " + toBold(name) + " ༻꧂",
-            "『 " + toBold(name) + " 』",
-            "【 " + toBold(name) + " 】",
-            "◥ " + toBold(name) + " ◤",
-            "╰ " + toBold(name) + " ╯",
-            "亗『 " + toDouble(name) + " 』亗",
-            "乂【 " + toBold(name) + " 】乂",
-            "⚡亗 " + toBold(name) + " 亗⚡",
-            "☠亗 " + toDouble(name) + " 亗☠",
-            "༒亗 " + toBold(name) + " 亗༒",
-            "彡乂 " + toBold(name) + " 乂彡",
-            "メ〆 " + toDouble(name) + " 〆メ",
-            "꧁乂 " + toBold(name) + " 乂꧂",
-            "꧁亗 " + toDouble(name) + " 亗꧂",
-            "『⚔ " + toBold(name) + " ⚔』",
-            "【☠ " + toDouble(name) + " ☠】",
-            "◥⚡ " + toBold(name) + " ⚡◤",
-            "༺⚔ " + toBold(name) + " ⚔༻",
-            "亗⚡ " + toBold(name) + " ⚡亗",
-            "乂☠ " + toDouble(name) + " ☠乂"
-
-        ];
-
-        gaming.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "gaming",
-                    "Gaming " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       ATTITUDE STYLES
-       ========================================================= */
-
-    function createAttitudeStyles(name) {
-
-        const attitude = [
-
-            "★彡 " + toBold(name) + " 彡★",
-            "乂 " + toBold(name) + " 乂",
-            "么 " + toDouble(name) + " 么",
-            "⚡ " + toBold(name) + " ⚡",
-            "☠ " + toDouble(name) + " ☠",
-            "♛ " + toScript(name) + " ♛",
-            "👑 " + toBold(name) + " 👑",
-            "亗 " + toBold(name) + " 亗",
-            "『 " + toDouble(name) + " 』",
-            "【 " + toBold(name) + " 】",
-            "〆 " + toBold(name) + " 〆",
-            "メ " + toDouble(name) + " メ",
-            "彡 " + toBold(name) + " 彡",
-            "ツ " + toBold(name) + " ツ",
-            "༒ " + toDouble(name) + " ༒",
-            "⚔ " + toBold(name) + " ⚔",
-            "🔥 " + toBold(name) + " 🔥",
-            "☢ " + toDouble(name) + " ☢",
-            "☣ " + toDouble(name) + " ☣",
-            "♠ " + toBold(name) + " ♠",
-            "♣ " + toBold(name) + " ♣",
-            "♦ " + toBold(name) + " ♦",
-            "★ " + toBold(name) + " ★",
-            "✦ " + toScript(name) + " ✦",
-            "✯ " + toDouble(name) + " ✯",
-            "❖ " + toBold(name) + " ❖",
-            "∞ " + toBold(name) + " ∞",
-            "⚜ " + toScript(name) + " ⚜",
-            "☯ " + toDouble(name) + " ☯",
-            "☮ " + toBold(name) + " ☮",
-            "꧁༺ " + toBold(name) + " ༻꧂",
-            "『亗 " + toBold(name) + " 亗』",
-            "【乂 " + toDouble(name) + " 乂】",
-            "★亗 " + toBold(name) + " 亗★",
-            "⚡亗 " + toBold(name) + " 亗⚡",
-            "☠亗 " + toDouble(name) + " 亗☠",
-            "♛亗 " + toScript(name) + " 亗♛",
-            "༒亗 " + toBold(name) + " 亗༒",
-            "彡乂 " + toBold(name) + " 乂彡",
-            "メ〆 " + toDouble(name) + " 〆メ"
-
-        ];
-
-        attitude.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "attitude",
-                    "Attitude " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       ROYAL STYLES
-       ========================================================= */
-
-    function createRoyalStyles(name) {
-
-        const royal = [
-
-            "♛ " + toBold(name) + " ♛",
-            "♕ " + toScript(name) + " ♕",
-            "♔ " + toBold(name) + " ♔",
-            "♚ " + toDouble(name) + " ♚",
-            "👑 " + toBold(name) + " 👑",
-            "♛༺ " + toBold(name) + " ༻♛",
-            "꧁♛ " + toScript(name) + " ♛꧂",
-            "꧁♕ " + toBold(name) + " ♕꧂",
-            "『♛ " + toDouble(name) + " ♛』",
-            "【♔ " + toBold(name) + " ♔】",
-            "亗♛ " + toBold(name) + " ♛亗",
-            "༺♛ " + toScript(name) + " ♛༻",
-            "⚜ " + toBold(name) + " ⚜",
-            "⚜♛ " + toBold(name) + " ♛⚜",
-            "♛★ " + toBold(name) + " ★♛",
-            "♕✦ " + toScript(name) + " ✦♕",
-            "👑亗 " + toBold(name) + " 亗👑",
-            "♔༒ " + toDouble(name) + " ༒♔",
-            "♚⚡ " + toBold(name) + " ⚡♚",
-            "꧁༺♛ " + toBold(name) + " ♛༻꧂",
-            "╰♛ " + toScript(name) + " ♛╯",
-            "╭♕ " + toScript(name) + " ♕╮",
-            "『👑 " + toBold(name) + " 👑』",
-            "【👑 " + toBold(name) + " 👑】",
-            "★♛ " + toBold(name) + " ♛★",
-            "✦♕ " + toScript(name) + " ♕✦",
-            "❖♛ " + toDouble(name) + " ♛❖",
-            "༒♚ " + toBold(name) + " ♚༒",
-            "亗👑 " + toBold(name) + " 👑亗",
-            "♛∞ " + toScript(name) + " ∞♛"
-
-        ];
-
-        royal.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "royal",
-                    "Royal " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       LOVE STYLES
-       ========================================================= */
-
-    function createLoveStyles(name) {
-
-        const love = [
-
-            "♡ " + toScript(name) + " ♡",
-            "♥ " + toBold(name) + " ♥",
-            "❤ " + toBold(name) + " ❤",
-            "💕 " + toScript(name) + " 💕",
-            "💖 " + toBold(name) + " 💖",
-            "💗 " + toScript(name) + " 💗",
-            "💘 " + toBold(name) + " 💘",
-            "💝 " + toScript(name) + " 💝",
-            "❣ " + toBold(name) + " ❣",
-            "ღ " + toScript(name) + " ღ",
-            "♡彡 " + toScript(name) + " 彡♡",
-            "♥彡 " + toBold(name) + " 彡♥",
-            "꧁♡ " + toScript(name) + " ♡꧂",
-            "꧁♥ " + toBold(name) + " ♥꧂",
-            "『♡ " + toScript(name) + " ♡』",
-            "【♥ " + toBold(name) + " ♥】",
-            "♡亗 " + toBold(name) + " 亗♡",
-            "♥亗 " + toScript(name) + " 亗♥",
-            "༺♡ " + toScript(name) + " ♡༻",
-            "༺♥ " + toBold(name) + " ♥༻",
-            "★♡ " + toBold(name) + " ♡★",
-            "✦♥ " + toScript(name) + " ♥✦",
-            "❖♡ " + toBold(name) + " ♡❖",
-            "🌸♡ " + toScript(name) + " ♡🌸",
-            "🌹 " + toScript(name) + " 🌹",
-            "💞 " + toBold(name) + " 💞",
-            "💓 " + toScript(name) + " 💓",
-            "💟 " + toBold(name) + " 💟",
-            "💌 " + toScript(name) + " 💌",
-            "💕♡ " + toBold(name) + " ♡💕"
-
-        ];
-
-        love.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "love",
-                    "Love " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       COOL STYLES
-       ========================================================= */
-
-    function createCoolStyles(name) {
-
-        const cool = [
-
-            "★ " + toBold(name) + " ★",
-            "☆ " + toScript(name) + " ☆",
-            "✦ " + toBold(name) + " ✦",
-            "✧ " + toScript(name) + " ✧",
-            "✯ " + toDouble(name) + " ✯",
-            "✰ " + toBold(name) + " ✰",
-            "❖ " + toDouble(name) + " ❖",
-            "◆ " + toBold(name) + " ◆",
-            "◇ " + toScript(name) + " ◇",
-            "⚡ " + toBold(name) + " ⚡",
-            "∞ " + toDouble(name) + " ∞",
-            "☯ " + toBold(name) + " ☯",
-            "☮ " + toScript(name) + " ☮",
-            "⚜ " + toBold(name) + " ⚜",
-            "亗 " + toBold(name) + " 亗",
-            "乂 " + toDouble(name) + " 乂",
-            "ツ " + toBold(name) + " ツ",
-            "彡 " + toScript(name) + " 彡",
-            "メ " + toBold(name) + " メ",
-            "〆 " + toDouble(name) + " 〆",
-            "么 " + toBold(name) + " 么",
-            "々 " + toScript(name) + " 々",
-            "★彡 " + toBold(name) + " 彡★",
-            "✦彡 " + toScript(name) + " 彡✦",
-            "亗★ " + toBold(name) + " ★亗",
-            "⚡亗 " + toBold(name) + " 亗⚡",
-            "❖亗 " + toDouble(name) + " 亗❖",
-            "꧁ " + toScript(name) + " ꧂",
-            "༺ " + toBold(name) + " ༻",
-            "『 " + toDouble(name) + " 』"
-
-        ];
-
-        cool.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "cool",
-                    "Cool " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       DARK STYLES
-       ========================================================= */
-
-    function createDarkStyles(name) {
-
-        const dark = [
-
-            "☠ " + toDouble(name) + " ☠",
-            "💀 " + toDouble(name) + " 💀",
-            "☣ " + toDouble(name) + " ☣",
-            "☢ " + toBold(name) + " ☢",
-            "༒ " + toBold(name) + " ༒",
-            "♠ " + toDouble(name) + " ♠",
-            "♤ " + toBold(name) + " ♤",
-            "⚔ " + toBold(name) + " ⚔",
-            "🖤 " + toScript(name) + " 🖤",
-            "☾ " + toScript(name) + " ☽",
-            "☽ " + toScript(name) + " ☾",
-            "亗☠ " + toDouble(name) + " ☠亗",
-            "꧁☠ " + toDouble(name) + " ☠꧂",
-            "꧁༒ " + toBold(name) + " ༒꧂",
-            "『☠ " + toDouble(name) + " ☠』",
-            "【☠ " + toDouble(name) + " ☠】",
-            "༺☠ " + toDouble(name) + " ☠༻",
-            "༺༒ " + toBold(name) + " ༒༻",
-            "★☠ " + toDouble(name) + " ☠★",
-            "✦☠ " + toBold(name) + " ☠✦",
-            "⚔亗 " + toBold(name) + " 亗⚔",
-            "☢亗 " + toDouble(name) + " 亗☢",
-            "☣亗 " + toDouble(name) + " 亗☣",
-            "♠༒ " + toBold(name) + " ༒♠",
-            "☾༒ " + toScript(name) + " ༒☽"
-
-        ];
-
-        dark.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "dark",
-                    "Dark " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       CUTE STYLES
-       ========================================================= */
-
-    function createCuteStyles(name) {
-
-        const cute = [
-
-            "🌸 " + toScript(name) + " 🌸",
-            "🌷 " + toScript(name) + " 🌷",
-            "🌺 " + toScript(name) + " 🌺",
-            "🌼 " + toScript(name) + " 🌼",
-            "🦋 " + toScript(name) + " 🦋",
-            "🐰 " + toBold(name) + " 🐰",
-            "🐻 " + toBold(name) + " 🐻",
-            "🐼 " + toBold(name) + " 🐼",
-            "🐨 " + toBold(name) + " 🐨",
-            "♡ " + toScript(name) + " ♡",
-            "ღ " + toScript(name) + " ღ",
-            "꒰ " + toScript(name) + " ꒱",
-            "꒰ა " + toScript(name) + " ໒꒱",
-            "୨♡୧ " + toScript(name) + " ୨♡୧",
-            "꧁♡ " + toScript(name) + " ♡꧂",
-            "『🌸 " + toScript(name) + " 🌸』",
-            "【🦋 " + toScript(name) + " 🦋】",
-            "♡彡 " + toScript(name) + " 彡♡",
-            "🌸彡 " + toScript(name) + " 彡🌸",
-            "🦋彡 " + toScript(name) + " 彡🦋",
-            "✿ " + toScript(name) + " ✿",
-            "❀ " + toScript(name) + " ❀",
-            "❁ " + toScript(name) + " ❁",
-            "✾ " + toScript(name) + " ✾",
-            "💗 " + toScript(name) + " 💗"
-
-        ];
-
-        cute.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "cute",
-                    "Cute " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       EXTRA PREMIUM STYLES
-       ========================================================= */
-
-    function createPremiumStyles(name) {
-
-        const premium = [
-
-            "꧁༺ " + toBold(name) + " ༻꧂",
-            "꧁༺ " + toScript(name) + " ༻꧂",
-            "꧁༺ " + toDouble(name) + " ༻꧂",
-            "★彡 " + toBold(name) + " 彡★",
-            "★彡 " + toScript(name) + " 彡★",
-            "✦ " + toDouble(name) + " ✦",
-            "亗 " + toBold(name) + " 亗",
-            "『 " + toScript(name) + " 』",
-            "【 " + toDouble(name) + " 】",
-            "༺ " + toBold(name) + " ༻",
-            "༒ " + toBold(name) + " ༒",
-            "♛ " + toScript(name) + " ♛",
-            "♡ " + toScript(name) + " ♡",
-            "⚡ " + toBold(name) + " ⚡",
-            "☠ " + toDouble(name) + " ☠",
-            "✯ " + toScript(name) + " ✯",
-            "❖ " + toDouble(name) + " ❖",
-            "彡 " + toBold(name) + " 彡",
-            "ツ " + toScript(name) + " ツ",
-            "乂 " + toDouble(name) + " 乂",
-            "꧁༒ " + toBold(name) + " ༒꧂",
-            "『亗 " + toBold(name) + " 亗』",
-            "【⚡ " + toBold(name) + " ⚡】",
-            "༺♛ " + toScript(name) + " ♛༻",
-            "★♛ " + toBold(name) + " ♛★",
-            "✦☠ " + toDouble(name) + " ☠✦",
-            "亗♡ " + toScript(name) + " ♡亗",
-            "⚡彡 " + toBold(name) + " 彡⚡",
-            "꧁👑 " + toBold(name) + " 👑꧂"
-
-        ];
-
-        premium.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "fancy",
-                    "Premium Design " + (index + 1),
-                    value
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       PART 2 END
-       
-       IMPORTANT:
-       DO NOT ADD "});"
-       PART 3 WILL CONTINUE DIRECTLY BELOW.
-       =========================================================
-    /* =========================================================
-   PART 3 — EVENTS + COPY + FILTERS + MENU + FINAL
+/* =========================================================
+   CATEGORY FILTER MATCHING
    ========================================================= */
+
+function categoryMatches(item, filter) {
+
+    if (filter === "all") {
+        return true;
+    }
+
+    if (filter === "fancy") {
+        return [
+            "fancy",
+            "cool",
+            "royal"
+        ].includes(item.category);
+    }
+
+    if (filter === "gaming") {
+        return item.category === "gaming";
+    }
+
+    if (filter === "attitude") {
+        return [
+            "gaming",
+            "dark",
+            "cool"
+        ].includes(item.category);
+    }
+
+    if (filter === "symbols") {
+        return item.category === "symbols";
+    }
+
+    return item.category === filter;
+}
+
+
+/* =========================================================
+   RENDER RESULTS
+   ========================================================= */
+
+function renderResults(styles, filter = "all") {
+
+    if (!resultsContainer) {
+        return;
+    }
+
+    resultsContainer.innerHTML = "";
+
+    const filteredStyles = styles.filter(item =>
+        categoryMatches(item, filter)
+    );
+
+    if (filteredStyles.length === 0) {
+
+        resultsContainer.innerHTML = `
+            <div class="empty-results">
+                <div class="empty-results-icon">✨</div>
+                <h3>No styles found</h3>
+                <p>Try another category.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    filteredStyles.forEach((item, index) => {
+
+        const card = document.createElement("article");
+
+        card.className = "result-card";
+
+        card.dataset.category = item.category;
+
+        card.innerHTML = `
+            <div class="result-card-top">
+                <span class="result-number">
+                    ${String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span class="result-category">
+                    ${escapeHTML(capitalize(item.category))}
+                </span>
+            </div>
+
+            <div class="result-style-name">
+                ${escapeHTML(item.text)}
+            </div>
+
+            <div class="result-card-bottom">
+
+                <span class="result-style-label">
+                    ${escapeHTML(item.label)}
+                </span>
+
+                <button
+                    type="button"
+                    class="copy-result-button"
+                    data-copy="${escapeAttribute(item.text)}"
+                >
+                    <span>📋</span>
+                    Copy
+                </button>
+
+            </div>
+        `;
+
+        resultsContainer.appendChild(card);
+    });
+}
+
+
+/* =========================================================
+   GENERATE NAME
+   ========================================================= */
+
+function generateName() {
+
+    const value = nameInput.value.trim();
+
+    if (!value) {
+
+        showToast(
+            "Please enter your name",
+            "error"
+        );
+
+        nameInput.focus();
+
+        return;
+    }
+
+    currentName = value;
+
+    previewSection.hidden = false;
+
+    previewName.textContent = value;
+
+    resultsSection.hidden = false;
+
+    const styles = generateStyles(value);
+
+    currentFilter = "all";
+
+    renderResults(styles, currentFilter);
+
+    updateFilterButtons();
+
+    if (resultsTitle) {
+        resultsTitle.textContent = `Stylish Names for ${value}`;
+    }
+
+    setTimeout(() => {
+
+        resultsSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }, 100);
+
+}
 
 
 /* =========================================================
@@ -1408,167 +582,70 @@ document.addEventListener("DOMContentLoaded", function () {
 
 if (nameForm) {
 
-    nameForm.addEventListener(
-        "submit",
-        function (event) {
+    nameForm.addEventListener("submit", function(event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            generateNames();
+        generateName();
 
-        }
-    );
+    });
 
 }
 
 
 /* =========================================================
-   INPUT EVENTS
+   LIVE PREVIEW
    ========================================================= */
 
 if (nameInput) {
 
-    nameInput.addEventListener(
-        "input",
-        function () {
+    nameInput.addEventListener("input", function() {
 
-            const value =
-                cleanName(
-                    nameInput.value
-                );
+        const value = this.value.trim();
 
-            if (clearName) {
-
-                clearName.hidden =
-                    value.length === 0;
-
-            }
-
+        if (clearName) {
+            clearName.hidden = value.length === 0;
         }
-    );
 
+        if (previewSection && previewName) {
 
-    nameInput.addEventListener(
-        "keydown",
-        function (event) {
+            if (value.length > 0) {
 
-            if (event.key === "Enter") {
+                previewSection.hidden = false;
+                previewName.textContent = value;
 
-                event.preventDefault();
-
-                generateNames();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CLEAR NAME
-   ========================================================= */
-
-if (clearName) {
-
-    clearName.addEventListener(
-        "click",
-        function () {
-
-            if (nameInput) {
-
-                nameInput.value = "";
-
-                nameInput.focus();
-
-            }
-
-            clearName.hidden = true;
-
-            currentName = "";
-
-            generatedStyles = [];
-
-            if (previewName) {
-
-                previewName.textContent =
-                    "Your Name";
-
-            }
-
-            if (previewSection) {
+            } else {
 
                 previewSection.hidden = true;
 
             }
 
-            if (resultsSection) {
-
-                resultsSection.hidden = true;
-
-            }
-
         }
-    );
+
+    });
 
 }
 
 
 /* =========================================================
-   COPY RESULT BUTTONS
+   CLEAR INPUT
    ========================================================= */
 
-if (resultsContainer) {
+if (clearName) {
 
-    resultsContainer.addEventListener(
-        "click",
-        function (event) {
+    clearName.addEventListener("click", function() {
 
-            const button =
-                event.target.closest(
-                    ".copy-result-button"
-                );
+        nameInput.value = "";
 
-            if (!button) {
-                return;
-            }
+        clearName.hidden = true;
 
-            const text =
-                button.dataset.copy || "";
-
-            if (!text) {
-                return;
-            }
-
-            copyText(text);
-
-            const original =
-                button.innerHTML;
-
-            button.innerHTML =
-                "✓ Copied!";
-
-            button.classList.add(
-                "copied"
-            );
-
-            setTimeout(
-                function () {
-
-                    button.innerHTML =
-                        original;
-
-                    button.classList.remove(
-                        "copied"
-                    );
-
-                },
-                1400
-            );
-
+        if (previewSection) {
+            previewSection.hidden = true;
         }
-    );
+
+        nameInput.focus();
+
+    });
 
 }
 
@@ -1577,117 +654,102 @@ if (resultsContainer) {
    FILTER BUTTONS
    ========================================================= */
 
+function updateFilterButtons() {
+
+    if (!styleFilters) {
+        return;
+    }
+
+    const buttons = styleFilters.querySelectorAll(
+        ".filter-button"
+    );
+
+    buttons.forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            button.dataset.filter === currentFilter
+        );
+
+    });
+
+}
+
+
 if (styleFilters) {
 
-    styleFilters.addEventListener(
-        "click",
-        function (event) {
+    styleFilters.addEventListener("click", function(event) {
 
-            const button =
-                event.target.closest(
-                    ".filter-button"
-                );
+        const button = event.target.closest(".filter-button");
 
-            if (!button) {
-                return;
-            }
-
-            const filter =
-                button.dataset.filter;
-
-            if (!filter) {
-                return;
-            }
-
-            activeFilter =
-                filter;
-
-            updateFilterButtons();
-
-            renderResults();
-
+        if (!button) {
+            return;
         }
-    );
+
+        currentFilter = button.dataset.filter || "all";
+
+        updateFilterButtons();
+
+        if (!currentName) {
+            return;
+        }
+
+        const styles = generateStyles(currentName);
+
+        renderResults(
+            styles,
+            currentFilter
+        );
+
+    });
 
 }
 
 
 /* =========================================================
-   CATEGORY CARDS
+   COPY GENERATED RESULT
    ========================================================= */
 
-const categoryCards =
-    document.querySelectorAll(
-        ".category-card"
-    );
+if (resultsContainer) {
 
+    resultsContainer.addEventListener("click", function(event) {
 
-categoryCards.forEach(
-    function (card) {
-
-        card.addEventListener(
-            "click",
-            function () {
-
-                const category =
-                    card.dataset.category;
-
-                if (!category) {
-                    return;
-                }
-
-                activeFilter =
-                    category;
-
-                if (
-                    !generatedStyles.length &&
-                    nameInput &&
-                    nameInput.value.trim()
-                ) {
-
-                    generateNames();
-
-                }
-
-                if (generatedStyles.length) {
-
-                    updateFilterButtons();
-
-                    renderResults();
-
-                    if (resultsSection) {
-
-                        resultsSection.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-
-                    }
-
-                } else {
-
-                    if (nameInput) {
-
-                        nameInput.focus();
-
-                        nameInput.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center"
-                        });
-
-                    }
-
-                    showToast(
-                        "Enter your name first."
-                    );
-
-                }
-
-            }
+        const button = event.target.closest(
+            ".copy-result-button"
         );
 
-    }
-);
+        if (!button) {
+            return;
+        }
+
+        const text = button.dataset.copy;
+
+        if (!text) {
+            return;
+        }
+
+        copyText(text);
+
+        button.classList.add("copied");
+
+        const originalHTML = button.innerHTML;
+
+        button.innerHTML = `
+            <span>✓</span>
+            Copied
+        `;
+
+        setTimeout(() => {
+
+            button.classList.remove("copied");
+
+            button.innerHTML = originalHTML;
+
+        }, 1500);
+
+    });
+
+}
 
 
 /* =========================================================
@@ -1696,55 +758,116 @@ categoryCards.forEach(
 
 if (symbolsGrid) {
 
-    symbolsGrid.addEventListener(
-        "click",
-        function (event) {
+    symbolsGrid.addEventListener("click", function(event) {
 
-            const button =
-                event.target.closest(
-                    ".symbol-card"
-                );
+        const button = event.target.closest(
+            ".symbol-card"
+        );
 
-            if (!button) {
-                return;
-            }
+        if (!button) {
+            return;
+        }
 
-            const symbol =
-                button.dataset.symbol || "";
+        const symbol = button.dataset.symbol;
 
-            if (!symbol) {
-                return;
-            }
+        if (!symbol) {
+            return;
+        }
 
-            copyText(symbol);
+        copyText(symbol);
 
-            const small =
-                button.querySelector(
-                    "small"
-                );
+        button.classList.add("copied");
 
-            if (small) {
+        setTimeout(() => {
 
-                const original =
-                    small.textContent;
+            button.classList.remove("copied");
 
-                small.textContent =
-                    "Copied!";
+        }, 1200);
 
-                setTimeout(
-                    function () {
+    });
 
-                        small.textContent =
-                            original;
+}
 
-                    },
-                    1200
-                );
 
-            }
+/* =========================================================
+   COPY FUNCTION
+   ========================================================= */
+
+async function copyText(text) {
+
+    try {
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            await navigator.clipboard.writeText(text);
+
+        } else {
+
+            fallbackCopy(text);
 
         }
-    );
+
+        showToast(
+            "Copied successfully!",
+            "success"
+        );
+
+    } catch (error) {
+
+        try {
+
+            fallbackCopy(text);
+
+            showToast(
+                "Copied successfully!",
+                "success"
+            );
+
+        } catch (fallbackError) {
+
+            showToast(
+                "Unable to copy",
+                "error"
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   FALLBACK COPY
+   ========================================================= */
+
+function fallbackCopy(text) {
+
+    const textarea = document.createElement("textarea");
+
+    textarea.value = text;
+
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.top = "0";
+
+    textarea.setAttribute("readonly", "");
+
+    document.body.appendChild(textarea);
+
+    textarea.focus();
+    textarea.select();
+
+    const successful = document.execCommand("copy");
+
+    document.body.removeChild(textarea);
+
+    if (!successful) {
+        throw new Error("Copy failed");
+    }
 
 }
 
@@ -1753,91 +876,133 @@ if (symbolsGrid) {
    TRENDING STYLE BUTTONS
    ========================================================= */
 
-const useStyleButtons =
-    document.querySelectorAll(
-        ".use-style-button"
-    );
+const useStyleButtons = document.querySelectorAll(
+    ".use-style-button"
+);
 
+useStyleButtons.forEach(button => {
 
-useStyleButtons.forEach(
-    function (button) {
+    button.addEventListener("click", function() {
 
-        button.addEventListener(
-            "click",
-            function () {
+        const template = this.dataset.template;
 
-                const template =
-                    button.dataset.template || "";
+        if (!template) {
+            return;
+        }
 
-                if (!template) {
-                    return;
-                }
+        const name = nameInput.value.trim();
 
-                if (!nameInput) {
-                    return;
-                }
+        if (!name) {
 
-                const name =
-                    cleanName(
-                        nameInput.value
-                    );
+            nameInput.focus();
 
-                if (!name) {
+            showToast(
+                "Enter your name first",
+                "error"
+            );
 
-                    nameInput.focus();
+            return;
+        }
 
-                    showToast(
-                        "Enter your name first."
-                    );
-
-                    return;
-
-                }
-
-                const styled =
-                    template.replace(
-                        /\{name\}/gi,
-                        name
-                    );
-
-                copyText(styled);
-
-            }
+        const styledName = template.replace(
+            "{name}",
+            name
         );
 
-    }
+        copyText(styledName);
+
+        previewSection.hidden = false;
+
+        previewName.textContent = styledName;
+
+    });
+
+});
+
+
+/* =========================================================
+   CATEGORY CARDS
+   ========================== */
+
+const categoryCards = document.querySelectorAll(
+    ".category-card"
 );
+
+categoryCards.forEach(card => {
+
+    card.addEventListener("click", function() {
+
+        const category = this.dataset.category;
+
+        if (!category) {
+            return;
+        }
+
+        if (!nameInput.value.trim()) {
+
+            nameInput.focus();
+
+            showToast(
+                "Enter your name first",
+                "error"
+            );
+
+            return;
+        }
+
+        currentName = nameInput.value.trim();
+
+        previewSection.hidden = false;
+        resultsSection.hidden = false;
+
+        previewName.textContent = currentName;
+
+        const styles = generateStyles(currentName);
+
+        currentFilter = category;
+
+        renderResults(
+            styles,
+            currentFilter
+        );
+
+        if (resultsTitle) {
+
+            resultsTitle.textContent =
+                `${capitalize(category)} Names for ${currentName}`;
+
+        }
+
+        if (styleFilters) {
+
+            const matchingButton =
+                styleFilters.querySelector(
+                    `[data-filter="${category}"]`
+                );
+
+            if (matchingButton) {
+
+                currentFilter = category;
+
+                updateFilterButtons();
+
+            }
+
+        }
+
+        resultsSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    });
+
+});
 
 
 /* =========================================================
    MOBILE MENU
    ========================================================= */
-
-function closeMobileMenu() {
-
-    if (!mobileMenu) {
-        return;
-    }
-
-    mobileMenu.classList.remove(
-        "open"
-    );
-
-    mobileMenu.classList.remove(
-        "active"
-    );
-
-    if (mobileMenuButton) {
-
-        mobileMenuButton.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-
-    }
-
-}
-
 
 function toggleMobileMenu() {
 
@@ -1846,16 +1011,14 @@ function toggleMobileMenu() {
     }
 
     const isOpen =
-        mobileMenu.classList.toggle(
-            "open"
-        );
-
-    mobileMenu.classList.toggle(
-        "active",
-        isOpen
-    );
+        mobileMenu.classList.toggle("open");
 
     if (mobileMenuButton) {
+
+        mobileMenuButton.classList.toggle(
+            "active",
+            isOpen
+        );
 
         mobileMenuButton.setAttribute(
             "aria-expanded",
@@ -1871,55 +1034,55 @@ if (mobileMenuButton) {
 
     mobileMenuButton.addEventListener(
         "click",
-        function (event) {
-
-            event.stopPropagation();
-
-            toggleMobileMenu();
-
-        }
+        toggleMobileMenu
     );
 
 }
 
 
 /* =========================================================
-   MOBILE NAV LINKS
+   MOBILE MENU LINKS
    ========================================================= */
 
-const mobileNavLinks =
-    document.querySelectorAll(
-        ".mobile-nav-link"
-    );
+if (mobileMenu) {
 
+    mobileMenu
+        .querySelectorAll("a")
+        .forEach(link => {
 
-mobileNavLinks.forEach(
-    function (link) {
+            link.addEventListener("click", function() {
 
-        link.addEventListener(
-            "click",
-            function () {
+                mobileMenu.classList.remove("open");
 
-                closeMobileMenu();
+                if (mobileMenuButton) {
 
-            }
-        );
+                    mobileMenuButton.classList.remove(
+                        "active"
+                    );
 
-    }
-);
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+
+            });
+
+        });
+
+}
 
 
 /* =========================================================
-   BOTTOM MENU
+   BOTTOM MORE MENU
    ========================================================= */
 
 if (bottomMenuButton) {
 
     bottomMenuButton.addEventListener(
         "click",
-        function (event) {
-
-            event.stopPropagation();
+        function() {
 
             toggleMobileMenu();
 
@@ -1930,111 +1093,138 @@ if (bottomMenuButton) {
 
 
 /* =========================================================
-   CLOSE MENU OUTSIDE
+   CLOSE MOBILE MENU OUTSIDE
    ========================================================= */
 
-document.addEventListener(
-    "click",
-    function (event) {
+document.addEventListener("click", function(event) {
 
-        if (!mobileMenu) {
-            return;
-        }
+    if (!mobileMenu || !mobileMenuButton) {
+        return;
+    }
 
-        const insideMenu =
-            mobileMenu.contains(
-                event.target
-            );
+    const clickedInsideMenu =
+        mobileMenu.contains(event.target);
 
-        const menuButton =
-            mobileMenuButton &&
-            mobileMenuButton.contains(
-                event.target
-            );
+    const clickedButton =
+        mobileMenuButton.contains(event.target);
 
-        const bottomButton =
-            bottomMenuButton &&
-            bottomMenuButton.contains(
-                event.target
-            );
+    if (
+        !clickedInsideMenu &&
+        !clickedButton &&
+        mobileMenu.classList.contains("open")
+    ) {
 
-        if (
-            !insideMenu &&
-            !menuButton &&
-            !bottomButton
-        ) {
+        mobileMenu.classList.remove("open");
 
-            closeMobileMenu();
+        mobileMenuButton.classList.remove(
+            "active"
+        );
 
-        }
+        mobileMenuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
 
     }
-);
+
+});
 
 
 /* =========================================================
-   ESC KEY
+   TOAST
    ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    function (event) {
+function showToast(message, type = "success") {
 
-        if (event.key === "Escape") {
-
-            closeMobileMenu();
-
-        }
-
+    if (!toast) {
+        return;
     }
-);
+
+    if (toastMessage) {
+        toastMessage.textContent = message;
+    }
+
+    toast.classList.remove(
+        "show",
+        "success",
+        "error"
+    );
+
+    toast.classList.add(type);
+
+    requestAnimationFrame(() => {
+
+        toast.classList.add("show");
+
+    });
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2200);
+
+}
 
 
 /* =========================================================
-   SMOOTH ANCHOR SCROLL
+   FAQ IMPROVEMENT
    ========================================================= */
 
-document.addEventListener(
-    "click",
-    function (event) {
+const faqItems = document.querySelectorAll(
+    ".faq-item"
+);
 
-        const link =
-            event.target.closest(
-                'a[href^="#"]'
-            );
+faqItems.forEach(item => {
 
-        if (!link) {
+    item.addEventListener("toggle", function() {
+
+        if (!this.open) {
             return;
         }
 
-        const href =
-            link.getAttribute(
-                "href"
-            );
+        faqItems.forEach(otherItem => {
+
+            if (
+                otherItem !== this &&
+                otherItem.open
+            ) {
+
+                otherItem.open = false;
+
+            }
+
+        });
+
+    });
+
+});
+
+
+/* =========================================================
+   SMOOTH NAVIGATION
+   ========================================================= */
+
+document.querySelectorAll(
+    'a[href^="#"]'
+).forEach(link => {
+
+    link.addEventListener("click", function(event) {
+
+        const targetID =
+            this.getAttribute("href");
 
         if (
-            !href ||
-            href === "#"
+            !targetID ||
+            targetID === "#"
         ) {
-
             return;
-
         }
 
-        let target = null;
-
-        try {
-
-            target =
-                document.querySelector(
-                    href
-                );
-
-        } catch (error) {
-
-            return;
-
-        }
+        const target =
+            document.querySelector(targetID);
 
         if (!target) {
             return;
@@ -2047,90 +1237,200 @@ document.addEventListener(
             block: "start"
         });
 
-        closeMobileMenu();
+    });
 
-    }
-);
+});
 
 
 /* =========================================================
-   INITIAL STATE
+   ACTIVE NAVIGATION
    ========================================================= */
 
-if (clearName) {
+const navigationLinks = document.querySelectorAll(
+    ".desktop-nav .nav-link"
+);
 
-    clearName.hidden =
-        !(
-            nameInput &&
-            nameInput.value.trim()
+const sections = document.querySelectorAll(
+    "main section[id]"
+);
+
+if (
+    navigationLinks.length > 0 &&
+    sections.length > 0
+) {
+
+    const sectionObserver =
+        new IntersectionObserver(
+            entries => {
+
+                entries.forEach(entry => {
+
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    const id = entry.target.id;
+
+                    navigationLinks.forEach(link => {
+
+                        const href =
+                            link.getAttribute("href");
+
+                        link.classList.toggle(
+                            "active",
+                            href === `#${id}`
+                        );
+
+                    });
+
+                });
+
+            },
+            {
+                rootMargin: "-30% 0px -60% 0px",
+                threshold: 0
+            }
         );
 
-}
+    sections.forEach(section => {
 
+        sectionObserver.observe(section);
 
-if (previewSection) {
-
-    previewSection.hidden = true;
-
-}
-
-
-if (resultsSection) {
-
-    resultsSection.hidden = true;
+    });
 
 }
-
-
-activeFilter = "all";
-
-updateFilterButtons();
 
 
 /* =========================================================
-   PUBLIC API
+   KEYBOARD SHORTCUT
    ========================================================= */
 
-window.ZNameStyle = {
+document.addEventListener("keydown", function(event) {
 
-    generate: function () {
+    if (
+        event.key === "Enter" &&
+        document.activeElement === nameInput &&
+        !event.shiftKey
+    ) {
 
-        generateNames();
+        event.preventDefault();
 
-    },
-
-    copy: function (text) {
-
-        return copyText(text);
-
-    },
-
-    getStyles: function () {
-
-        return generatedStyles.slice();
-
-    },
-
-    getCurrentName: function () {
-
-        return currentName;
+        generateName();
 
     }
 
-};
+    if (
+        event.key === "Escape" &&
+        mobileMenu &&
+        mobileMenu.classList.contains("open")
+    ) {
+
+        mobileMenu.classList.remove("open");
+
+        if (mobileMenuButton) {
+
+            mobileMenuButton.classList.remove(
+                "active"
+            );
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+    }
+
+});
 
 
 /* =========================================================
-   SCRIPT READY
+   HTML ESCAPE HELPERS
    ========================================================= */
 
-console.log(
-    "Z-Name Style Generator Ready"
-);
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+}
+
+
+/* =========================================================
+   CAPITALIZE
+   ========================================================= */
+
+function capitalize(value) {
+      if (!value) {
+        return "";
+    }
+
+    return value.charAt(0).toUpperCase() +
+        value.slice(1);
+
+}
+
+
+/* =========================================================
+   INITIAL SETUP
+   ========================================================= */
+
+function initializeApp() {
+
+    if (clearName && nameInput) {
+
+        clearName.hidden =
+            nameInput.value.trim().length === 0;
+
+    }
+
+    updateFilterButtons();
+
+    if (previewSection) {
+        previewSection.hidden = true;
+    }
+
+    if (resultsSection) {
+        resultsSection.hidden = true;
+    }
+
+}
+
+
+/* =========================================================
+   START APPLICATION
+   ========================================================= */
+
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeApp
+    );
+
+} else {
+
+    initializeApp();
+
+}
 
 
 /* =========================================================
    END OF SCRIPT
    ========================================================= */
-
-});
