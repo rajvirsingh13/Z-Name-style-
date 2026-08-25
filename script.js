@@ -1,2232 +1,1416 @@
-document.addEventListener("DOMContentLoaded", function () {
-    "use strict";
+/* =========================================================
+   Z-NAME STYLE
+   Complete script.js
+   Compatible with the provided index.html + style.css
+   220+ Stylish Name Styles
+   ========================================================= */
 
-    /*
-     * ============================================================
-     * Z-NAME STYLE
-     * Complete script.js
-     *
-     * IMPORTANT:
-     * Result cards intentionally contain ONLY:
-     *     1. Stylish Name
-     *     2. Copy button
-     *
-     * No number
-     * No category name
-     * No style title
-     * No "A"
-     * No "Bold Fancy"
-     * No "Gaming"
-     * ============================================================
-     */
+"use strict";
 
+/* =========================================================
+   DOM ELEMENTS
+   ========================================================= */
 
-    /* ============================================================
-       DOM ELEMENTS
-       ============================================================ */
+const nameForm = document.getElementById("nameForm");
+const nameInput = document.getElementById("nameInput");
+const clearName = document.getElementById("clearName");
+const generateButton = document.getElementById("generateButton");
 
-    const nameForm = document.getElementById("nameForm");
-    const nameInput = document.getElementById("nameInput");
-    const clearName = document.getElementById("clearName");
+const previewSection = document.getElementById("previewSection");
+const previewName = document.getElementById("previewName");
 
-    const previewSection = document.getElementById("previewSection");
-    const previewName = document.getElementById("previewName");
+const resultsSection = document.getElementById("resultsSection");
+const resultsContainer = document.getElementById("resultsContainer");
+const resultsTitle = document.getElementById("resultsTitle");
 
-    const resultsSection = document.getElementById("resultsSection");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const resultsTitle = document.getElementById("resultsTitle");
+const styleFilters = document.getElementById("styleFilters");
 
-    const styleFilters = document.getElementById("styleFilters");
-    const symbolsGrid = document.getElementById("symbolsGrid");
+const symbolsGrid = document.getElementById("symbolsGrid");
 
-    const toast = document.getElementById("toast");
-    const toastMessage = document.getElementById("toastMessage");
+const mobileMenuButton = document.getElementById("mobileMenuButton");
+const mobileMenu = document.getElementById("mobileMenu");
 
-    const mobileMenuButton =
-        document.getElementById("mobileMenuButton");
+const bottomMenuButton = document.getElementById("bottomMenuButton");
 
-    const mobileMenu =
-        document.getElementById("mobileMenu");
-
-    const bottomMenuButton =
-        document.getElementById("bottomMenuButton");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
 
 
-    /* ============================================================
-       STATE
-       ============================================================ */
+/* =========================================================
+   STATE
+   ========================================================= */
 
-    let currentName = "";
-    let activeFilter = "all";
-    let generatedStyles = [];
-
-
-    /* ============================================================
-       BASIC HELPERS
-       ============================================================ */
-
-    function cleanName(value) {
-        return String(value || "")
-            .replace(/\s+/g, " ")
-            .trim()
-            .slice(0, 30);
-    }
+let currentName = "";
+let currentResults = [];
+let currentFilter = "all";
+let toastTimer = null;
 
 
-    function uniquePush(list, category, value) {
-        if (!value) return;
+/* =========================================================
+   UNICODE FONT TABLES
+   ========================================================= */
 
-        const finalValue = String(value).trim();
+const normalUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const normalLower = "abcdefghijklmnopqrstuvwxyz";
 
-        if (!finalValue) return;
+const boldUpper =
+    "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙";
 
-        const exists = list.some(function (item) {
-            return item.value === finalValue;
-        });
+const boldLower =
+    "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳";
 
-        if (!exists) {
-            list.push({
-                category: category,
-                value: finalValue
-            });
+const italicUpper =
+    "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍";
+
+const italicLower =
+    "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧";
+
+const boldItalicUpper =
+    "𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁";
+
+const boldItalicLower =
+    "𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛";
+
+const scriptUpper =
+    "𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵";
+
+const scriptLower =
+    "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏";
+
+const boldScriptUpper =
+    "𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩";
+
+const boldScriptLower =
+    "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃";
+
+const frakturUpper =
+    "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ";
+
+const frakturLower =
+    "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷";
+
+const boldFrakturUpper =
+    "𝕬𝕭𝕮𝕯𝕰𝕱𝕲𝕳𝕴𝕵𝕶𝕷𝕸𝕹𝕺𝕻𝕼𝕽𝕾𝕿𝖀𝖁𝖂𝖃𝖄𝖅";
+
+const boldFrakturLower =
+    "𝖆𝖇𝖈𝖉𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟";
+
+const doubleUpper =
+    "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ";
+
+const doubleLower =
+    "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫";
+
+const sansUpper =
+    "𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹";
+
+const sansLower =
+    "𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓";
+
+const sansBoldUpper =
+    "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭";
+
+const sansBoldLower =
+    "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇";
+
+const sansItalicUpper =
+    "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡";
+
+const sansItalicLower =
+    "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻";
+
+const sansBoldItalicUpper =
+    "𝘼𝘽𝘾𝘿𝙀𝙁𝙂𝙃𝙄𝙅𝙆𝙇𝙈𝙉𝙊𝙋𝙌𝙍𝙎𝙏𝙐𝙑𝙒𝙓𝙔𝙕";
+
+const sansBoldItalicLower =
+    "𝙖𝙗𝙘𝙙𝙚𝙛𝙜𝙝𝙞𝙟𝙠𝙡𝙢𝙣𝙤𝙥𝙦𝙧𝙨𝙩𝙪𝙫𝙬𝙭𝙮𝙯";
+
+const monoUpper =
+    "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉";
+
+const monoLower =
+    "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣";
+
+const smallCaps = {
+    a: "ᴀ",
+    b: "ʙ",
+    c: "ᴄ",
+    d: "ᴅ",
+    e: "ᴇ",
+    f: "ꜰ",
+    g: "ɢ",
+    h: "ʜ",
+    i: "ɪ",
+    j: "ᴊ",
+    k: "ᴋ",
+    l: "ʟ",
+    m: "ᴍ",
+    n: "ɴ",
+    o: "ᴏ",
+    p: "ᴘ",
+    q: "ǫ",
+    r: "ʀ",
+    s: "s",
+    t: "ᴛ",
+    u: "ᴜ",
+    v: "ᴠ",
+    w: "ᴡ",
+    x: "x",
+    y: "ʏ",
+    z: "ᴢ"
+};
+
+
+/* =========================================================
+   FONT CONVERTER
+   ========================================================= */
+
+function convertFont(text, upper, lower) {
+    let output = "";
+
+    for (const char of text) {
+        const upperIndex = normalUpper.indexOf(char);
+
+        if (upperIndex !== -1) {
+            output += upper[upperIndex] || char;
+            continue;
         }
-    }
 
+        const lowerIndex = normalLower.indexOf(char);
 
-    function showToast(message) {
-        if (!toast) return;
-
-        if (toastMessage) {
-            toastMessage.textContent = message;
+        if (lowerIndex !== -1) {
+            output += lower[lowerIndex] || char;
+            continue;
         }
 
-        toast.classList.add("show");
-
-        clearTimeout(showToast.timer);
-
-        showToast.timer = setTimeout(function () {
-            toast.classList.remove("show");
-        }, 1800);
+        output += char;
     }
 
-
-    /* ============================================================
-       UNICODE FONTS
-       ============================================================ */
-
-    const boldUpper =
-        "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙".split("");
-
-    const boldLower =
-        "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳".split("");
+    return output;
+}
 
 
-    const italicUpper =
-        "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍".split("");
-
-    const italicLower =
-        "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧".split("");
-
-
-    const monoUpper =
-        "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉".split("");
-
-    const monoLower =
-        "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣".split("");
+function toSmallCaps(text) {
+    return [...text]
+        .map(char => {
+            const lower = char.toLowerCase();
+            return smallCaps[lower] || char;
+        })
+        .join("");
+}
 
 
-    const doubleUpper =
-        "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ".split("");
-
-    const doubleLower =
-        "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫".split("");
-
-
-    const scriptUpper =
-        "𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵".split("");
-
-    const scriptLower =
-        "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏".split("");
-
-
-    const frakturUpper =
-        "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ".split("");
-
-    const frakturLower =
-        "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷".split("");
-
-
-    const sansBoldUpper =
-        "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭".split("");
-
-    const sansBoldLower =
-        "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇".split("");
-
-
-    const sansItalicUpper =
-        "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡".split("");
-
-    const sansItalicLower =
-        "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻".split("");
-
-
-    const sansUpper =
-        "𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹".split("");
-
-    const sansLower =
-        "𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓".split("");
-
-
-    function convertFont(text, upper, lower) {
-        return String(text)
-            .split("")
-            .map(function (character) {
-
-                const code = character.charCodeAt(0);
-
-                if (code >= 65 && code <= 90) {
-                    return upper[code - 65] || character;
-                }
-
-                if (code >= 97 && code <= 122) {
-                    return lower[code - 97] || character;
-                }
-
-                return character;
-            })
-            .join("");
-    }
-
-
-    function toBold(text) {
-        return convertFont(text, boldUpper, boldLower);
-    }
-
-    function toItalic(text) {
-        return convertFont(text, italicUpper, italicLower);
-    }
-
-    function toMono(text) {
-        return convertFont(text, monoUpper, monoLower);
-    }
-
-    function toDouble(text) {
-        return convertFont(text, doubleUpper, doubleLower);
-    }
-
-    function toScript(text) {
-        return convertFont(text, scriptUpper, scriptLower);
-    }
-
-    function toFraktur(text) {
-        return convertFont(text, frakturUpper, frakturLower);
-    }
-
-    function toSansBold(text) {
-        return convertFont(text, sansBoldUpper, sansBoldLower);
-    }
-
-    function toSansItalic(text) {
-        return convertFont(text, sansItalicUpper, sansItalicLower);
-    }
-
-    function toSans(text) {
-        return convertFont(text, sansUpper, sansLower);
-    }
-
-
-    /* ============================================================
-       SPECIAL TEXT STYLES
-       ============================================================ */
-
-    const smallCaps = {
-        a: "ᴀ",
-        b: "ʙ",
-        c: "ᴄ",
-        d: "ᴅ",
-        e: "ᴇ",
-        f: "ғ",
-        g: "ɢ",
-        h: "ʜ",
-        i: "ɪ",
-        j: "ᴊ",
-        k: "ᴋ",
-        l: "ʟ",
-        m: "ᴍ",
-        n: "ɴ",
-        o: "ᴏ",
-        p: "ᴘ",
-        q: "ǫ",
-        r: "ʀ",
-        s: "s",
-        t: "ᴛ",
-        u: "ᴜ",
-        v: "ᴠ",
-        w: "ᴡ",
-        x: "x",
-        y: "ʏ",
-        z: "ᴢ"
+function toCircled(text) {
+    const map = {
+        A: "Ⓐ", B: "Ⓑ", C: "Ⓒ", D: "Ⓓ", E: "Ⓔ",
+        F: "Ⓕ", G: "Ⓖ", H: "Ⓗ", I: "Ⓘ", J: "Ⓙ",
+        K: "Ⓚ", L: "Ⓛ", M: "Ⓜ", N: "Ⓝ", O: "Ⓞ",
+        P: "Ⓟ", Q: "Ⓠ", R: "Ⓡ", S: "Ⓢ", T: "Ⓣ",
+        U: "Ⓤ", V: "Ⓥ", W: "Ⓦ", X: "Ⓧ", Y: "Ⓨ",
+        Z: "Ⓩ"
     };
 
+    return [...text]
+        .map(char => map[char.toUpperCase()] || char)
+        .join("");
+}
 
-    function toSmallCaps(text) {
-        return String(text)
-            .toLowerCase()
-            .split("")
-            .map(function (character) {
-                return smallCaps[character] || character;
-            })
-            .join("");
+
+function toSquared(text) {
+    const map = {
+        A: "🄰", B: "🄱", C: "🄲", D: "🄳", E: "🄴",
+        F: "🄵", G: "🄶", H: "🄷", I: "🄸", J: "🄹",
+        K: "🄺", L: "🄻", M: "🄼", N: "🄽", O: "🄾",
+        P: "🄿", Q: "🅀", R: "🅁", S: "🅂", T: "🅃",
+        U: "🅄", V: "🅅", W: "🅆", X: "🅇", Y: "🅈",
+        Z: "🅉"
+    };
+
+    return [...text]
+        .map(char => map[char.toUpperCase()] || char)
+        .join("");
+}
+
+
+function addStrike(text) {
+    return [...text]
+        .map(char => {
+            if (char === " ") return char;
+            return char + "̶";
+        })
+        .join("");
+}
+
+
+function addUnderline(text) {
+    return [...text]
+        .map(char => {
+            if (char === " ") return char;
+            return char + "̲";
+        })
+        .join("");
+}
+
+
+function addDoubleUnderline(text) {
+    return [...text]
+        .map(char => {
+            if (char === " ") return char;
+            return char + "͟";
+        })
+        .join("");
+}
+
+
+function addDot(text) {
+    return [...text]
+        .map(char => {
+            if (char === " ") return char;
+            return char + "̇";
+        })
+        .join("");
+}
+
+
+function addWave(text) {
+    return [...text]
+        .map(char => {
+            if (char === " ") return char;
+            return char + "̃";
+        })
+        .join("");
+}
+
+
+function reverseText(text) {
+    return [...text].reverse().join("");
+}
+
+
+function spaced(text, separator) {
+    return [...text].join(separator);
+}
+
+
+/* =========================================================
+   STYLE DEFINITIONS
+   220+ UNIQUE STYLE FUNCTIONS
+   ========================================================= */
+
+const styleFunctions = [
+
+    /* ---------- BASIC FONTS ---------- */
+
+    text => text,
+    text => convertFont(text, boldUpper, boldLower),
+    text => convertFont(text, italicUpper, italicLower),
+    text => convertFont(text, boldItalicUpper, boldItalicLower),
+    text => convertFont(text, scriptUpper, scriptLower),
+    text => convertFont(text, boldScriptUpper, boldScriptLower),
+    text => convertFont(text, frakturUpper, frakturLower),
+    text => convertFont(text, boldFrakturUpper, boldFrakturLower),
+    text => convertFont(text, doubleUpper, doubleLower),
+    text => convertFont(text, sansUpper, sansLower),
+    text => convertFont(text, sansBoldUpper, sansBoldLower),
+    text => convertFont(text, sansItalicUpper, sansItalicLower),
+    text => convertFont(text, sansBoldItalicUpper, sansBoldItalicLower),
+    text => convertFont(text, monoUpper, monoLower),
+    text => toSmallCaps(text),
+    text => toCircled(text),
+    text => toSquared(text),
+
+    /* ---------- SYMBOL FRAMES ---------- */
+
+    text => `꧁${text}꧂`,
+    text => `꧁༺${text}༻꧂`,
+    text => `༺${text}༻`,
+    text => `༺༻${text}༺༻`,
+    text => `『${text}』`,
+    text => `【${text}】`,
+    text => `〖${text}〗`,
+    text => `〘${text}〙`,
+    text => `〚${text}〛`,
+    text => `⟦${text}⟧`,
+    text => `⟨${text}⟩`,
+    text => `《${text}》`,
+    text => `〈${text}〉`,
+    text => `「${text}」`,
+    text => `『${text}』`,
+    text => `【『${text}』】`,
+    text => `乂${text}乂`,
+    text => `メ${text}メ`,
+    text => `彡${text}彡`,
+    text => `ツ${text}ツ`,
+    text => `×͜×${text}×͜×`,
+    text => `乂༒${text}༒乂`,
+    text => `亗${text}亗`,
+    text => `〆${text}〆`,
+    text => `々${text}々`,
+    text => `ミ${text}彡`,
+    text => `シ${text}ツ`,
+    text => `ヅ${text}ヅ`,
+    text => `么${text}么`,
+
+    /* ---------- STAR STYLES ---------- */
+
+    text => `★${text}★`,
+    text => `☆${text}☆`,
+    text => `★彡${text}彡★`,
+    text => `☆彡${text}彡☆`,
+    text => `✦${text}✦`,
+    text => `✧${text}✧`,
+    text => `✪${text}✪`,
+    text => `✯${text}✯`,
+    text => `✰${text}✰`,
+    text => `✵${text}✵`,
+    text => `✷${text}✷`,
+    text => `✸${text}✸`,
+    text => `✹${text}✹`,
+    text => `✺${text}✺`,
+    text => `✻${text}✻`,
+    text => `✼${text}✼`,
+    text => `✽${text}✽`,
+    text => `✾${text}✾`,
+    text => `✿${text}✿`,
+    text => `❀${text}❀`,
+    text => `❁${text}❁`,
+    text => `❂${text}❂`,
+    text => `❃${text}❃`,
+    text => `❇${text}❇`,
+    text => `❈${text}❈`,
+    text => `❉${text}❉`,
+    text => `❊${text}❊`,
+    text => `❋${text}❋`,
+
+    /* ---------- CROWN / ROYAL ---------- */
+
+    text => `♛${text}♛`,
+    text => `♕${text}♕`,
+    text => `♚${text}♚`,
+    text => `♔${text}♔`,
+    text => `♛༺${text}༻♛`,
+    text => `♕༺${text}༻♕`,
+    text => `♚꧁${text}꧂♚`,
+    text => `♔꧁${text}꧂♔`,
+    text => `👑${text}👑`,
+    text => `⚜${text}⚜`,
+    text => `♜${text}♜`,
+    text => `♝${text}♝`,
+    text => `♞${text}♞`,
+    text => `♟${text}♟`,
+
+    /* ---------- GAMING ---------- */
+
+    text => `乂${text}乂`,
+    text => `亗${text}亗`,
+    text => `メ${text}メ`,
+    text => `〆${text}〆`,
+    text => `么${text}么`,
+    text => `ツ${text}ツ`,
+    text => `彡${text}彡`,
+    text => `乂༒${text}༒乂`,
+    text => `亗『${text}』亗`,
+    text => `メ『${text}』メ`,
+    text => `〆『${text}』〆`,
+    text => `么『${text}』么`,
+    text => `乂『${text}』乂`,
+    text => `彡『${text}』彡`,
+    text => `×͜×${text}×͜×`,
+    text => `乂★${text}★乂`,
+    text => `亗★${text}★亗`,
+    text => `メ★${text}★メ`,
+    text => `〆★${text}★〆`,
+    text => `乂✦${text}✦乂`,
+    text => `亗✦${text}✦亗`,
+    text => `メ✦${text}✦メ`,
+    text => `乂♛${text}♛乂`,
+    text => `亗♛${text}♛亗`,
+    text => `メ♛${text}♛メ`,
+    text => `〆♛${text}♛〆`,
+    text => `乂꧁${text}꧂乂`,
+    text => `亗꧁${text}꧂亗`,
+    text => `メ꧁${text}꧂メ`,
+    text => `〆꧁${text}꧂〆`,
+
+    /* ---------- ATTITUDE ---------- */
+
+    text => `☠${text}☠`,
+    text => `☬${text}☬`,
+    text => `⚔${text}⚔`,
+    text => `⚡${text}⚡`,
+    text => `🔥${text}🔥`,
+    text => `💀${text}💀`,
+    text => `😈${text}😈`,
+    text => `👿${text}👿`,
+    text => `😎${text}😎`,
+    text => `🖤${text}🖤`,
+    text => `♠${text}♠`,
+    text => `♣${text}♣`,
+    text => `♦${text}♦`,
+    text => `♥${text}♥`,
+    text => `☠༺${text}༻☠`,
+    text => `⚔༺${text}༻⚔`,
+    text => `⚡༺${text}༻⚡`,
+    text => `🔥༺${text}༻🔥`,
+    text => `💀༺${text}༻💀`,
+    text => `😈༺${text}༻😈`,
+    text => `👿༺${text}༻👿`,
+    text => `😎༺${text}༻😎`,
+    text => `🖤༺${text}༻🖤`,
+    text => `☠꧁${text}꧂☠`,
+    text => `⚔꧁${text}꧂⚔`,
+    text => `⚡꧁${text}꧂⚡`,
+    text => `🔥꧁${text}꧂🔥`,
+    text => `💀꧁${text}꧂💀`,
+    text => `😈꧁${text}꧂😈`,
+    text => `😎꧁${text}꧂😎`,
+
+    /* ---------- LOVE ---------- */
+
+    text => `♡${text}♡`,
+    text => `♥${text}♥`,
+    text => `❤${text}❤`,
+    text => `❥${text}❥`,
+    text => `ღ${text}ღ`,
+    text => `💕${text}💕`,
+    text => `💖${text}💖`,
+    text => `💗${text}💗`,
+    text => `💘${text}💘`,
+    text => `💝${text}💝`,
+    text => `💞${text}💞`,
+    text => `💓${text}💓`,
+    text => `♡꧁${text}꧂♡`,
+    text => `♥꧁${text}꧂♥`,
+    text => `❤꧁${text}꧂❤`,
+    text => `ღ꧁${text}꧂ღ`,
+    text => `♡༺${text}༻♡`,
+    text => `♥༺${text}༻♥`,
+    text => `❤༺${text}༻❤`,
+
+    /* ---------- SIMPLE DECORATIVE ---------- */
+
+    text => `•${text}•`,
+    text => `·${text}·`,
+    text => `|${text}|`,
+    text => `~${text}~`,
+    text => `^${text}^`,
+    text => `+${text}+`,
+    text => `=${text}=`,
+    text => `-${text}-`,
+    text => `_${text}_`,
+    text => `*${text}*`,
+    text => `#${text}#`,
+    text => `@${text}@`,
+    text => `$${text}$`,
+    text => `%${text}%`,
+    text => `&${text}&`,
+    text => `!${text}!`,
+    text => `?${text}?`,
+    text => `•°${text}°•`,
+    text => `°•${text}•°`,
+    text => `•.¸${text}¸.•`,
+    text => `¸.•${text}•.¸`,
+    text => `╰${text}╯`,
+    text => `╭${text}╮`,
+    text => `╰☆${text}☆╮`,
+    text => `╭☆${text}☆╯`,
+    text => `┏${text}┓`,
+    text => `┗${text}┛`,
+    text => `┌${text}┐`,
+    text => `└${text}┘`,
+    text => `╔${text}╗`,
+    text => `╚${text}╝`,
+    text => `╭༺${text}༻╮`,
+    text => `╰༺${text}༻╯`,
+    text => `╭꧁${text}꧂╮`,
+    text => `╰꧁${text}꧂╯`,
+
+    /* ---------- SPACED ---------- */
+
+    text => spaced(text, " "),
+    text => spaced(text, "  "),
+    text => spaced(text, " • "),
+    text => spaced(text, " · "),
+    text => spaced(text, " ★ "),
+    text => spaced(text, " ☆ "),
+    text => spaced(text, " ✦ "),
+    text => spaced(text, " ✧ "),
+    text => spaced(text, " | "),
+    text => spaced(text, " ~ "),
+    text => spaced(text, " - "),
+    text => spaced(text, " 乂 "),
+    text => spaced(text, " 亗 "),
+    text => spaced(text, " ツ "),
+    text => spaced(text, " 彡 "),
+
+    /* ---------- COMBINED FONTS + DECORATION ---------- */
+
+    text => `★${convertFont(text, boldUpper, boldLower)}★`,
+    text => `☆${convertFont(text, boldUpper, boldLower)}☆`,
+    text => `꧁${convertFont(text, boldUpper, boldLower)}꧂`,
+    text => `༺${convertFont(text, boldUpper, boldLower)}༻`,
+    text => `『${convertFont(text, boldUpper, boldLower)}』`,
+    text => `亗${convertFont(text, boldUpper, boldLower)}亗`,
+    text => `乂${convertFont(text, boldUpper, boldLower)}乂`,
+    text => `彡${convertFont(text, boldUpper, boldLower)}彡`,
+    text => `♛${convertFont(text, boldUpper, boldLower)}♛`,
+    text => `☠${convertFont(text, boldUpper, boldLower)}☠`,
+    text => `⚡${convertFont(text, boldUpper, boldLower)}⚡`,
+    text => `🔥${convertFont(text, boldUpper, boldLower)}🔥`,
+    text => `♡${convertFont(text, boldUpper, boldLower)}♡`,
+    text => `★${convertFont(text, italicUpper, italicLower)}★`,
+    text => `☆${convertFont(text, italicUpper, italicLower)}☆`,
+    text => `꧁${convertFont(text, italicUpper, italicLower)}꧂`,
+    text => `༺${convertFont(text, italicUpper, italicLower)}༻`,
+    text => `『${convertFont(text, italicUpper, italicLower)}』`,
+    text => `亗${convertFont(text, italicUpper, italicLower)}亗`,
+    text => `乂${convertFont(text, italicUpper, italicLower)}乂`,
+    text => `彡${convertFont(text, italicUpper, italicLower)}彡`,
+    text => `♛${convertFont(text, italicUpper, italicLower)}♛`,
+    text => `☠${convertFont(text, italicUpper, italicLower)}☠`,
+    text => `⚡${convertFont(text, italicUpper, italicLower)}⚡`,
+    text => `🔥${convertFont(text, italicUpper, italicLower)}🔥`,
+    text => `♡${convertFont(text, italicUpper, italicLower)}♡`,
+
+    /* ---------- MARKED TEXT ---------- */
+
+    text => addStrike(text),
+    text => addUnderline(text),
+    text => addDoubleUnderline(text),
+    text => addDot(text),
+    text => addWave(text),
+
+    text => `★${addStrike(text)}★`,
+    text => `☆${addStrike(text)}☆`,
+    text => `꧁${addStrike(text)}꧂`,
+    text => `亗${addStrike(text)}亗`,
+    text => `乂${addStrike(text)}乂`,
+    text => `彡${addStrike(text)}彡`,
+    text => `♛${addStrike(text)}♛`,
+    text => `☠${addStrike(text)}☠`,
+    text => `♡${addStrike(text)}♡`,
+
+    text => `★${addUnderline(text)}★`,
+    text => `☆${addUnderline(text)}☆`,
+    text => `꧁${addUnderline(text)}꧂`,
+    text => `亗${addUnderline(text)}亗`,
+    text => `乂${addUnderline(text)}乂`,
+    text => `彡${addUnderline(text)}彡`,
+    text => `♛${addUnderline(text)}♛`,
+    text => `☠${addUnderline(text)}☠`,
+    text => `♡${addUnderline(text)}♡`,
+
+    /* ---------- EXTRA COMBINATIONS ---------- */
+
+    text => `꧁༺${convertFont(text, boldUpper, boldLower)}༻꧂`,
+    text => `꧁༺${convertFont(text, italicUpper, italicLower)}༻꧂`,
+    text => `★彡${convertFont(text, boldUpper, boldLower)}彡★`,
+    text => `☆彡${convertFont(text, boldUpper, boldLower)}彡☆`,
+    text => `亗『${convertFont(text, boldUpper, boldLower)}』亗`,
+    text => `乂『${convertFont(text, italicUpper, italicLower)}』乂`,
+    text => `メ『${convertFont(text, boldItalicUpper, boldItalicLower)}』メ`,
+    text => `〆『${convertFont(text, scriptUpper, scriptLower)}』〆`,
+    text => `♛꧁${convertFont(text, boldUpper, boldLower)}꧂♛`,
+    text => `☠꧁${convertFont(text, boldUpper, boldLower)}꧂☠`,
+    text => `⚔꧁${convertFont(text, boldUpper, boldLower)}꧂⚔`,
+    text => `⚡꧁${convertFont(text, boldUpper, boldLower)}꧂⚡`,
+    text => `🔥꧁${convertFont(text, boldUpper, boldLower)}꧂🔥`,
+    text => `💀꧁${convertFont(text, boldUpper, boldLower)}꧂💀`,
+    text => `😈꧁${convertFont(text, boldUpper, boldLower)}꧂😈`,
+    text => `👑꧁${convertFont(text, boldUpper, boldLower)}꧂👑`,
+    text => `♡꧁${convertFont(text, boldUpper, boldLower)}꧂♡`,
+    text => `♥꧁${convertFont(text, boldUpper, boldLower)}꧂♥`,
+    text => `★༺${convertFont(text, boldItalicUpper, boldItalicLower)}༻★`,
+    text => `☆༺${convertFont(text, scriptUpper, scriptLower)}༻☆`,
+    text => `✦『${convertFont(text, sansBoldUpper, sansBoldLower)}』✦`,
+    text => `✧『${convertFont(text, sansItalicUpper, sansItalicLower)}』✧`,
+    text => `❖${convertFont(text, doubleUpper, doubleLower)}❖`,
+    text => `◆${convertFont(text, monoUpper, monoLower)}◆`,
+    text => `◇${convertFont(text, monoUpper, monoLower)}◇`,
+    text => `●${convertFont(text, sansBoldUpper, sansBoldLower)}●`,
+    text => `○${convertFont(text, sansItalicUpper, sansItalicLower)}○`,
+    text => `◈${convertFont(text, boldUpper, boldLower)}◈`,
+    text => `◉${convertFont(text, italicUpper, italicLower)}◉`,
+    text => `✪${convertFont(text, boldUpper, boldLower)}✪`,
+    text => `✯${convertFont(text, scriptUpper, scriptLower)}✯`,
+    text => `⚜${convertFont(text, boldUpper, boldLower)}⚜`,
+    text => `♔${convertFont(text, boldUpper, boldLower)}♔`,
+    text => `♕${convertFont(text, scriptUpper, scriptLower)}♕`,
+    text => `♚${convertFont(text, frakturUpper, frakturLower)}♚`,
+    text => `♛${convertFont(text, boldFrakturUpper, boldFrakturLower)}♛`,
+
+    /* ---------- REVERSED / SPECIAL ---------- */
+
+    text => reverseText(text),
+    text => `↞${text}↠`,
+    text => `↠${text}↞`,
+    text => `‹${text}›`,
+    text => `›${text}‹`,
+    text => `«${text}»`,
+    text => `»${text}«`,
+    text => `⫷${text}⫸`,
+    text => `⫸${text}⫷`,
+    text => `⟪${text}⟫`,
+    text => `⟫${text}⟪`,
+    text => `⦗${text}⦘`,
+    text => `⦘${text}⦗`,
+    text => `〔${text}〕`,
+    text => `〕${text}〔`,
+    text => `〖${text}〗`,
+    text => `〗${text}〖`,
+    text => `⟮${text}⟯`,
+    text => `⟯${text}⟮`,
+    text => `﹝${text}﹞`,
+    text => `﹞${text}﹝`,
+    text => `⸢${text}⸣`,
+    text => `⸤${text}⸥`,
+    text => `⸜${text}⸝`,
+    text => `⸜${text}⸝`,
+
+    /* ---------- FINAL DECORATIVE STYLES ---------- */
+
+    text => `•°${convertFont(text, boldUpper, boldLower)}°•`,
+    text => `°•${convertFont(text, italicUpper, italicLower)}•°`,
+    text => `✦•${convertFont(text, boldUpper, boldLower)}•✦`,
+    text => `✧•${convertFont(text, scriptUpper, scriptLower)}•✧`,
+    text => `★•${convertFont(text, sansBoldUpper, sansBoldLower)}•★`,
+    text => `☆•${convertFont(text, sansItalicUpper, sansItalicLower)}•☆`,
+    text => `꧁•${convertFont(text, boldUpper, boldLower)}•꧂`,
+    text => `༺•${convertFont(text, italicUpper, italicLower)}•༻`,
+    text => `亗•${convertFont(text, boldUpper, boldLower)}•亗`,
+    text => `乂•${convertFont(text, boldItalicUpper, boldItalicLower)}•乂`,
+    text => `彡•${convertFont(text, scriptUpper, scriptLower)}•彡`,
+    text => `♛•${convertFont(text, boldFrakturUpper, boldFrakturLower)}•♛`,
+    text => `☠•${convertFont(text, boldFrakturUpper, boldFrakturLower)}•☠`,
+    text => `⚡•${convertFont(text, sansBoldUpper, sansBoldLower)}•⚡`,
+    text => `🔥•${convertFont(text, boldUpper, boldLower)}•🔥`,
+    text => `♡•${convertFont(text, scriptUpper, scriptLower)}•♡`,
+    text => `♥•${convertFont(text, boldUpper, boldLower)}•♥`,
+    text => `👑•${convertFont(text, boldUpper, boldLower)}•👑`
+];
+
+
+/* =========================================================
+   CATEGORY ASSIGNMENT
+   Important:
+   Categories are ONLY used for filtering.
+   They are NEVER displayed inside result cards.
+   ========================================================= */
+
+function getCategory(index) {
+    if (index < 17) {
+        return "fancy";
     }
 
-
-    function strike(text) {
-        return String(text)
-            .split("")
-            .map(function (character) {
-                return character + "̶";
-            })
-            .join("");
+    if (index < 95) {
+        return "gaming";
     }
 
-
-    function underline(text) {
-        return String(text)
-            .split("")
-            .map(function (character) {
-                return character + "̲";
-            })
-            .join("");
+    if (index < 150) {
+        return "attitude";
     }
 
-
-    function overline(text) {
-        return String(text)
-            .split("")
-            .map(function (character) {
-                return character + "̅";
-            })
-            .join("");
+    if (index < 205) {
+        return "symbols";
     }
 
+    return "fancy";
+}
 
-    function dotText(text) {
-        return String(text).split("").join("・");
-    }
 
+/* =========================================================
+   BUILD STYLES
+   ========================================================= */
 
-    function spaced(text) {
-        return String(text).split("").join(" ");
-    }
+function buildStyles(name) {
+    const styles = [];
+    const used = new Set();
 
-
-    function bulletSpace(text) {
-        return String(text).split("").join(" • ");
-    }
-
-
-    function slashSpace(text) {
-        return String(text).split("").join(" / ");
-    }
-
-
-    function waveSpace(text) {
-        return String(text).split("").join(" ~ ");
-    }
-
-
-    /* ============================================================
-       DECORATION DATA
-       ============================================================ */
-
-    const decorations = [
-        ["★", "★"],
-        ["☆", "☆"],
-        ["✦", "✦"],
-        ["✧", "✧"],
-        ["✯", "✯"],
-        ["✰", "✰"],
-        ["❖", "❖"],
-        ["◆", "◆"],
-        ["◇", "◇"],
-        ["⚡", "⚡"],
-        ["亗", "亗"],
-        ["乂", "乂"],
-        ["ツ", "ツ"],
-        ["彡", "彡"],
-        ["〆", "〆"],
-        ["么", "么"],
-        ["々", "々"],
-        ["メ", "メ"],
-        ["シ", "シ"],
-        ["乛", "乛"],
-        ["♛", "♛"],
-        ["♕", "♕"],
-        ["♔", "♔"],
-        ["♚", "♚"],
-        ["♡", "♡"],
-        ["♥", "♥"],
-        ["☠", "☠"],
-        ["☾", "☽"],
-        ["☽", "☾"],
-        ["❀", "❀"],
-        ["✿", "✿"],
-        ["❁", "❁"],
-        ["🌸", "🌸"],
-        ["🔥", "🔥"],
-        ["👑", "👑"],
-        ["⚔", "⚔"],
-        ["♠", "♠"],
-        ["♣", "♣"],
-        ["♦", "♦"],
-        ["☯", "☯"],
-        ["☮", "☮"],
-        ["∞", "∞"],
-        ["⚜", "⚜"],
-        ["༒", "༒"],
-        ["࿐", "࿐"],
-        ["❣", "❣"],
-        ["ღ", "ღ"],
-        ["☘", "☘"],
-        ["☀", "☀"]
-    ];
-
-
-    const frames = [
-        ["『", "』"],
-        ["【", "】"],
-        ["〖", "〗"],
-        ["〘", "〙"],
-        ["〚", "〛"],
-        ["〈", "〉"],
-        ["《", "》"],
-        ["「", "」"],
-        ["〔", "〕"],
-        ["〝", "〞"],
-        ["⟦", "⟧"],
-        ["⟨", "⟩"],
-        ["❲", "❳"],
-        ["❬", "❭"],
-        ["꧁", "꧂"],
-        ["༺", "༻"],
-        ["༼", "༽"],
-        ["╰", "╯"],
-        ["╭", "╮"],
-        ["╔", "╗"],
-        ["╚", "╝"],
-        ["▌", "▐"],
-        ["◥", "◤"],
-        ["◢", "◣"],
-        ["⟪", "⟫"],
-        ["⟮", "⟯"],
-        ["﹝", "﹞"],
-        ["﹙", "﹚"],
-        ["⦅", "⦆"],
-        ["⟬", "⟭"]
-    ];
-
-
-    /* ============================================================
-       STYLE GENERATORS
-       ============================================================ */
-
-    function addFontStyles(name, output) {
-
-        const fonts = [
-            toBold(name),
-            toItalic(name),
-            toMono(name),
-            toDouble(name),
-            toScript(name),
-            toFraktur(name),
-            toSansBold(name),
-            toSansItalic(name),
-            toSans(name),
-            toSmallCaps(name),
-
-            underline(name),
-            strike(name),
-            overline(name),
-
-            underline(toBold(name)),
-            underline(toItalic(name)),
-            underline(toScript(name)),
-            underline(toDouble(name)),
-
-            strike(toBold(name)),
-            strike(toItalic(name)),
-            strike(toScript(name)),
-
-            overline(toBold(name)),
-            overline(toItalic(name)),
-            overline(toScript(name)),
-
-            toBold(spaced(name)),
-            toItalic(spaced(name)),
-            toDouble(spaced(name)),
-            toScript(spaced(name)),
-            toFraktur(spaced(name)),
-
-            toBold(dotText(name)),
-            toItalic(dotText(name)),
-            toDouble(dotText(name)),
-            toScript(dotText(name)),
-
-            toBold(bulletSpace(name)),
-            toItalic(bulletSpace(name)),
-            toDouble(bulletSpace(name)),
-
-            toBold(slashSpace(name)),
-            toItalic(slashSpace(name)),
-            toDouble(slashSpace(name)),
-
-            toBold(waveSpace(name)),
-            toScript(waveSpace(name))
-        ];
-
-
-        fonts.forEach(function (value) {
-            uniquePush(output, "fancy", value);
-        });
-    }
-
-
-    function addSymbolStyles(name, output) {
-
-        decorations.forEach(function (pair) {
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + " " + name + " " + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + " " + toBold(name) + " " + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + " " + toScript(name) + " " + pair[1]
-            );
-
-        });
-
-
-        frames.forEach(function (pair) {
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + name + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + toBold(name) + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "symbols",
-                pair[0] + toScript(name) + pair[1]
-            );
-
-        });
-    }
-
-
-    function addGamingStyles(name, output) {
-
-        const gamingPairs = [
-            ["亗", "亗"],
-            ["乂", "乂"],
-            ["〆", "〆"],
-            ["么", "么"],
-            ["メ", "メ"],
-            ["シ", "シ"],
-            ["ツ", "ツ"],
-            ["彡", "彡"],
-            ["乛", "乛"],
-            ["々", "々"],
-            ["⚔", "⚔"],
-            ["☠", "☠"],
-            ["♠", "♠"],
-            ["⚡", "⚡"],
-            ["🔥", "🔥"],
-            ["🎯", "🎯"],
-            ["👑", "👑"],
-            ["☢", "☢"],
-            ["☣", "☣"],
-            ["༒", "༒"],
-            ["★亗", "亗★"],
-            ["⚡亗", "亗⚡"],
-            ["☠亗", "亗☠"],
-            ["彡乂", "乂彡"],
-            ["メ〆", "〆メ"],
-            ["༺༒", "༒༻"],
-            ["꧁", "꧂"],
-            ["『", "』"],
-            ["【", "】"],
-            ["◥", "◤"],
-            ["╰", "╯"],
-            ["♛", "♛"]
-        ];
-
-
-        gamingPairs.forEach(function (pair) {
-
-            uniquePush(
-                output,
-                "gaming",
-                pair[0] + " " + toBold(name) + " " + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "gaming",
-                pair[0] + " " + toDouble(name) + " " + pair[1]
-            );
-
-            uniquePush(
-                output,
-                "gaming",
-                pair[0] + " " + toMono(name) + " " + pair[1]
-            );
-
-        });
-    }
-
-
-    function addAttitudeStyles(name, output) {
-
-        const attitude = [
-            "★彡 {name} 彡★",
-            "乂 {name} 乂",
-            "么 {name} 么",
-            "⚡ {name} ⚡",
-            "☠ {name} ☠",
-            "♛ {name} ♛",
-            "👑 {name} 👑",
-            "亗 {name} 亗",
-            "『 {name} 』",
-            "【 {name} 】",
-            "〆 {name} 〆",
-            "メ {name} メ",
-            "彡 {name} 彡",
-            "ツ {name} ツ",
-            "༒ {name} ༒",
-            "⚔ {name} ⚔",
-            "🔥 {name} 🔥",
-            "☢ {name} ☢",
-            "☣ {name} ☣",
-            "♠ {name} ♠",
-            "★ {name} ★",
-            "✦ {name} ✦",
-            "✯ {name} ✯",
-            "❖ {name} ❖",
-            "∞ {name} ∞",
-            "⚜ {name} ⚜",
-            "☯ {name} ☯",
-            "☮ {name} ☮",
-            "꧁༺ {name} ༻꧂",
-            "『亗 {name} 亗』",
-            "【乂 {name} 乂】",
-            "★亗 {name} 亗★",
-            "⚡亗 {name} 亗⚡",
-            "☠亗 {name} 亗☠",
-            "♛亗 {name} 亗♛",
-            "༒亗 {name} 亗༒",
-            "彡乂 {name} 乂彡",
-            "メ〆 {name} 〆メ",
-            "꧁ {name} ꧂",
-            "༺ {name} ༻"
-        ];
-
-
-        attitude.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "attitude",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "attitude",
-                template.replace("{name}", toDouble(name))
-            );
-
-        });
-    }
-
-
-    function addRoyalStyles(name, output) {
-
-        const royal = [
-            "♛ {name} ♛",
-            "♕ {name} ♕",
-            "♔ {name} ♔",
-            "♚ {name} ♚",
-            "👑 {name} 👑",
-            "♛༺ {name} ༻♛",
-            "꧁♛ {name} ♛꧂",
-            "꧁♕ {name} ♕꧂",
-            "『♛ {name} ♛』",
-            "【♔ {name} ♔】",
-            "亗♛ {name} ♛亗",
-            "༺♛ {name} ♛༻",
-            "⚜ {name} ⚜",
-            "⚜♛ {name} ♛⚜",
-            "♛★ {name} ★♛",
-            "♕✦ {name} ✦♕",
-            "👑亗 {name} 亗👑",
-            "♔༒ {name} ༒♔",
-            "♚⚡ {name} ⚡♚",
-            "꧁༺♛ {name} ♛༻꧂",
-            "╰♛ {name} ♛╯",
-            "╭♕ {name} ♕╮",
-            "『👑 {name} 👑』",
-            "【👑 {name} 👑】",
-            "★♛ {name} ♛★",
-            "✦♕ {name} ♕✦",
-            "❖♛ {name} ♛❖",
-            "༒♚ {name} ♚༒",
-            "亗👑 {name} 👑亗",
-            "♛∞ {name} ∞♛"
-        ];
-
-
-        royal.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "royal",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "royal",
-                template.replace("{name}", toScript(name))
-            );
-
-        });
-    }
-
-
-    function addLoveStyles(name, output) {
-
-        const love = [
-            "♡ {name} ♡",
-            "♥ {name} ♥",
-            "❤ {name} ❤",
-            "💕 {name} 💕",
-            "💖 {name} 💖",
-            "💗 {name} 💗",
-            "💘 {name} 💘",
-            "💝 {name} 💝",
-            "❣ {name} ❣",
-            "ღ {name} ღ",
-            "♡彡 {name} 彡♡",
-            "♥彡 {name} 彡♥",
-            "꧁♡ {name} ♡꧂",
-            "꧁♥ {name} ♥꧂",
-            "『♡ {name} ♡』",
-            "【♥ {name} ♥】",
-            "♡亗 {name} 亗♡",
-            "♥亗 {name} 亗♥",
-            "༺♡ {name} ♡༻",
-            "༺♥ {name} ♥༻",
-            "★♡ {name} ♡★",
-            "✦♥ {name} ♥✦",
-            "❖♡ {name} ♡❖",
-            "🌸♡ {name} ♡🌸",
-            "🌹 {name} 🌹",
-            "💞 {name} 💞",
-            "💓 {name} 💓",
-            "💟 {name} 💟",
-            "💌 {name} 💌",
-            "💕♡ {name} ♡💕"
-        ];
-
-
-        love.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "love",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "love",
-                template.replace("{name}", toScript(name))
-            );
-
-        });
-    }
-
-
-    function addCoolStyles(name, output) {
-
-        const cool = [
-            "★ {name} ★",
-            "☆ {name} ☆",
-            "✦ {name} ✦",
-            "✧ {name} ✧",
-            "✯ {name} ✯",
-            "✰ {name} ✰",
-            "❖ {name} ❖",
-            "◆ {name} ◆",
-            "◇ {name} ◇",
-            "⚡ {name} ⚡",
-            "∞ {name} ∞",
-            "☯ {name} ☯",
-            "☮ {name} ☮",
-            "⚜ {name} ⚜",
-            "亗 {name} 亗",
-            "乂 {name} 乂",
-            "ツ {name} ツ",
-            "彡 {name} 彡",
-            "メ {name} メ",
-            "〆 {name} 〆",
-            "么 {name} 么",
-            "々 {name} 々",
-            "★彡 {name} 彡★",
-            "✦彡 {name} 彡✦",
-            "亗★ {name} ★亗",
-            "⚡亗 {name} 亗⚡",
-            "❖亗 {name} 亗❖",
-            "꧁ {name} ꧂",
-            "༺ {name} ༻",
-            "『 {name} 』"
-        ];
-
-
-        cool.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "cool",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "cool",
-                template.replace("{name}", toScript(name))
-            );
-
-        });
-    }
-
-
-    function addDarkStyles(name, output) {
-
-        const dark = [
-            "☠ {name} ☠",
-            "💀 {name} 💀",
-            "☣ {name} ☣",
-            "☢ {name} ☢",
-            "༒ {name} ༒",
-            "♠ {name} ♠",
-            "♤ {name} ♤",
-            "⚔ {name} ⚔",
-            "🖤 {name} 🖤",
-            "☾ {name} ☽",
-            "☽ {name} ☾",
-            "亗☠ {name} ☠亗",
-            "꧁☠ {name} ☠꧂",
-            "꧁༒ {name} ༒꧂",
-            "『☠ {name} ☠』",
-            "【☠ {name} ☠】",
-            "༺☠ {name} ☠༻",
-            "༺༒ {name} ༒༻",
-            "★☠ {name} ☠★",
-            "✦☠ {name} ☠✦",
-            "⚔亗 {name} 亗⚔",
-            "☢亗 {name} 亗☢",
-            "☣亗 {name} 亗☣",
-            "♠༒ {name} ༒♠",
-            "☾༒ {name} ༒☽"
-        ];
-
-
-        dark.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "dark",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "dark",
-                template.replace("{name}", toFraktur(name))
-            );
-
-        });
-    }
-
-
-    function addCuteStyles(name, output) {
-
-        const cute = [
-            "🌸 {name} 🌸",
-            "🌷 {name} 🌷",
-            "🌺 {name} 🌺",
-            "🌼 {name} 🌼",
-            "🦋 {name} 🦋",
-            "🐰 {name} 🐰",
-            "🐻 {name} 🐻",
-            "🐼 {name} 🐼",
-            "🐨 {name} 🐨",
-            "♡ {name} ♡",
-            "ღ {name} ღ",
-            "꒰ {name} ꒱",
-            "꒰ა {name} ໒꒱",
-            "୨♡୧ {name} ୨♡୧",
-            "꧁♡ {name} ♡꧂",
-            "『🌸 {name} 🌸』",
-            "【🦋 {name} 🦋】",
-            "♡彡 {name} 彡♡",
-            "🌸彡 {name} 彡🌸",
-            "🦋彡 {name} 彡🦋",
-            "✿ {name} ✿",
-            "❀ {name} ❀",
-            "❁ {name} ❁",
-            "✾ {name} ✾",
-            "💗 {name} 💗"
-        ];
-
-
-        cute.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "cute",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "cute",
-                template.replace("{name}", toScript(name))
-            );
-
-        });
-    }
-
-
-    function addSocialStyles(name, output) {
-
-        const social = [
-            "• {name} •",
-            "× {name} ×",
-            "— {name} —",
-            "_ {name} _",
-            "~ {name} ~",
-            "| {name} |",
-            "《 {name} 》",
-            "「 {name} 」",
-            "『 {name} 』",
-            "【 {name} 】",
-            "〈 {name} 〉",
-            "✦ {name} ✦",
-            "♡ {name} ♡",
-            "☆ {name} ☆",
-            "•° {name} °•",
-            "°• {name} •°",
-            "×͜× {name} ×͜×",
-            "ツ {name} ツ",
-            "彡 {name} 彡",
-            "亗 {name} 亗"
-        ];
-
-
-        social.forEach(function (template) {
-
-            uniquePush(
-                output,
-                "social",
-                template.replace("{name}", toBold(name))
-            );
-
-            uniquePush(
-                output,
-                "social",
-                template.replace("{name}", toScript(name))
-            );
-
-        });
-    }
-
-
-    /* ============================================================
-       GENERATE ALL
-       ============================================================ */
-
-    function generateAllStyles(name) {
-
-        const output = [];
-
-        addFontStyles(name, output);
-        addSymbolStyles(name, output);
-        addGamingStyles(name, output);
-        addAttitudeStyles(name, output);
-        addRoyalStyles(name, output);
-        addLoveStyles(name, output);
-        addCoolStyles(name, output);
-        addDarkStyles(name, output);
-        addCuteStyles(name, output);
-        addSocialStyles(name, output);
-
-
-        /*
-         * Extra combinations.
-         * These make the total comfortably 200+.
-         */
-
-        const extraLeft = [
-            "★",
-            "☆",
-            "✦",
-            "✧",
-            "✯",
-            "❖",
-            "亗",
-            "乂",
-            "ツ",
-            "彡",
-            "⚡",
-            "♛",
-            "♕",
-            "♡",
-            "♥",
-            "☠",
-            "༒",
-            "⚔"
-        ];
-
-
-        const extraRight = [
-            "★",
-            "☆",
-            "✦",
-            "✧",
-            "✯",
-            "❖",
-            "亗",
-            "乂",
-            "ツ",
-            "彡",
-            "⚡",
-            "♛",
-            "♕",
-            "♡",
-            "♥",
-            "☠",
-            "༒",
-            "⚔"
-        ];
-
-
-        const fontFunctions = [
-            toBold,
-            toScript,
-            toDouble,
-            toMono,
-            toFraktur,
-            toSansBold
-        ];
-
-
-        fontFunctions.forEach(function (fontFunction, fontIndex) {
-
-            extraLeft.forEach(function (left, leftIndex) {
-
-                if (leftIndex >= 18) return;
-
-                const right =
-                    extraRight[
-                        (leftIndex + fontIndex + 3) %
-                        extraRight.length
-                    ];
-
-
-                const styledName = fontFunction(name);
-
-
-                uniquePush(
-                    output,
-                    "fancy",
-                    left + " " + styledName + " " + right
-                );
-
-
-                if (fontIndex < 4) {
-
-                    uniquePush(
-                        output,
-                        "fancy",
-                        left + "•" + styledName + "•" + right
-                    );
-
-                    uniquePush(
-                        output,
-                        "fancy",
-                        left + "〆" + styledName + "〆" + right
-                    );
-                }
-
-            });
-
-        });
-
-
-        /*
-         * More frame combinations.
-         */
-
-        frames.forEach(function (frame, index) {
-
-            const font = fontFunctions[index % fontFunctions.length];
-
-            uniquePush(
-                output,
-                "symbols",
-                frame[0] + font(name) + frame[1]
-            );
-
-            uniquePush(
-                output,
-                "symbols",
-                frame[0] + " " + font(name) + " " + frame[1]
-            );
-
-        });
-
-
-        /*
-         * Make sure we have at least 200 results.
-         * The generators above normally produce far more.
-         */
-
-        if (output.length < 200) {
-
-            const fallbackDecorations = [
-                "★",
-                "☆",
-                "✦",
-                "✧",
-                "✯",
-                "✰",
-                "❖",
-                "◆",
-                "◇",
-                "⚡",
-                "亗",
-                "乂",
-                "ツ",
-                "彡",
-                "〆",
-                "么",
-                "メ",
-                "♛",
-                "♡",
-                "♥",
-                "☠",
-                "⚔",
-                "༒",
-                "∞",
-                "⚜"
-            ];
-
-
-            let counter = 0;
-
-            while (output.length < 200 && counter < 1000) {
-
-                const symbol =
-                    fallbackDecorations[
-                        counter %
-                        fallbackDecorations.length
-                    ];
-
-                const second =
-                    fallbackDecorations[
-                        (counter * 3 + 5) %
-                        fallbackDecorations.length
-                    ];
-
-                const font =
-                    fontFunctions[
-                        counter %
-                        fontFunctions.length
-                    ];
-
-
-                uniquePush(
-                    output,
-                    "fancy",
-                    symbol +
-                    " " +
-                    font(name) +
-                    " " +
-                    second
-                );
-
-
-                counter++;
-            }
-        }
-
-
-        return output;
-    }
-
-
-    /* ============================================================
-       FILTER
-       ============================================================ */
-
-    function getFilteredStyles() {
-
-        if (activeFilter === "all") {
-            return generatedStyles;
-        }
-
-        return generatedStyles.filter(function (style) {
-            return style.category === activeFilter;
-        });
-    }
-
-
-    /* ============================================================
-       RESULT CARD
-       ============================================================
-
-       VERY IMPORTANT:
-
-       Card contains ONLY:
-
-           Stylish Name
-           Copy
-
-       Nothing else.
-       ============================================================ */
-
-    function createResultCard(style) {
-
-        const card = document.createElement("article");
-
-        card.className = "result-card";
-
-        card.dataset.category = style.category;
-
-
-        /*
-         * Stylish name
-         */
-
-        const value = document.createElement("div");
-
-        value.className = "result-value";
-
-        value.textContent = style.value;
-
-
-        /*
-         * Copy button
-         */
-
-        const button = document.createElement("button");
-
-        button.type = "button";
-
-        button.className = "copy-result-button";
-
-        button.dataset.copy = style.value;
-
-        button.innerHTML = "<span>📋</span> Copy";
-
-
-        /*
-         * Append ONLY name + copy button
-         */
-
-        card.appendChild(value);
-
-        card.appendChild(button);
-
-
-        return card;
-    }
-
-
-    /* ============================================================
-       RENDER RESULTS
-       ============================================================ */
-
-    function renderResults() {
-
-        if (!resultsContainer) return;
-
-
-        const styles = getFilteredStyles();
-
-
-        resultsContainer.innerHTML = "";
-
-
-        if (!styles.length) {
-
-            const empty = document.createElement("div");
-
-            empty.className = "no-results";
-
-            empty.innerHTML =
-                "<strong>No styles found</strong>" +
-                "<p>Try another category.</p>";
-
-            resultsContainer.appendChild(empty);
-
-            return;
-        }
-
-
-        const fragment =
-            document.createDocumentFragment();
-
-
-        styles.forEach(function (style) {
-
-            fragment.appendChild(
-                createResultCard(style)
-            );
-
-        });
-
-
-        resultsContainer.appendChild(fragment);
-
-
-        /*
-         * Do NOT show category/style names inside cards.
-         * Only heading changes.
-         */
-
-        if (resultsTitle) {
-
-            if (activeFilter === "all") {
-
-                resultsTitle.textContent =
-                    "Stylish Names";
-
-            } else {
-
-                const names = {
-                    fancy: "Stylish Names",
-                    gaming: "Stylish Names",
-                    attitude: "Stylish Names",
-                    symbols: "Stylish Names",
-                    royal: "Stylish Names",
-                    love: "Stylish Names",
-                    cool: "Stylish Names",
-                    dark: "Stylish Names",
-                    cute: "Stylish Names",
-                    social: "Stylish Names"
-                };
-
-
-                resultsTitle.textContent =
-                    names[activeFilter] ||
-                    "Stylish Names";
-            }
-        }
-    }
-
-
-    /* ============================================================
-       COPY
-       ============================================================ */
-
-    async function copyText(text) {
-
-        text = String(text || "");
-
-        if (!text) return false;
-
+    for (let i = 0; i < styleFunctions.length; i++) {
+        let styledName = "";
 
         try {
-
-            if (
-                navigator.clipboard &&
-                window.isSecureContext
-            ) {
-
-                await navigator.clipboard.writeText(text);
-
-            } else {
-
-                const textarea =
-                    document.createElement("textarea");
-
-                textarea.value = text;
-
-                textarea.style.position = "fixed";
-                textarea.style.left = "-9999px";
-                textarea.style.top = "0";
-
-                document.body.appendChild(textarea);
-
-                textarea.focus();
-                textarea.select();
-
-                document.execCommand("copy");
-
-                textarea.remove();
-            }
-
-
-            return true;
-
+            styledName = styleFunctions[i](name);
         } catch (error) {
-
-            return false;
+            styledName = name;
         }
+
+        styledName = String(styledName).trim();
+
+        if (!styledName || used.has(styledName)) {
+            continue;
+        }
+
+        used.add(styledName);
+
+        styles.push({
+            id: styles.length + 1,
+            value: styledName,
+            category: getCategory(styles.length)
+        });
     }
 
-
-    /* ============================================================
-       FILTER BUTTONS
-       ============================================================ */
-
-    function updateFilterButtons() {
-
-        if (!styleFilters) return;
+    return styles;
+}
 
 
-        styleFilters
-            .querySelectorAll(".filter-button")
-            .forEach(function (button) {
+/* =========================================================
+   COPY FUNCTION
+   ========================================================= */
 
-                button.classList.toggle(
-                    "active",
-                    (button.dataset.filter || "all") ===
-                    activeFilter
-                );
+async function copyText(text) {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
 
-            });
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.style.top = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.focus();
+        textarea.select();
+
+        const successful = document.execCommand("copy");
+
+        textarea.remove();
+
+        return successful;
+    } catch (error) {
+        return false;
+    }
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(message) {
+    if (!toast || !toastMessage) {
+        return;
     }
 
+    toastMessage.textContent = message;
 
-    /* ============================================================
-       GENERATE
-       ============================================================ */
+    toast.classList.add("show");
 
-    function generateNames() {
+    clearTimeout(toastTimer);
 
-        if (!nameInput) return;
-
-
-        const name =
-            cleanName(nameInput.value);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 1800);
+}
 
 
-        if (!name) {
+/* =========================================================
+   CREATE RESULT CARD
+   IMPORTANT:
+   ONLY NAME + COPY BUTTON.
+   NO CATEGORY.
+   NO STYLE NAME.
+   NO "A".
+   ========================================================= */
 
-            showToast("Please enter your name.");
+function createResultCard(result, index) {
+    const card = document.createElement("article");
 
+    card.className = "result-card";
+    card.dataset.category = result.category;
+    card.style.animationDelay = `${Math.min(index * 0.018, 0.5)}s`;
+
+    const nameElement = document.createElement("div");
+
+    nameElement.className = "result-name";
+    nameElement.textContent = result.value;
+
+    const copyButton = document.createElement("button");
+
+    copyButton.type = "button";
+    copyButton.className = "copy-result-button";
+    copyButton.setAttribute("aria-label", "Copy styled name");
+
+    copyButton.innerHTML = `
+        <span class="copy-icon">📋</span>
+        <span class="copy-text">Copy</span>
+    `;
+
+    copyButton.addEventListener("click", async () => {
+        const copied = await copyText(result.value);
+
+        if (copied) {
+            copyButton.classList.add("copied");
+
+            const copyTextElement =
+                copyButton.querySelector(".copy-text");
+
+            const copyIcon =
+                copyButton.querySelector(".copy-icon");
+
+            if (copyTextElement) {
+                copyTextElement.textContent = "Copied!";
+            }
+
+            if (copyIcon) {
+                copyIcon.textContent = "✓";
+            }
+
+            showToast("Name copied!");
+
+            setTimeout(() => {
+                copyButton.classList.remove("copied");
+
+                if (copyTextElement) {
+                    copyTextElement.textContent = "Copy";
+                }
+
+                if (copyIcon) {
+                    copyIcon.textContent = "📋";
+                }
+            }, 1400);
+        } else {
+            showToast("Copy failed");
+        }
+    });
+
+    card.appendChild(nameElement);
+    card.appendChild(copyButton);
+
+    return card;
+}
+
+
+/* =========================================================
+   RENDER RESULTS
+   ========================================================= */
+
+function renderResults(filter = "all") {
+    if (!resultsContainer) {
+        return;
+    }
+
+    currentFilter = filter;
+
+    resultsContainer.innerHTML = "";
+
+    const filteredResults =
+        filter === "all"
+            ? currentResults
+            : currentResults.filter(
+                result => result.category === filter
+            );
+
+    filteredResults.forEach((result, index) => {
+        const card = createResultCard(result, index);
+        resultsContainer.appendChild(card);
+    });
+
+    if (resultsTitle) {
+        resultsTitle.textContent =
+            `${filteredResults.length} Stylish Names`;
+    }
+}
+
+
+/* =========================================================
+   GENERATE
+   ========================================================= */
+
+function generateNames() {
+    const value = nameInput
+        ? nameInput.value.trim()
+        : "";
+
+    if (!value) {
+        showToast("Please enter your name");
+        if (nameInput) {
             nameInput.focus();
-
-            return;
         }
-
-
-        currentName = name;
-
-        activeFilter = "all";
-
-
-        generatedStyles =
-            generateAllStyles(currentName);
-
-
-        /*
-         * Preview
-         */
-
-        if (previewName) {
-            previewName.textContent =
-                currentName;
-        }
-
-
-        if (previewSection) {
-            previewSection.hidden = false;
-        }
-
-
-        /*
-         * Results
-         */
-
-        if (resultsSection) {
-            resultsSection.hidden = false;
-        }
-
-
-        /*
-         * Clear button
-         */
-
-        if (clearName) {
-            clearName.hidden = false;
-        }
-
-
-        updateFilterButtons();
-
-        renderResults();
-
-
-        /*
-         * Scroll to results
-         */
-
-        if (resultsSection) {
-
-            setTimeout(function () {
-
-                resultsSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            }, 80);
-        }
-
-
-        console.log(
-            "Z-Name Style generated:",
-            generatedStyles.length,
-            "unique styles"
-        );
+        return;
     }
 
+    currentName = value;
 
-    /* ============================================================
-       FORM
-       ============================================================ */
-
-    if (nameForm) {
-
-        nameForm.addEventListener(
-            "submit",
-            function (event) {
-
-                event.preventDefault();
-
-                generateNames();
-            }
-        );
+    if (previewSection) {
+        previewSection.hidden = false;
     }
 
-
-    /* ============================================================
-       INPUT
-       ============================================================ */
-
-    if (nameInput) {
-
-        nameInput.addEventListener(
-            "input",
-            function () {
-
-                const value =
-                    cleanName(nameInput.value);
-
-
-                if (clearName) {
-
-                    clearName.hidden =
-                        value.length === 0;
-                }
-            }
-        );
-
-
-        nameInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Enter") {
-
-                    event.preventDefault();
-
-                    generateNames();
-                }
-            }
-        );
+    if (previewName) {
+        previewName.textContent = value;
     }
 
-
-    /* ============================================================
-       CLEAR NAME
-       ============================================================ */
-
-    if (clearName) {
-
-        clearName.addEventListener(
-            "click",
-            function () {
-
-                if (nameInput) {
-
-                    nameInput.value = "";
-
-                    nameInput.focus();
-                }
-
-
-                currentName = "";
-
-                generatedStyles = [];
-
-                activeFilter = "all";
-
-
-                clearName.hidden = true;
-
-
-                if (previewName) {
-                    previewName.textContent =
-                        "Your Name";
-                }
-
-
-                if (previewSection) {
-                    previewSection.hidden = true;
-                }
-
-
-                if (resultsSection) {
-                    resultsSection.hidden = true;
-                }
-
-
-                if (resultsContainer) {
-                    resultsContainer.innerHTML = "";
-                }
-
-
-                updateFilterButtons();
-            }
-        );
+    if (resultsSection) {
+        resultsSection.hidden = false;
     }
 
+    currentResults = buildStyles(value);
 
-    /* ============================================================
-       RESULT COPY BUTTON
-       ============================================================ */
+    currentFilter = "all";
 
-    if (resultsContainer) {
+    updateFilterButtons("all");
 
-        resultsContainer.addEventListener(
-            "click",
-            async function (event) {
+    renderResults("all");
 
-                const button =
-                    event.target.closest(
-                        ".copy-result-button"
-                    );
-
-
-                if (!button) return;
-
-
-                const text =
-                    button.dataset.copy || "";
-
-
-                if (!text) return;
-
-
-                /*
-                 * Prevent double click while copying
-                 */
-
-                if (
-                    button.dataset.copying === "true"
-                ) {
-                    return;
-                }
-
-
-                button.dataset.copying = "true";
-
-
-                const success =
-                    await copyText(text);
-
-
-                if (success) {
-
-                    button.classList.add("copied");
-
-                    button.innerHTML =
-                        "<span>✓</span> Copied!";
-
-                    showToast("Name copied!");
-
-                } else {
-
-                    button.classList.add("copy-error");
-
-                    button.innerHTML =
-                        "<span>!</span> Try Again";
-
-                    showToast(
-                        "Copy failed. Try again."
-                    );
-                }
-
-
-                setTimeout(function () {
-
-                    button.classList.remove(
-                        "copied"
-                    );
-
-                    button.classList.remove(
-                        "copy-error"
-                    );
-
-                    button.innerHTML =
-                        "<span>📋</span> Copy";
-
-                    button.dataset.copying =
-                        "false";
-
-                }, 1400);
-            }
-        );
-    }
-
-
-    /* ============================================================
-       STYLE FILTERS
-       ============================================================ */
-
-    if (styleFilters) {
-
-        styleFilters.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".filter-button"
-                    );
-
-
-                if (!button) return;
-
-
-                activeFilter =
-                    button.dataset.filter ||
-                    "all";
-
-
-                updateFilterButtons();
-
-                renderResults();
-            }
-        );
-    }
-
-
-    /* ============================================================
-       POPULAR STYLE CATEGORY CARDS
-       ============================================================ */
-
-    document
-        .querySelectorAll(".category-card")
-        .forEach(function (card) {
-
-            card.addEventListener(
-                "click",
-                function () {
-
-                    const category =
-                        card.dataset.category;
-
-
-                    if (!category) return;
-
-
-                    /*
-                     * If no name has been generated yet,
-                     * ask user for name.
-                     */
-
-                    if (!generatedStyles.length) {
-
-                        if (
-                            nameInput &&
-                            nameInput.value.trim()
-                        ) {
-
-                            generateNames();
-
-                        } else {
-
-                            if (nameInput) {
-                                nameInput.focus();
-                            }
-
-                            showToast(
-                                "Enter your name first."
-                            );
-
-                            return;
-                        }
-                    }
-
-
-                    /*
-                     * Category cards can use categories
-                     * that are not present in the top
-                     * filter buttons.
-                     */
-
-                    activeFilter = category;
-
-
-                    updateFilterButtons();
-
-                    renderResults();
-
-
-                    if (resultsSection) {
-
-                        resultsSection.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-                    }
-                }
-            );
-        });
-
-
-    /* ============================================================
-       SYMBOL COPY
-       ============================================================ */
-
-    if (symbolsGrid) {
-
-        symbolsGrid.addEventListener(
-            "click",
-            async function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".symbol-card"
-                    );
-
-
-                if (!button) return;
-
-
-                const symbol =
-                    button.dataset.symbol || "";
-
-
-                if (!symbol) return;
-
-
-                const success =
-                    await copyText(symbol);
-
-
-                if (!success) {
-
-                    showToast(
-                        "Copy failed. Try again."
-                    );
-
-                    return;
-                }
-
-
-                showToast(
-                    "Symbol copied!"
-                );
-
-
-                const small =
-                    button.querySelector("small");
-
-
-                if (small) {
-
-                    const original =
-                        small.textContent;
-
-
-                    small.textContent =
-                        "Copied!";
-
-
-                    setTimeout(
-                        function () {
-
-                            small.textContent =
-                                original;
-
-                        },
-                        1200
-                    );
-                }
-            }
-        );
-    }
-
-
-    /* ============================================================
-       TRENDING STYLE BUTTONS
-       ============================================================ */
-
-    document
-        .querySelectorAll(".use-style-button")
-        .forEach(function (button) {
-
-            button.addEventListener(
-                "click",
-                async function () {
-
-                    const template =
-                        button.dataset.template ||
-                        "";
-
-
-                    if (!template) return;
-
-
-                    if (!nameInput) return;
-
-
-                    const name =
-                        cleanName(
-                            nameInput.value
-                        );
-
-
-                    if (!name) {
-
-                        nameInput.focus();
-
-                        showToast(
-                            "Enter your name first."
-                        );
-
-                        return;
-                    }
-
-
-                    const styled =
-                        template.replace(
-                            /\{name\}/gi,
-                            name
-                        );
-
-
-                    const success =
-                        await copyText(styled);
-
-
-                    if (success) {
-
-                        showToast(
-                            "Style copied!"
-                        );
-
-                    } else {
-
-                        showToast(
-                            "Copy failed. Try again."
-                        );
-                    }
-                }
-            );
-        });
-
-
-    /* ============================================================
-       MOBILE MENU
-       ============================================================ */
-
-    function closeMobileMenu() {
-
-        if (!mobileMenu) return;
-
-
-        mobileMenu.classList.remove("open");
-
-        mobileMenu.classList.remove("active");
-
-
-        if (mobileMenuButton) {
-
-            mobileMenuButton.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-        }
-    }
-
-
-    function toggleMobileMenu() {
-
-        if (!mobileMenu) return;
-
-
-        const isOpen =
-            mobileMenu.classList.toggle(
-                "open"
-            );
-
-
-        mobileMenu.classList.toggle(
-            "active",
-            isOpen
-        );
-
-
-        if (mobileMenuButton) {
-
-            mobileMenuButton.setAttribute(
-                "aria-expanded",
-                String(isOpen)
-            );
-        }
-    }
-
-
-    if (mobileMenuButton) {
-
-        mobileMenuButton.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                toggleMobileMenu();
-            }
-        );
-    }
-
-
-    if (bottomMenuButton) {
-
-        bottomMenuButton.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                toggleMobileMenu();
-            }
-        );
-    }
-
-
-    document
-        .querySelectorAll(".mobile-nav-link")
-        .forEach(function (link) {
-
-            link.addEventListener(
-                "click",
-                closeMobileMenu
-            );
-        });
-
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            if (!mobileMenu) return;
-
-
-            const insideMenu =
-                mobileMenu.contains(
-                    event.target
-                );
-
-
-            const headerButton =
-                mobileMenuButton &&
-                mobileMenuButton.contains(
-                    event.target
-                );
-
-
-            const bottomButton =
-                bottomMenuButton &&
-                bottomMenuButton.contains(
-                    event.target
-                );
-
-
-            if (
-                !insideMenu &&
-                !headerButton &&
-                !bottomButton
-            ) {
-
-                closeMobileMenu();
-            }
-        }
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key === "Escape") {
-
-                closeMobileMenu();
-            }
-        }
-    );
-
-
-    /* ============================================================
-       SMOOTH INTERNAL LINKS
-       ============================================================ */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const link =
-                event.target.closest(
-                    'a[href^="#"]'
-                );
-
-
-            if (!link) return;
-
-
-            const href =
-                link.getAttribute("href");
-
-
-            if (
-                !href ||
-                href === "#"
-            ) {
-                return;
-            }
-
-
-            let target;
-
-
-            try {
-
-                target =
-                    document.querySelector(href);
-
-            } catch (error) {
-
-                return;
-            }
-
-
-            if (!target) return;
-
-
-            event.preventDefault();
-
-
-            target.scrollIntoView({
+    if (resultsSection) {
+        setTimeout(() => {
+            resultsSection.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
+        }, 80);
+    }
+}
 
 
+/* =========================================================
+   FILTER BUTTONS
+   ========================================================= */
+
+function updateFilterButtons(activeFilter) {
+    if (!styleFilters) {
+        return;
+    }
+
+    const buttons =
+        styleFilters.querySelectorAll(".filter-button");
+
+    buttons.forEach(button => {
+        const filter = button.dataset.filter;
+
+        button.classList.toggle(
+            "active",
+            filter === activeFilter
+        );
+    });
+}
+
+
+if (styleFilters) {
+    styleFilters.addEventListener("click", event => {
+        const button =
+            event.target.closest(".filter-button");
+
+        if (!button) {
+            return;
+        }
+
+        const filter = button.dataset.filter || "all";
+
+        updateFilterButtons(filter);
+        renderResults(filter);
+    });
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+if (nameForm) {
+    nameForm.addEventListener("submit", event => {
+        event.preventDefault();
+        generateNames();
+    });
+}
+
+
+/* =========================================================
+   LIVE INPUT / CLEAR BUTTON
+   ========================================================= */
+
+if (nameInput) {
+    nameInput.addEventListener("input", () => {
+        const hasValue =
+            nameInput.value.trim().length > 0;
+
+        if (clearName) {
+            clearName.hidden = !hasValue;
+        }
+
+        if (previewName && !previewSection.hidden) {
+            previewName.textContent =
+                nameInput.value.trim() || "Your Name";
+        }
+    });
+
+    nameInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            if (nameForm) {
+                nameForm.requestSubmit();
+            }
+        }
+    });
+}
+
+
+if (clearName) {
+    clearName.addEventListener("click", () => {
+        if (nameInput) {
+            nameInput.value = "";
+            nameInput.focus();
+        }
+
+        clearName.hidden = true;
+
+        if (previewName) {
+            previewName.textContent = "Your Name";
+        }
+    });
+}
+
+
+/* =========================================================
+   GENERATE BUTTON ANIMATION
+   ========================================================= */
+
+if (nameForm && generateButton) {
+    nameForm.addEventListener("submit", () => {
+        generateButton.classList.add("generating");
+
+        setTimeout(() => {
+            generateButton.classList.remove("generating");
+        }, 450);
+    });
+}
+
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+function openMobileMenu() {
+    if (!mobileMenu || !mobileMenuButton) {
+        return;
+    }
+
+    mobileMenu.classList.add("open");
+    mobileMenuButton.classList.add("open");
+
+    mobileMenuButton.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+
+    mobileMenuButton.setAttribute(
+        "aria-label",
+        "Close menu"
+    );
+}
+
+
+function closeMobileMenu() {
+    if (!mobileMenu || !mobileMenuButton) {
+        return;
+    }
+
+    mobileMenu.classList.remove("open");
+    mobileMenuButton.classList.remove("open");
+
+    mobileMenuButton.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+    mobileMenuButton.setAttribute(
+        "aria-label",
+        "Open menu"
+    );
+}
+
+
+function toggleMobileMenu() {
+    if (!mobileMenu) {
+        return;
+    }
+
+    if (mobileMenu.classList.contains("open")) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+}
+
+
+if (mobileMenuButton) {
+    mobileMenuButton.addEventListener(
+        "click",
+        toggleMobileMenu
+    );
+}
+
+
+if (mobileMenu) {
+    mobileMenu.addEventListener("click", event => {
+        const link =
+            event.target.closest(".mobile-nav-link");
+
+        if (link) {
             closeMobileMenu();
         }
-    );
+    });
+}
 
 
-    /* ============================================================
-       INITIAL STATE
-       ============================================================ */
+document.addEventListener("click", event => {
+    if (
+        mobileMenu &&
+        mobileMenuButton &&
+        mobileMenu.classList.contains("open") &&
+        !mobileMenu.contains(event.target) &&
+        !mobileMenuButton.contains(event.target)
+    ) {
+        closeMobileMenu();
+    }
+});
+
+
+/* =========================================================
+   ESCAPE CLOSES MOBILE MENU
+   ========================================================= */
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeMobileMenu();
+    }
+});
+
+
+/* =========================================================
+   BOTTOM MORE BUTTON
+   ========================================================= */
+
+if (bottomMenuButton) {
+    bottomMenuButton.addEventListener("click", () => {
+        toggleMobileMenu();
+    });
+}
+
+
+/* =========================================================
+   SYMBOL COPY
+   ========================================================= */
+
+if (symbolsGrid) {
+    symbolsGrid.addEventListener("click", async event => {
+        const button =
+            event.target.closest(".symbol-card");
+
+        if (!button) {
+            return;
+        }
+
+        const symbol =
+            button.dataset.symbol || "";
+
+        if (!symbol) {
+            return;
+        }
+
+        const copied = await copyText(symbol);
+
+        if (copied) {
+            button.classList.add("copied");
+
+            const small =
+                button.querySelector("small");
+
+            if (small) {
+                small.textContent = "Copied!";
+            }
+
+            showToast("Symbol copied!");
+
+            setTimeout(() => {
+                button.classList.remove("copied");
+
+                if (small) {
+                    small.textContent = "Copy";
+                }
+            }, 1200);
+        } else {
+            showToast("Copy failed");
+        }
+    });
+}
+
+
+/* =========================================================
+   TRENDING STYLE BUTTONS
+   ========================================================= */
+
+document.addEventListener("click", event => {
+    const button =
+        event.target.closest(".use-style-button");
+
+    if (!button) {
+        return;
+    }
+
+    const template =
+        button.dataset.template || "";
+
+    if (!template) {
+        return;
+    }
+
+    const name =
+        currentName ||
+        (nameInput ? nameInput.value.trim() : "");
+
+    if (!name) {
+        showToast("First enter your name");
+
+        if (nameInput) {
+            nameInput.focus();
+        }
+
+        return;
+    }
+
+    const styled =
+        template.replace(/\{name\}/gi, name);
+
+    if (nameInput) {
+        nameInput.value = name;
+    }
+
+    currentName = name;
 
     if (previewSection) {
-        previewSection.hidden = true;
+        previewSection.hidden = false;
     }
 
+    if (previewName) {
+        previewName.textContent = styled;
+    }
 
     if (resultsSection) {
-        resultsSection.hidden = true;
+        resultsSection.hidden = false;
     }
 
-
-    if (clearName) {
-
-        clearName.hidden =
-            !(
-                nameInput &&
-                nameInput.value.trim()
-            );
-    }
-
-
-    activeFilter = "all";
-
-    updateFilterButtons();
-
-
-    /* ============================================================
-       PUBLIC API
-       ============================================================ */
-
-    window.ZNameStyle = {
-
-        generate: generateNames,
-
-        copy: copyText,
-
-        getStyles: function () {
-            return generatedStyles.slice();
-        },
-
-        getCurrentName: function () {
-            return currentName;
-        },
-
-        getStyleCount: function () {
-            return generatedStyles.length;
+    currentResults = [
+        {
+            id: 1,
+            value: styled,
+            category: "symbols"
         }
-    };
+    ];
 
+    updateFilterButtons("all");
+    renderResults("all");
 
-    console.log(
-        "Z-Name Style Generator Ready"
-    );
+    if (resultsSection) {
+        resultsSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 });
+
+
+/* =========================================================
+   DESKTOP NAV ACTIVE STATE
+   ========================================================= */
+
+const desktopNavLinks =
+    document.querySelectorAll(".desktop-nav .nav-link");
+
+desktopNavLinks.forEach(link => {
+    link.addEventListener("click", () => {
+        desktopNavLinks.forEach(item => {
+            item.classList.remove("active");
+        });
+
+        link.classList.add("active");
+    });
+});
+
+
+/* =========================================================
+   MOBILE BOTTOM NAV ACTIVE STATE
+   ========================================================= */
+
+const bottomNavItems =
+    document.querySelectorAll(".bottom-nav-item");
+
+bottomNavItems.forEach(item => {
+    item.addEventListener("click", () => {
+        if (item.tagName.toLowerCase() === "button") {
+            return;
+        }
+
+        bottomNavItems.forEach(navItem => {
+            navItem.classList.remove("active");
+        });
+
+        item.classList.add("active");
+    });
+});
+
+
+/* =========================================================
+   FAQ + ACCESSIBILITY
+   ========================================================= */
+
+const faqItems =
+    document.querySelectorAll(".faq-item");
+
+faqItems.forEach(item => {
+    item.addEventListener("toggle", () => {
+        if (!item.open) {
+            return;
+        }
+
+        faqItems.forEach(other => {
+            if (other !== item) {
+                other.open = false;
+            }
+        });
+    });
+});
+
+
+/* =========================================================
+   INITIAL STATE
+   ========================================================= */
+
+if (clearName && nameInput) {
+    clearName.hidden =
+        nameInput.value.trim().length === 0;
+}
+
+if (resultsSection) {
+    resultsSection.hidden = true;
+}
+
+if (previewSection) {
+    previewSection.hidden = true;
+}
+
+
+/* =========================================================
+   SAFETY CHECK
+   ========================================================= */
+
+if (styleFunctions.length < 200) {
+    console.warn(
+        "Z-Name Style: Less than 200 style functions loaded."
+    );
+}
+
+
+/* =========================================================
+   READY
+   ========================================================= */
+
+console.log(
+    `Z-Name Style loaded successfully — ${styleFunctions.length}+ style patterns available.`
+);
