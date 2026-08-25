@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Z-Name Style - Create Your Stylish Name</title>
+
+    <meta
+        name="description"
+        content="Create stylish names, fancy fonts and unique symbols for gaming, Instagram and social media with Z-Name Style."
+    >
+
+    <meta
+        name="keywords"
+        content="stylish name generator, fancy name generator, gaming names, stylish fonts, stylish symbols"
+    >
+
+    <meta name="theme-color" content="#6d5dfc">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="site-header">
+        <div class="container header-inner">
+
+            <a href="#" class="brand" aria-label="Z-Name Style Home">
+                <span class="brand-mark">Z</span>
+
+                <span class="brand-text">
+                    <strong>Z-Name</strong>
+                    <span>Style</span>
+                </span>
+            </a>
+
+            <nav class="desktop-nav" aria-label="Main navigation">
+
+                <a href="#generator" class="nav-link active">
+                    Generator
+                </a>
+
+                <a href="#styles" class="nav-link">
+                    Styles
+                </a>
+
+                <a href="#tools" class="nav-link">
+                    Tools
+                </a>
+
+                <a href="#symbols" class="nav-link">
+                    Symbols
+                </a>
+
+                <a href="#faq" class="nav-link">
+                    FAQ
+                </a>
+
+            </nav>
+
+            <button
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                type="button"
+                aria-label="Open menu"
+                aria-expanded="false"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu">
+
+            <a href="#generator" class="mobile-nav-link">
+                Generator
+            </a>
+
+            <a href="#styles" class="mobile-nav-link">
+                Styles
+            </a>
+
+            <a href="#tools" class="mobile-nav-link">
+                Tools
+            </a>
+
+            <a href="#symbols" class="mobile-nav-link">
+                Symbols
+            </a>
+
+            <a href="#faq" class="mobile-nav-link">
+                FAQ
+            </a>
+
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- ================= HERO ================= -->
+
+        <section class="hero-section" id="generator">
+
+            <div class="container hero-container">
+
+                <div class="hero-content">
+
+                    <div class="hero-badge">
+                        <span>✨</span>
+                        FREE STYLISH NAME GENERATOR
+                    </div>
+
+                    <h1>
+                        Create Your
+                        <span class="gradient-text">Stylish Name</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Generate cool, fancy and unique names for gaming,
+                        Instagram and social media in seconds.
+                    </p>
+
+                </div>
+
+
+                <!-- ================= GENERATOR CARD ================= -->
+
+                <div class="generator-card">
+
+                    <div class="generator-heading">
+
+                        <div>
+                            <h2>Name Generator</h2>
+
+                            <p>
+                                Enter your name and discover stylish designs.
+                            </p>
+                        </div>
+
+                        <div class="generator-icon">
+                            ✨
+                        </div>
+
+                    </div>
+
+
+                    <form id="nameForm" class="generator-form">
+
+                        <label for="nameInput" class="input-label">
+                            Enter your name
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                Aa
+                            </span>
+
+                            <input
+                                type="text"
+                                id="nameInput"
+                                class="name-input"
+                                placeholder="e.g. Rajvir"
+                                autocomplete="off"
+                                maxlength="30"
+                                aria-label="Enter your name"
+                            >
+
+                            <button
+                                type="button"
+                                id="clearName"
+                                class="clear-button"
+                                aria-label="Clear name"
+                                hidden
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="generate-button"
+                            id="generateButton"
+                        >
+                            <span>✨</span>
+                            Generate Stylish Name
+                        </button>
+
+                    </form>
+
+
+                    <div class="generator-features">
+
+                        <span>
+                            ⚡ Instant
+                        </span>
+
+                        <span>
+                            📋 One-Click Copy
+                        </span>
+
+                        <span>
+                            🆓 Free
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= LIVE PREVIEW ================= -->
+
+        <section class="preview-section" id="previewSection" hidden>
+
+            <div class="container">
+
+                <div class="preview-card">
+
+                    <div class="preview-label">
+                        LIVE PREVIEW
+                    </div>
+
+                    <div
+                        class="preview-name"
+                        id="previewName"
+                    >
+                        Your Name
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RESULTS ================= -->
+
+        <section class="results-section" id="resultsSection" hidden>
+
+            <div class="container">
+
+                <div class="section-heading result-heading">
+
+                    <div>
+                        <span class="section-kicker">
+                            GENERATED FOR YOU
+                        </span>
+
+                        <h2 id="resultsTitle">
+                            Stylish Names
+                        </h2>
+
+                        <p>
+                            Choose your favourite style and copy it instantly.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="style-filters" id="styleFilters">
+
+                    <button
+                        class="filter-button active"
+                        data-filter="all"
+                        type="button"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="fancy"
+                        type="button"
+                    >
+                        Fancy
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="gaming"
+                        type="button"
+                    >
+                        Gaming
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="attitude"
+                        type="button"
+                    >
+                        Attitude
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-filter="symbols"
+                        type="button"
+                    >
+                        Symbols
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="results-grid"
+                    id="resultsContainer"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ADVERTISEMENT ================= -->
+
+        <section class="ad-section">
+
+            <div class="container">
+
+                <div class="ad-placeholder">
+
+                    <span>ADVERTISEMENT</span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= POPULAR STYLES ================= -->
+
+        <section class="content-section" id="styles">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        EXPLORE
+                    </span>
+
+                    <h2>
+                        Popular Styles
+                    </h2>
+
+                    <p>
+                        Find a style that matches your personality.
+                    </p>
+
+                </div>
+
+
+                <div class="category-grid">
+
+                    <button
+                        class="category-card"
+                        data-category="gaming"
+                        type="button"
+                    >
+                        <span class="category-icon gaming-icon">🔥</span>
+
+                        <span class="category-title">
+                            Gaming
+                        </span>
+
+                        <span class="category-description">
+                            Pro gaming names
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="attitude"
+                        type="button"
+                    >
+                        <span class="category-icon attitude-icon">😎</span>
+
+                        <span class="category-title">
+                            Attitude
+                        </span>
+
+                        <span class="category-description">
+                            Bold & savage names
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="royal"
+                        type="button"
+                    >
+                        <span class="category-icon royal-icon">👑</span>
+
+                        <span class="category-title">
+                            Royal
+                        </span>
+
+                        <span class="category-description">
+                            King & queen styles
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="love"
+                        type="button"
+                    >
+                        <span class="category-icon love-icon">❤️</span>
+
+                        <span class="category-title">
+                            Love
+                        </span>
+
+                        <span class="category-description">
+                            Cute & romantic names
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+  </button>
+                      <button
+                        class="category-card"
+                        data-category="cool"
+                        type="button"
+                    >
+                        <span class="category-icon cool-icon">⚡</span>
+
+                        <span class="category-title">
+                            Cool
+                        </span>
+
+                        <span class="category-description">
+                            Fresh modern styles
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="dark"
+                        type="button"
+                    >
+                        <span class="category-icon dark-icon">💀</span>
+
+                        <span class="category-title">
+                            Dark
+                        </span>
+
+                        <span class="category-description">
+                            Dark & mysterious
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="fancy"
+                        type="button"
+                    >
+                        <span class="category-icon fancy-icon">✨</span>
+
+                        <span class="category-title">
+                            Fancy
+                        </span>
+
+                        <span class="category-description">
+                            Beautiful text styles
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+
+                    <button
+                        class="category-card"
+                        data-category="cute"
+                        type="button"
+                    >
+                        <span class="category-icon cute-icon">🌸</span>
+
+                        <span class="category-title">
+                            Cute
+                        </span>
+
+                        <span class="category-description">
+                            Soft & adorable names
+                        </span>
+
+                        <span class="category-arrow">
+                            →
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= TOOLS ================= -->
+
+        <section class="content-section tools-section" id="tools">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        NAME TOOLS
+                    </span>
+
+                    <h2>
+                        Explore Name Tools
+                    </h2>
+
+                    <p>
+                        Everything you need to create your perfect online name.
+                    </p>
+
+                </div>
+
+
+                <div class="tools-grid">
+
+                    <a href="#gaming" class="tool-card">
+
+                        <div class="tool-icon">
+                            🎮
+                        </div>
+
+                        <div class="tool-content">
+
+                            <h3>
+                                Gaming Names
+                            </h3>
+
+                            <p>
+                                Create stylish names for your favourite games.
+                            </p>
+
+                        </div>
+
+                        <span class="tool-arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+                    <a href="#social" class="tool-card">
+
+                        <div class="tool-icon">
+                            📸
+                        </div>
+
+                        <div class="tool-content">
+
+                            <h3>
+                                Social Names
+                            </h3>
+
+                            <p>
+                                Make your social profile name stand out.
+                            </p>
+
+                        </div>
+
+                        <span class="tool-arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+                    <a href="#symbols" class="tool-card">
+
+                        <div class="tool-icon">
+                            🔣
+                        </div>
+
+                        <div class="tool-content">
+
+                            <h3>
+                                Stylish Symbols
+                            </h3>
+
+                            <p>
+                                Discover symbols you can copy with one tap.
+                            </p>
+
+                        </div>
+
+                        <span class="tool-arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+                    <a href="#fonts" class="tool-card">
+
+                        <div class="tool-icon">
+                            🔤
+                        </div>
+
+                        <div class="tool-content">
+
+                            <h3>
+                                Fancy Fonts
+                            </h3>
+
+                            <p>
+                                Turn ordinary text into stylish Unicode fonts.
+                            </p>
+
+                        </div>
+
+                        <span class="tool-arrow">
+                            →
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= GAMING ================= -->
+
+        <section class="content-section" id="gaming">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        FOR GAMERS
+                    </span>
+
+                    <h2>
+                        Create Your Gaming Name
+                    </h2>
+
+                    <p>
+                        Build a unique identity for your gaming profile.
+                    </p>
+
+                </div>
+
+
+                <div class="mini-card-grid">
+
+                    <a href="#" class="mini-card">
+                        <span>🔥</span>
+                        <strong>Free Fire</strong>
+                        <small>Stylish FF names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>⚔️</span>
+                        <strong>BGMI</strong>
+                        <small>Pro BGMI names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>🎯</span>
+                        <strong>PUBG</strong>
+                        <small>Unique PUBG names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>🧱</span>
+                        <strong>Roblox</strong>
+                        <small>Creative names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>💬</span>
+                        <strong>Discord</strong>
+                        <small>Discord names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>🏆</span>
+                        <strong>Clan Names</strong>
+                        <small>Team name ideas</small>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SOCIAL ================= -->
+
+        <section class="content-section soft-section" id="social">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        SOCIAL MEDIA
+                    </span>
+
+                    <h2>
+                        Stylish Names for Social Media
+                    </h2>
+
+                    <p>
+                        Give your online profile a name people remember.
+                    </p>
+
+                </div>
+
+
+                <div class="mini-card-grid">
+
+                    <a href="#" class="mini-card">
+                        <span>📸</span>
+                        <strong>Instagram</strong>
+                        <small>Instagram name styles</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>▶️</span>
+                        <strong>YouTube</strong>
+                        <small>Channel name styles</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>🎵</span>
+                        <strong>TikTok</strong>
+                        <small>Creative profile names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>👥</span>
+                        <strong>Facebook</strong>
+                        <small>Stylish profile names</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>👻</span>
+                        <strong>Snapchat</strong>
+                        <small>Unique name ideas</small>
+                    </a>
+
+                    <a href="#" class="mini-card">
+                        <span>💬</span>
+                        <strong>Discord</strong>
+                        <small>Cool Discord names</small>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SYMBOLS ================= -->
+
+        <section class="content-section" id="symbols">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        COPY & USE
+                    </span>
+
+                    <h2>
+                        Popular Stylish Symbols
+                    </h2>
+
+                    <p>
+                        Tap any symbol to copy it instantly.
+                    </p>
+
+                </div>
+
+
+                <div class="symbols-grid" id="symbolsGrid">
+
+                    <button class="symbol-card" data-symbol="★">
+                        <span>★</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="亗">
+                        <span>亗</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="꧁">
+                        <span>꧁</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="꧂">
+                        <span>꧂</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="『">
+                        <span>『</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="』">
+                        <span>』</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="乂">
+                        <span>乂</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="彡">
+                        <span>彡</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="ツ">
+                        <span>ツ</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="࿐">
+                        <span>࿐</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="♡">
+                        <span>♡</span>
+                        <small>Copy</small>
+                    </button>
+
+                    <button class="symbol-card" data-symbol="♛">
+                        <span>♛</span>
+                        <small>Copy</small>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= TRENDING ================= -->
+
+        <section class="content-section soft-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        TRENDING
+                    </span>
+
+                    <h2>
+                        Trending Name Styles
+                    </h2>
+
+                    <p>
+                        Pick a template and make it yours.
+                    </p>
+
+                </div>
+
+
+                <div class="trending-grid">
+
+                    <div class="trending-card">
+
+                        <div class="template-name">
+                            ꧁༺ NAME ༻꧂
+                        </div>
+
+                        <button
+                            class="use-style-button"
+                            data-template="꧁༺ {name} ༻꧂"
+                            type="button"
+                        >
+                            Use This Style
+                        </button>
+
+                    </div>
+
+
+                    <div class="trending-card">
+
+                        <div class="template-name">
+                            ★彡 NAME 彡★
+                        </div>
+
+                        <button
+                            class="use-style-button"
+                            data-template="★彡 {name} 彡★"
+                            type="button"
+                        >
+                            Use This Style
+                        </button>
+
+                    </div>
+
+
+                    <div class="trending-card">
+
+                        <div class="template-name">
+                            亗 NAME 亗
+                        </div>
+
+                        <button
+                            class="use-style-button"
+                            data-template="亗 {name} 亗"
+                            type="button"
+                        >
+                            Use This Style
+                        </button>
+
+                    </div>
+
+
+                    <div class="trending-card">
+
+                        <div class="template-name">
+                            『 NAME 』
+                        </div>
+
+                        <button
+                            class="use-style-button"
+                            data-template="『{name}』"
+                            type="button"
+                        >
+                            Use This Style
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+                <!-- ================= HOW IT WORKS ================= -->
+
+        <section class="content-section">
+
+            <div class="container">
+
+                <div class="section-heading centered">
+
+                    <span class="section-kicker">
+                        SIMPLE PROCESS
+                    </span>
+
+                    <h2>
+                        How It Works
+                    </h2>
+
+                    <p>
+                        Create your stylish name in three simple steps.
+                    </p>
+
+                </div>
+
+
+                <div class="steps-grid">
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            01
+                        </div>
+
+                        <div class="step-icon">
+                            ✍️
+                        </div>
+
+                        <h3>
+                            Enter Your Name
+                        </h3>
+
+                        <p>
+                            Type the name you want to style.
+                        </p>
+
+                    </div>
+
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            02
+                        </div>
+
+                        <div class="step-icon">
+                            🎨
+                        </div>
+
+                        <h3>
+                            Choose Your Style
+                        </h3>
+
+                        <p>
+                            Explore different designs and categories.
+                        </p>
+
+                    </div>
+
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            03
+                        </div>
+
+                        <div class="step-icon">
+                            📋
+                        </div>
+
+                        <h3>
+                            Copy & Use
+                        </h3>
+
+                        <p>
+                            Copy your favourite name with one tap.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= WHY US ================= -->
+
+        <section class="content-section soft-section">
+
+            <div class="container">
+
+                <div class="section-heading centered">
+
+                    <span class="section-kicker">
+                        WHY Z-NAME STYLE
+                    </span>
+
+                    <h2>
+                        Made for Stylish Names
+                    </h2>
+
+                </div>
+
+
+                <div class="benefits-grid">
+
+                    <div class="benefit-card">
+
+                        <span>⚡</span>
+
+                        <h3>
+                            Instant Results
+                        </h3>
+
+                        <p>
+                            Generate stylish names in seconds.
+                        </p>
+
+                    </div>
+
+
+                    <div class="benefit-card">
+
+                        <span>🎨</span>
+
+                        <h3>
+                            Many Styles
+                        </h3>
+
+                        <p>
+                            Explore different designs for every mood.
+                        </p>
+
+                    </div>
+
+
+                    <div class="benefit-card">
+
+                        <span>📋</span>
+
+                        <h3>
+                            Easy Copy
+                        </h3>
+
+                        <p>
+                            Copy your favourite result with one tap.
+                        </p>
+
+                    </div>
+
+
+                    <div class="benefit-card">
+
+                        <span>📱</span>
+
+                        <h3>
+                            Mobile Friendly
+                        </h3>
+
+                        <p>
+                            Designed to work smoothly on every screen.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SEO CONTENT ================= -->
+
+        <section class="content-section seo-section">
+
+            <div class="container narrow-container">
+
+                <div class="section-heading">
+
+                    <span class="section-kicker">
+                        LEARN MORE
+                    </span>
+
+                    <h2>
+                        Stylish Name Generator
+                    </h2>
+
+                </div>
+
+
+                <div class="seo-content">
+
+                    <p>
+                        Z-Name Style is a stylish name generator designed to
+                        help you create unique text styles for gaming,
+                        social media profiles and online communities.
+                    </p>
+
+                    <p>
+                        Enter your name to explore different fancy fonts,
+                        decorative styles and symbol combinations. You can
+                        quickly copy the result and use it wherever you want.
+                    </p>
+
+                    <h3>
+                        Create a unique online identity
+                    </h3>
+
+                    <p>
+                        A good username or nickname can make your profile
+                        easier to remember. Z-Name Style gives you a simple
+                        way to experiment with different visual styles
+                        without manually creating every combination.
+                    </p>
+
+                    <h3>
+                        Designed for gamers and creators
+                    </h3>
+
+                    <p>
+                        Whether you need a gaming nickname, a social media
+                        display name, a clan name or a decorative text style,
+                        the tools on Z-Name Style are built to make the
+                        process quick and easy.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= FAQ ================= -->
+
+        <section class="content-section" id="faq">
+
+            <div class="container faq-container">
+
+                <div class="section-heading centered">
+
+                    <span class="section-kicker">
+                        FAQ
+                    </span>
+
+                    <h2>
+                        Frequently Asked Questions
+                    </h2>
+
+                    <p>
+                        Quick answers about Z-Name Style.
+                    </p>
+
+                </div>
+
+
+                <div class="faq-list">
+
+                    <details class="faq-item">
+
+                        <summary>
+                            What is a stylish name generator?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            A stylish name generator converts ordinary text
+                            into decorative, fancy and creative name styles
+                            that you can copy and use online.
+                        </p>
+
+                    </details>
+
+
+                    <details class="faq-item">
+
+                        <summary>
+                            How can I create a stylish name?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            Enter your name in the generator, explore the
+                            available styles and copy the design you like.
+                        </p>
+
+                    </details>
+
+
+                    <details class="faq-item">
+
+                        <summary>
+                            Can I copy the generated names?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            Yes. Each generated result includes a copy button
+                            so you can quickly copy the text.
+                        </p>
+
+                    </details>
+
+
+                    <details class="faq-item">
+
+                        <summary>
+                            Can I use stylish names in games?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            You can copy the generated text and try it in
+                            your game. The characters accepted by each game
+                            can vary.
+                        </p>
+
+                    </details>
+
+
+                    <details class="faq-item">
+
+                        <summary>
+                            Can I use these names on Instagram?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            You can use compatible stylish text in places
+                            where Instagram allows those characters.
+                        </p>
+
+                    </details>
+
+
+                    <details class="faq-item">
+
+                        <summary>
+                            Is Z-Name Style free?
+                            <span>+</span>
+                        </summary>
+
+                        <p>
+                            The core name styling features are designed to
+                            be available for free.
+                        </p>
+
+                    </details>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="site-footer">
+
+        <div class="container">
+
+            <div class="footer-top">
+
+                <div class="footer-brand">
+
+                    <a href="#" class="brand footer-logo">
+
+                        <span class="brand-mark">
+                            Z
+                        </span>
+
+                        <span class="brand-text">
+                            <strong>Z-Name</strong>
+                            <span>Style</span>
+                        </span>
+
+                    </a>
+
+                    <p>
+                        Stylish names, fonts and symbols for gamers,
+                        creators and social media users.
+                    </p>
+
+                </div>
+
+
+                <div class="footer-column">
+
+                    <h3>
+                        Tools
+                    </h3>
+
+                    <a href="#generator">
+                        Name Generator
+                    </a>
+
+                    <a href="#fonts">
+                        Fancy Fonts
+                    </a>
+
+                    <a href="#symbols">
+                        Stylish Symbols
+                    </a>
+
+                    <a href="#gaming">
+                        Gaming Names
+                    </a>
+
+                </div>
+
+
+                <div class="footer-column">
+
+                    <h3>
+                        Categories
+                    </h3>
+
+                    <a href="#styles">
+                        Gaming
+                    </a>
+
+                    <a href="#styles">
+                        Attitude
+                    </a>
+
+                    <a href="#styles">
+                        Royal
+                    </a>
+
+                    <a href="#styles">
+                        Love
+                    </a>
+
+                </div>
+
+
+                <div class="footer-column">
+
+                    <h3>
+                        Company
+                    </h3>
+
+                    <a href="#">
+                        About Us
+                    </a>
+
+                    <a href="#">
+                        Contact
+                    </a>
+
+                    <a href="#">
+                        Privacy Policy
+                    </a>
+
+                    <a href="#">
+                        Terms & Conditions
+                    </a>
+
+                    <a href="#">
+                        Disclaimer
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="footer-bottom">
+
+                <p>
+                    © 2026 Z-Name Style. All rights reserved.
+                </p>
+
+                <p>
+                    Made for stylish creators.
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- ================= MOBILE BOTTOM NAV ================= -->
+
+    <nav
+        class="mobile-bottom-nav"
+        aria-label="Mobile navigation"
+    >
+
+        <a href="#" class="bottom-nav-item active">
+
+            <span>⌂</span>
+
+            <small>
+                Home
+            </small>
+
+        </a>
+
+
+        <a href="#generator" class="bottom-nav-item">
+
+            <span>✨</span>
+
+            <small>
+                Generate
+            </small>
+
+        </a>
+
+
+        <a href="#styles" class="bottom-nav-item">
+
+            <span>🎨</span>
+
+            <small>
+                Styles
+            </small>
+
+        </a>
+
+
+        <a href="#symbols" class="bottom-nav-item">
+
+            <span>🔣</span>
+
+            <small>
+                Symbols
+            </small>
+
+        </a>
+
+
+        <button
+            type="button"
+            class="bottom-nav-item"
+            id="bottomMenuButton"
+        >
+
+            <span>☰</span>
+
+            <small>
+                More
+            </small>
+
+        </button>
+
+    </nav>
+
+
+    <!-- ================= TOAST ================= -->
+
+    <div
+        class="toast"
+        id="toast"
+        role="status"
+        aria-live="polite"
+    >
+
+        <span class="toast-icon">
+            ✓
+        </span>
+
+        <span id="toastMessage">
+            Copied!
+        </span>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="script.js"></script>
+
+</body>
+  </html>
