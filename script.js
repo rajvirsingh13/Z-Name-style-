@@ -1,12 +1,10 @@
-"use strict";
-
 /* =========================================================
    Z-NAME STYLE
-   COMPLETE WORKING SCRIPT
-   200 STYLISH NAME STYLES
-   FIRST 50 = TOP / TRENDING STYLES
+   COMPLETE SCRIPT.JS
+   Works with the provided index.html
    ========================================================= */
 
+"use strict";
 
 /* =========================================================
    DOM ELEMENTS
@@ -14,8 +12,7 @@
 
 const nameForm = document.getElementById("nameForm");
 const nameInput = document.getElementById("nameInput");
-const clearNameButton = document.getElementById("clearName");
-
+const clearName = document.getElementById("clearName");
 const generateButton = document.getElementById("generateButton");
 
 const previewSection = document.getElementById("previewSection");
@@ -39,954 +36,832 @@ const toastMessage = document.getElementById("toastMessage");
 
 
 /* =========================================================
-   STATE
+   CURRENT STATE
    ========================================================= */
 
 let currentName = "";
-let currentFilter = "all";
-let currentStyles = [];
+let currentTemplate = null;
 let toastTimer = null;
 
 
 /* =========================================================
-   200 STYLE DEFINITIONS
-   ---------------------------------------------------------
-   FIRST 50 ARE THE TOP / TRENDING STYLES
+   200+ STYLE TEMPLATES
+   IMPORTANT:
+   Only the final stylish name is displayed.
+   No numbers or category names are added.
    ========================================================= */
 
-const styles = [
-
-    /* =====================================================
-       TOP 50 TRENDING STYLES
-       ===================================================== */
-
-    {
-        category: "fancy",
-        template: "꧁༺ {name} ༻꧂"
-    },
-
-    {
-        category: "fancy",
-        template: "★彡 {name} 彡★"
-    },
-
-    {
-        category: "gaming",
-        template: "亗 {name} 亗"
-    },
-
-    {
-        category: "gaming",
-        template: "『 {name} 』"
-    },
-
-    {
-        category: "attitude",
-        template: "乂 {name} 乂"
-    },
-
-    {
-        category: "fancy",
-        template: "꧁ {name} ꧂"
-    },
-
-    {
-        category: "gaming",
-        template: "メ {name} メ"
-    },
-
-    {
-        category: "gaming",
-        template: "〆 {name} 〆"
-    },
-
-    {
-        category: "royal",
-        template: "♛ {name} ♛"
-    },
-
-    {
-        category: "royal",
-        template: "♕ {name} ♕"
-    },
-
-    {
-        category: "love",
-        template: "♡ {name} ♡"
-    },
-
-    {
-        category: "love",
-        template: "♥ {name} ♥"
-    },
-
-    {
-        category: "cool",
-        template: "⚡ {name} ⚡"
-    },
-
-    {
-        category: "dark",
-        template: "☠ {name} ☠"
-    },
-
-    {
-        category: "fancy",
-        template: "༺ {name} ༻"
-    },
-
-    {
-        category: "fancy",
-        template: "༻ {name} ༺"
-    },
-
-    {
-        category: "gaming",
-        template: "乂『 {name} 』乂"
-    },
-
-    {
-        category: "gaming",
-        template: "亗『 {name} 』亗"
-    },
-
-    {
-        category: "gaming",
-        template: "メ『 {name} 』メ"
-    },
-
-    {
-        category: "gaming",
-        template: "〆『 {name} 』〆"
-    },
-
-    {
-        category: "attitude",
-        template: "⚔ {name} ⚔"
-    },
-
-    {
-        category: "attitude",
-        template: "☬ {name} ☬"
-    },
-
-    {
-        category: "attitude",
-        template: "☠︎ {name} ☠︎"
-    },
-
-    {
-        category: "attitude",
-        template: "⚡『 {name} 』⚡"
-    },
-
-    {
-        category: "attitude",
-        template: "乂⚡ {name} ⚡乂"
-    },
-
-    {
-        category: "royal",
-        template: "♛『 {name} 』♛"
-    },
-
-    {
-        category: "royal",
-        template: "♕『 {name} 』♕"
-    },
-
-    {
-        category: "royal",
-        template: "♚ {name} ♚"
-    },
-
-    {
-        category: "royal",
-        template: "♔ {name} ♔"
-    },
-
-    {
-        category: "royal",
-        template: "👑 {name} 👑"
-    },
-
-    {
-        category: "love",
-        template: "♡꧁ {name} ꧂♡"
-    },
-
-    {
-        category: "love",
-        template: "♥꧁ {name} ꧂♥"
-    },
-
-    {
-        category: "love",
-        template: "ღ {name} ღ"
-    },
-
-    {
-        category: "love",
-        template: "❣ {name} ❣"
-    },
-
-    {
-        category: "love",
-        template: "❤ {name} ❤"
-    },
-
-    {
-        category: "cool",
-        template: "⚡『 {name} 』⚡"
-    },
-
-    {
-        category: "cool",
-        template: "✦ {name} ✦"
-    },
-
-    {
-        category: "cool",
-        template: "✧ {name} ✧"
-    },
-
-    {
-        category: "cool",
-        template: "★ {name} ★"
-    },
-
-    {
-        category: "cool",
-        template: "☆ {name} ☆"
-    },
-
-    {
-        category: "dark",
-        template: "☠『 {name} 』☠"
-    },
-
-    {
-        category: "dark",
-        template: "☾ {name} ☽"
-    },
-
-    {
-        category: "dark",
-        template: "☽ {name} ☾"
-    },
-
-    {
-        category: "dark",
-        template: "♰ {name} ♰"
-    },
-
-    {
-        category: "dark",
-        template: "† {name} †"
-    },
-
-    {
-        category: "cute",
-        template: "🌸 {name} 🌸"
-    },
-
-    {
-        category: "cute",
-        template: "♡🌸 {name} 🌸♡"
-    },
-
-    {
-        category: "cute",
-        template: "꒰ {name} ꒱"
-    },
-
-    {
-        category: "cute",
-        template: "ʚ {name} ɞ"
-    },
-
-
-    /* =====================================================
-       51 - 200
-       ADDITIONAL STYLES
-       ===================================================== */
-
-    {
-        category: "fancy",
-        template: "꧁༒ {name} ༒꧂"
-    },
-
-    {
-        category: "fancy",
-        template: "༺★ {name} ★༻"
-    },
-
-    {
-        category: "fancy",
-        template: "༺✦ {name} ✦༻"
-    },
-
-    {
-        category: "fancy",
-        template: "༺✧ {name} ✧༻"
-    },
-
-    {
-        category: "fancy",
-        template: "『★ {name} ★』"
-    },
-
-    {
-        category: "fancy",
-        template: "『✦ {name} ✦』"
-    },
-
-    {
-        category: "fancy",
-        template: "『✧ {name} ✧』"
-    },
-
-    {
-        category: "fancy",
-        template: "꧁★ {name} ★꧂"
-    },
-
-    {
-        category: "fancy",
-        template: "꧁✦ {name} ✦꧂"
-    },
-
-    {
-        category: "fancy",
-        template: "꧁✧ {name} ✧꧂"
-    },
-
-    {
-        category: "fancy",
-        template: "༒ {name} ༒"
-    },
-
-    {
-        category: "fancy",
-        template: "✦༺ {name} ༻✦"
-    },
-
-    {
-        category: "fancy",
-        template: "✧༺ {name} ༻✧"
-    },
-
-    {
-        category: "fancy",
-        template: "★༺ {name} ༻★"
-    },
-
-    {
-        category: "fancy",
-        template: "☆༺ {name} ༻☆"
-    },
-
-
-    {
-        category: "gaming",
-        template: "乂★ {name} ★乂"
-    },
-
-    {
-        category: "gaming",
-        template: "乂✦ {name} ✦乂"
-    },
-
-    {
-        category: "gaming",
-        template: "乂✧ {name} ✧乂"
-    },
-
-    {
-        category: "gaming",
-        template: "乂⚔ {name} ⚔乂"
-    },
-
-    {
-        category: "gaming",
-        template: "亗★ {name} ★亗"
-    },
-
-    {
-        category: "gaming",
-        template: "亗✦ {name} ✦亗"
-    },
-
-    {
-        category: "gaming",
-        template: "亗✧ {name} ✧亗"
-    },
-
-    {
-        category: "gaming",
-        template: "亗⚔ {name} ⚔亗"
-    },
-
-    {
-        category: "gaming",
-        template: "メ★ {name} ★メ"
-    },
-
-    {
-        category: "gaming",
-        template: "メ✦ {name} ✦メ"
-    },
-
-    {
-        category: "gaming",
-        template: "メ✧ {name} ✧メ"
-    },
-
-    {
-        category: "gaming",
-        template: "メ⚔ {name} ⚔メ"
-    },
-
-    {
-        category: "gaming",
-        template: "〆★ {name} ★〆"
-    },
-
-    {
-        category: "gaming",
-        template: "〆✦ {name} ✦〆"
-    },
-
-    {
-        category: "gaming",
-        template: "〆✧ {name} ✧〆"
-    },
-
-
-    {
-        category: "attitude",
-        template: "⚡★ {name} ★⚡"
-    },
-
-    {
-        category: "attitude",
-        template: "⚡✦ {name} ✦⚡"
-    },
-
-    {
-        category: "attitude",
-        template: "⚡✧ {name} ✧⚡"
-    },
-
-    {
-        category: "attitude",
-        template: "☬★ {name} ★☬"
-    },
-
-    {
-        category: "attitude",
-        template: "☬✦ {name} ✦☬"
-    },
-
-    {
-        category: "attitude",
-        template: "☬✧ {name} ✧☬"
-    },
-
-    {
-        category: "attitude",
-        template: "⚔★ {name} ★⚔"
-    },
-
-    {
-        category: "attitude",
-        template: "⚔✦ {name} ✦⚔"
-    },
-
-    {
-        category: "attitude",
-        template: "⚔✧ {name} ✧⚔"
-    },
-
-    {
-        category: "attitude",
-        template: "☠★ {name} ★☠"
-    },
-
-    {
-        category: "attitude",
-        template: "☠✦ {name} ✦☠"
-    },
-
-    {
-        category: "attitude",
-        template: "☠✧ {name} ✧☠"
-    },
-
-    {
-        category: "attitude",
-        template: "乂⚡ {name} ⚡乂"
-    },
-
-    {
-        category: "attitude",
-        template: "乂☠ {name} ☠乂"
-    },
-
-    {
-        category: "attitude",
-        template: "乂⚔ {name} ⚔乂"
-    },
-
-
-    {
-        category: "royal",
-        template: "♛★ {name} ★♛"
-    },
-
-    {
-        category: "royal",
-        template: "♛✦ {name} ✦♛"
-    },
-
-    {
-        category: "royal",
-        template: "♛✧ {name} ✧♛"
-    },
-
-    {
-        category: "royal",
-        template: "♕★ {name} ★♕"
-    },
-
-    {
-        category: "royal",
-        template: "♕✦ {name} ✦♕"
-    },
-
-    {
-        category: "royal",
-        template: "♕✧ {name} ✧♕"
-    },
-
-    {
-        category: "royal",
-        template: "♚★ {name} ★♚"
-    },
-
-    {
-        category: "royal",
-        template: "♚✦ {name} ✦♚"
-    },
-
-    {
-        category: "royal",
-        template: "♚✧ {name} ✧♚"
-    },
-
-    {
-        category: "royal",
-        template: "♔★ {name} ★♔"
-    },
-
-    {
-        category: "royal",
-        template: "♔✦ {name} ✦♔"
-    },
-
-    {
-        category: "royal",
-        template: "♔✧ {name} ✧♔"
-    },
-
-    {
-        category: "royal",
-        template: "♛⚜ {name} ⚜♛"
-    },
-
-    {
-        category: "royal",
-        template: "♕⚜ {name} ⚜♕"
-    },
-
-    {
-        category: "royal",
-        template: "♚⚜ {name} ⚜♚"
-    },
-
-
-    {
-        category: "love",
-        template: "♡★ {name} ★♡"
-    },
-
-    {
-        category: "love",
-        template: "♡✦ {name} ✦♡"
-    },
-
-    {
-        category: "love",
-        template: "♡✧ {name} ✧♡"
-    },
-
-    {
-        category: "love",
-        template: "♥★ {name} ★♥"
-    },
-
-    {
-        category: "love",
-        template: "♥✦ {name} ✦♥"
-    },
-
-    {
-        category: "love",
-        template: "♥✧ {name} ✧♥"
-    },
-
-    {
-        category: "love",
-        template: "ღ★ {name} ★ღ"
-    },
-
-    {
-        category: "love",
-        template: "ღ✦ {name} ✦ღ"
-    },
-
-    {
-        category: "love",
-        template: "ღ✧ {name} ✧ღ"
-    },
-
-    {
-        category: "love",
-        template: "❣★ {name} ★❣"
-    },
-
-    {
-        category: "love",
-        template: "❣✦ {name} ✦❣"
-    },
-
-    {
-        category: "love",
-        template: "❣✧ {name} ✧❣"
-    },
-
-    {
-        category: "love",
-        template: "❤★ {name} ★❤"
-    },
-
-    {
-        category: "love",
-        template: "❤✦ {name} ✦❤"
-    },
-
-    {
-        category: "love",
-        template: "❤✧ {name} ✧❤"
-    },
-
-
-    {
-        category: "cool",
-        template: "★『 {name} 』★"
-    },
-
-    {
-        category: "cool",
-        template: "✦『 {name} 』✦"
-    },
-
-    {
-        category: "cool",
-        template: "✧『 {name} 』✧"
-    },
-
-    {
-        category: "cool",
-        template: "★༺ {name} ༻★"
-    },
-
-    {
-        category: "cool",
-        template: "✦༺ {name} ༻✦"
-    },
-
-    {
-        category: "cool",
-        template: "✧༺ {name} ༻✧"
-    },
-
-    {
-        category: "cool",
-        template: "⚡★ {name} ★⚡"
-    },
-
-    {
-        category: "cool",
-        template: "⚡✦ {name} ✦⚡"
-    },
-
-    {
-        category: "cool",
-        template: "⚡✧ {name} ✧⚡"
-    },
-
-    {
-        category: "cool",
-        template: "★彡 {name} 彡★"
-    },
-
-    {
-        category: "cool",
-        template: "✦彡 {name} 彡✦"
-    },
-
-    {
-        category: "cool",
-        template: "✧彡 {name} 彡✧"
-    },
-
-    {
-        category: "cool",
-        template: "☆『 {name} 』☆"
-    },
-
-    {
-        category: "cool",
-        template: "☆༺ {name} ༻☆"
-    },
-
-    {
-        category: "cool",
-        template: "☆彡 {name} 彡☆"
-    },
-
-
-    {
-        category: "dark",
-        template: "☠★ {name} ★☠"
-    },
-
-    {
-        category: "dark",
-        template: "☠✦ {name} ✦☠"
-    },
-
-    {
-        category: "dark",
-        template: "☠✧ {name} ✧☠"
-    },
-
-    {
-        category: "dark",
-        template: "†★ {name} ★†"
-    },
-
-    {
-        category: "dark",
-        template: "†✦ {name} ✦†"
-    },
-
-    {
-        category: "dark",
-        template: "†✧ {name} ✧†"
-    },
-
-    {
-        category: "dark",
-        template: "♰★ {name} ★♰"
-    },
-
-    {
-        category: "dark",
-        template: "♰✦ {name} ✦♰"
-    },
-
-    {
-        category: "dark",
-        template: "♰✧ {name} ✧♰"
-    },
-
-    {
-        category: "dark",
-        template: "☾★ {name} ★☽"
-    },
-
-    {
-        category: "dark",
-        template: "☾✦ {name} ✦☽"
-    },
-
-    {
-        category: "dark",
-        template: "☾✧ {name} ✧☽"
-    },
-
-    {
-        category: "dark",
-        template: "☽★ {name} ★☾"
-    },
-
-    {
-        category: "dark",
-        template: "☽✦ {name} ✦☽"
-    },
-
-    {
-        category: "dark",
-        template: "☽✧ {name} ✧☽"
-    },
-
-
-    {
-        category: "cute",
-        template: "🌸★ {name} ★🌸"
-    },
-
-    {
-        category: "cute",
-        template: "🌸✦ {name} ✦🌸"
-    },
-
-    {
-        category: "cute",
-        template: "🌸✧ {name} ✧🌸"
-    },
-
-    {
-        category: "cute",
-        template: "♡🌸 {name} 🌸♡"
-    },
-
-    {
-        category: "cute",
-        template: "♡✿ {name} ✿♡"
-    },
-
-    {
-        category: "cute",
-        template: "✿ {name} ✿"
-    },
-
-    {
-        category: "cute",
-        template: "❀ {name} ❀"
-    },
-
-    {
-        category: "cute",
-        template: "✿★ {name} ★✿"
-    },
-
-    {
-        category: "cute",
-        template: "✿✦ {name} ✦✿"
-    },
-
-    {
-        category: "cute",
-        template: "✿✧ {name} ✧✿"
-    },
-
-    {
-        category: "cute",
-        template: "꒰★ {name} ★꒱"
-    },
-
-    {
-        category: "cute",
-        template: "꒰✦ {name} ✦꒱"
-    },
-
-    {
-        category: "cute",
-        template: "꒰✧ {name} ✧꒱"
-    },
-
-    {
-        category: "cute",
-        template: "ʚ★ {name} ★ɞ"
-    },
-
-    {
-        category: "cute",
-        template: "ʚ✦ {name} ✦ɞ"
-    }
-
+const STYLE_TEMPLATES = [
+
+    "꧁༺ {name} ༻꧂",
+    "꧁༺{name}༻꧂",
+    "꧁{name}꧂",
+    "༺ {name} ༻",
+    "༺{name}༻",
+    "『{name}』",
+    "『 {name} 』",
+    "【{name}】",
+    "【 {name} 】",
+    "〖{name}〗",
+    "〘{name}〙",
+    "〚{name}〛",
+    "《{name}》",
+    "〈{name}〉",
+    "「{name}」",
+    "『༺{name}༻』",
+    "꧁𓊈𒆜 {name} 𒆜𓊉꧂",
+    "꧁𓊈{ name }𓊉꧂",
+    "亗 {name} 亗",
+    "亗{name}亗",
+    "乂 {name} 乂",
+    "乂{name}乂",
+    "彡 {name} 彡",
+    "彡{name}彡",
+    "ツ {name} ツ",
+    "ツ{name}ツ",
+    "࿐ {name} ࿐",
+    "࿐{name}࿐",
+    "★ {name} ★",
+    "★彡 {name} 彡★",
+    "★彡{name}彡★",
+    "☆ {name} ☆",
+    "☆彡 {name} 彡☆",
+    "✦ {name} ✦",
+    "✧ {name} ✧",
+    "✯ {name} ✯",
+    "✰ {name} ✰",
+    "✪ {name} ✪",
+    "✵ {name} ✵",
+    "✺ {name} ✺",
+    "❖ {name} ❖",
+    "◆ {name} ◆",
+    "◇ {name} ◇",
+    "◈ {name} ◈",
+    "◉ {name} ◉",
+    "● {name} ●",
+    "○ {name} ○",
+    "• {name} •",
+    "× {name} ×",
+    "メ {name} メ",
+    "乄 {name} 乄",
+    "么 {name} 么",
+    "々 {name} 々",
+    "〆 {name} 〆",
+    "〄 {name} 〄",
+    "シ {name} シ",
+    "ツ乂 {name} 乂ツ",
+    "亗〆 {name} 〆亗",
+    "乂亗 {name} 亗乂",
+    "メ亗 {name} 亗メ",
+    "『亗 {name} 亗』",
+    "『乂 {name} 乂』",
+    "『★ {name} ★』",
+    "【亗 {name} 亗】",
+    "【乂 {name} 乂】",
+    "【★ {name} ★】",
+    "꧁亗 {name} 亗꧂",
+    "꧁乂 {name} 乂꧂",
+    "꧁★ {name} ★꧂",
+    "꧁༺ {name} ༻꧂",
+    "꧁༺★ {name} ★༻꧂",
+    "꧁༺亗 {name} 亗༻꧂",
+    "꧁༺乂 {name} 乂༻꧂",
+    "꧁𓆩 {name} 𓆪꧂",
+    "𓆩 {name} 𓆪",
+    "𓆩{name}𓆪",
+    "𓆩♡{name}♡𓆪",
+    "𓆩★{name}★𓆪",
+    "𓆩亗{name}亗𓆪",
+    "𓆩乂{name}乂𓆪",
+    "༒ {name} ༒",
+    "༒︎ {name} ༒︎",
+    "༒{name}༒",
+    "☬ {name} ☬",
+    "☬{name}☬",
+    "♛ {name} ♛",
+    "♛{name}♛",
+    "♕ {name} ♕",
+    "♕{name}♕",
+    "♚ {name} ♚",
+    "♚{name}♚",
+    "♔ {name} ♔",
+    "♔{name}♔",
+    "♤ {name} ♤",
+    "♧ {name} ♧",
+    "♡ {name} ♡",
+    "♥ {name} ♥",
+    "❥ {name} ❥",
+    "ღ {name} ღ",
+    "❣ {name} ❣",
+    "☾ {name} ☽",
+    "☽ {name} ☾",
+    "☠ {name} ☠",
+    "☠︎ {name} ☠︎",
+    "☣ {name} ☣",
+    "☢ {name} ☢",
+    "⚔ {name} ⚔",
+    "⚡ {name} ⚡",
+    "🔥 {name} 🔥",
+    "❄ {name} ❄",
+    "🌙 {name} 🌙",
+    "🌸 {name} 🌸",
+    "💫 {name} 💫",
+    "💎 {name} 💎",
+    "👑 {name} 👑",
+    "👑༺ {name} ༻👑",
+    "⚡亗 {name} 亗⚡",
+    "🔥亗 {name} 亗🔥",
+    "☠亗 {name} 亗☠",
+    "♛亗 {name} 亗♛",
+    "♛༺ {name} ༻♛",
+    "♚༺ {name} ༻♚",
+    "★༺ {name} ༻★",
+    "☆༺ {name} ༻☆",
+    "✦༺ {name} ༻✦",
+    "✧༺ {name} ༻✧",
+    "❖༺ {name} ༻❖",
+    "◆༺ {name} ༻◆",
+    "◇༺ {name} ༻◇",
+    "☬༺ {name} ༻☬",
+    "༒༺ {name} ༻༒",
+    "☠༺ {name} ༻☠",
+    "⚔༺ {name} ༻⚔",
+    "⚡༺ {name} ༻⚡",
+    "🔥༺ {name} ༻🔥",
+    "❄༺ {name} ༻❄",
+    "♡༺ {name} ༻♡",
+    "ღ༺ {name} ༻ღ",
+    "❥༺ {name} ༻❥",
+    "꧁♛ {name} ♛꧂",
+    "꧁♚ {name} ♚꧂",
+    "꧁♕ {name} ♕꧂",
+    "꧁⚡ {name} ⚡꧂",
+    "꧁🔥 {name} 🔥꧂",
+    "꧁☠ {name} ☠꧂",
+    "꧁☬ {name} ☬꧂",
+    "꧁༒ {name} ༒꧂",
+    "꧁♡ {name} ♡꧂",
+    "꧁ღ {name} ღ꧂",
+    "꧁✦ {name} ✦꧂",
+    "꧁✧ {name} ✧꧂",
+    "꧁❖ {name} ❖꧂",
+    "꧁◆ {name} ◆꧂",
+    "꧁◇ {name} ◇꧂",
+    "꧁★ {name} ★꧂",
+    "꧁☆ {name} ☆꧂",
+    "『★ {name} ★』",
+    "『☆ {name} ☆』",
+    "『✦ {name} ✦』",
+    "『✧ {name} ✧』",
+    "『亗 {name} 亗』",
+    "『☠ {name} ☠』",
+    "『♛ {name} ♛』",
+    "『⚡ {name} ⚡』",
+    "『🔥 {name} 🔥』",
+    "『♡ {name} ♡』",
+    "【★ {name} ★】",
+    "【☆ {name} ☆】",
+    "【✦ {name} ✦】",
+    "【✧ {name} ✧】",
+    "【亗 {name} 亗】",
+    "【☠ {name} ☠】",
+    "【♛ {name} ♛】",
+    "【⚡ {name} ⚡】",
+    "【🔥 {name} 🔥】",
+    "【♡ {name} ♡】",
+    "〖★ {name} ★〗",
+    "〖亗 {name} 亗〗",
+    "〖乂 {name} 乂〗",
+    "〖⚡ {name} ⚡〗",
+    "〖🔥 {name} 🔥〗",
+    "〘★ {name} ★〙",
+    "〘亗 {name} 亗〙",
+    "〘乂 {name} 乂〙",
+    "〘⚡ {name} ⚡〙",
+    "〘🔥 {name} 🔥〙",
+    "《★ {name} ★》",
+    "《亗 {name} 亗》",
+    "《乂 {name} 乂》",
+    "《⚡ {name} ⚡》",
+    "《🔥 {name} 🔥》",
+    "〈★ {name} ★〉",
+    "〈亗 {name} 亗〉",
+    "〈乂 {name} 乂〉",
+    "〈⚡ {name} ⚡〉",
+    "〈🔥 {name} 🔥〉",
+    "乂★ {name} ★乂",
+    "乂亗 {name} 亗乂",
+    "乂☠ {name} ☠乂",
+    "乂⚡ {name} ⚡乂",
+    "乂🔥 {name} 🔥乂",
+    "彡★ {name} ★彡",
+    "彡亗 {name} 亗彡",
+    "彡乂 {name} 乂彡",
+    "彡⚡ {name} ⚡彡",
+    "彡🔥 {name} 🔥彡",
+    "ツ★ {name} ★ツ",
+    "ツ亗 {name} 亗ツ",
+    "ツ乂 {name} 乂ツ",
+    "ツ⚡ {name} ⚡ツ",
+    "ツ🔥 {name} 🔥ツ",
+    "メ★ {name} ★メ",
+    "メ亗 {name} 亗メ",
+    "メ乂 {name} 乂メ",
+    "メ⚡ {name} ⚡メ",
+    "メ🔥 {name} 🔥メ",
+    "〆★ {name} ★〆",
+    "〆亗 {name} 亗〆",
+    "〆乂 {name} 乂〆",
+    "〆⚡ {name} ⚡〆",
+    "〆🔥 {name} 🔥〆",
+    "么★ {name} ★么",
+    "么亗 {name} 亗么",
+    "么乂 {name} 乂么",
+    "么⚡ {name} ⚡么",
+    "么🔥 {name} 🔥么",
+    "々★ {name} ★々",
+    "々亗 {name} 亗々",
+    "々乂 {name} 乂々",
+    "々⚡ {name} ⚡々",
+    "々🔥 {name} 🔥々",
+    "★彡 {name} 彡★",
+    "★彡{name}彡★",
+    "☆彡 {name} 彡☆",
+    "✦彡 {name} 彡✦",
+    "亗彡 {name} 彡亗",
+    "乂彡 {name} 彡乂",
+    "⚡彡 {name} 彡⚡",
+    "🔥彡 {name} 彡🔥",
+    "☠彡 {name} 彡☠",
+    "♛彡 {name} 彡♛",
+    "༺★ {name} ★༻",
+    "༺☆ {name} ☆༻",
+    "༺✦ {name} ✦༻",
+    "༺✧ {name} ✧༻",
+    "༺亗 {name} 亗༻",
+    "༺乂 {name} 乂༻",
+    "༺⚡ {name} ⚡༻",
+    "༺🔥 {name} 🔥༻",
+    "༺☠ {name} ☠༻",
+    "༺♛ {name} ♛༻",
+    "༺♡ {name} ♡༻",
+    "༺ღ {name} ღ༻",
+    "𒆜 {name} 𒆜",
+    "𒆜{name}𒆜",
+    "𒁍 {name} 𒁍",
+    "𒀱 {name} 𒀱",
+    "𓆩 {name} 𓆪",
+    "𓆩{name}𓆪",
+    "𓆩★ {name} ★𓆪",
+    "𓆩亗 {name} 亗𓆪",
+    "𓆩乂 {name} 乂𓆪",
+    "𓆩⚡ {name} ⚡𓆪",
+    "𓆩🔥 {name} 🔥𓆪",
+    "𓆩♡ {name} ♡𓆪",
+    "☾✦ {name} ✦☽",
+    "☾★ {name} ★☽",
+    "☽亗 {name} 亗☾",
+    "☾♛ {name} ♛☽",
+    "☾♡ {name} ♡☽",
+    "⚜ {name} ⚜",
+    "⚜️ {name} ⚜️",
+    "⚜༺ {name} ༻⚜",
+    "♔༺ {name} ༻♔",
+    "♕༺ {name} ༻♕",
+    "♚༺ {name} ༻♚",
+    "♛༺ {name} ༻♛",
+    "👑 {name} 👑",
+    "👑亗 {name} 亗👑",
+    "👑༺ {name} ༻👑",
+    "💎 {name} 💎",
+    "💎༺ {name} ༻💎",
+    "🌸 {name} 🌸",
+    "🌸༺ {name} ༻🌸",
+    "♡ {name} ♡",
+    "♡༺ {name} ༻♡",
+    "♥ {name} ♥",
+    "♥༺ {name} ༻♥",
+    "ღ {name} ღ",
+    "ღ༺ {name} ༻ღ",
+    "❥ {name} ❥",
+    "❥༺ {name} ༻❥",
+    "☠ {name} ☠",
+    "☠༺ {name} ༻☠",
+    "☣ {name} ☣",
+    "☢ {name} ☢",
+    "⚔ {name} ⚔",
+    "⚔༺ {name} ༻⚔",
+    "⚡ {name} ⚡",
+    "⚡༺ {name} ༻⚡",
+    "🔥 {name} 🔥",
+    "🔥༺ {name} ༻🔥",
+    "❄ {name} ❄",
+    "❄༺ {name} ༻❄",
+    "🌙 {name} 🌙",
+    "🌙༺ {name} ༻🌙",
+    "💫 {name} 💫",
+    "💫༺ {name} ༻💫",
+    "✨ {name} ✨",
+    "✨༺ {name} ༻✨",
+    "✰ {name} ✰",
+    "✰༺ {name} ༻✰",
+    "✯ {name} ✯",
+    "✯༺ {name} ༻✯",
+    "❖ {name} ❖",
+    "❖༺ {name} ༻❖",
+    "◆ {name} ◆",
+    "◆༺ {name} ༻◆",
+    "◇ {name} ◇",
+    "◇༺ {name} ༻◇",
+    "◈ {name} ◈",
+    "◈༺ {name} ༻◈",
+    "★ {name} ★",
+    "★༺ {name} ༻★",
+    "☆ {name} ☆",
+    "☆༺ {name} ༻☆"
 ];
 
 
 /* =========================================================
-   SAFETY CHECK
+   EXTRA UNICODE FONT MAPS
+   These create actual fancy letters.
    ========================================================= */
 
-console.log("Z-Name Style loaded.");
-console.log("Total style definitions:", styles.length);
+const FONT_STYLES = {
+
+    bold: {
+        upper: "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭",
+        lower: "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇",
+        digits: "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"
+    },
+
+    italic: {
+        upper: "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡",
+        lower: "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻",
+        digits: "0123456789"
+    },
+
+    boldItalic: {
+        upper: "𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁",
+        lower: "𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛",
+        digits: "0123456789"
+    },
+
+    script: {
+        upper: "𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵",
+        lower: "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏",
+        digits: "0123456789"
+    },
+
+    double: {
+        upper: "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ",
+        lower: "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫",
+        digits: "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"
+    },
+
+    fraktur: {
+        upper: "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ",
+        lower: "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷",
+        digits: "0123456789"
+    },
+
+    monospace: {
+        upper: "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉",
+        lower: "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣",
+        digits: "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"
+    },
+
+    fullwidth: {
+        upper: "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ",
+        lower: "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ",
+        digits: "０１２３４５６７８９"
+    }
+};
 
 
 /* =========================================================
-   CLEAN NAME
+   FANCY FONT CONVERTER
+   ========================================================= */
+
+function convertToFont(text, font) {
+
+    if (!FONT_STYLES[font]) {
+        return text;
+    }
+
+    const style = FONT_STYLES[font];
+
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const digits = "0123456789";
+
+    let output = "";
+
+    for (const character of text) {
+
+        const upperIndex = upper.indexOf(character);
+
+        if (upperIndex !== -1) {
+            output += style.upper[upperIndex] || character;
+            continue;
+        }
+
+        const lowerIndex = lower.indexOf(character);
+
+        if (lowerIndex !== -1) {
+            output += style.lower[lowerIndex] || character;
+            continue;
+        }
+
+        const digitIndex = digits.indexOf(character);
+
+        if (digitIndex !== -1) {
+            output += style.digits[digitIndex] || character;
+            continue;
+        }
+
+        output += character;
+    }
+
+    return output;
+}
+
+
+/* =========================================================
+   FONT-BASED STYLES
+   ========================================================= */
+
+const FONT_TEMPLATES = [
+
+    "{font:bold}",
+    "{font:italic}",
+    "{font:boldItalic}",
+    "{font:script}",
+    "{font:double}",
+    "{font:fraktur}",
+    "{font:monospace}",
+    "{font:fullwidth}",
+
+    "★ {font:bold} ★",
+    "亗 {font:bold} 亗",
+    "乂 {font:bold} 乂",
+    "彡 {font:bold} 彡",
+    "『{font:bold}』",
+    "꧁{font:bold}꧂",
+
+    "★彡 {font:bold} 彡★",
+    "亗 {font:boldItalic} 亗",
+    "乂 {font:boldItalic} 乂",
+    "♛ {font:bold} ♛",
+    "☠ {font:bold} ☠",
+    "⚡ {font:bold} ⚡",
+    "🔥 {font:bold} 🔥",
+    "♡ {font:script} ♡",
+    "ღ {font:script} ღ",
+    "꧁༺ {font:bold} ༻꧂",
+    "꧁亗 {font:bold} 亗꧂",
+    "『★ {font:bold} ★』",
+    "【亗 {font:bold} 亗】",
+    "༺ {font:boldItalic} ༻",
+    "𓆩 {font:bold} 𓆪",
+    "♛ {font:double} ♛",
+    "⚔ {font:fraktur} ⚔",
+    "☬ {font:bold} ☬",
+    "✦ {font:script} ✦",
+    "✧ {font:italic} ✧",
+    "❖ {font:bold} ❖",
+    "💎 {font:bold} 💎",
+    "👑 {font:bold} 👑",
+    "☠ {font:fraktur} ☠",
+    "⚡ {font:double} ⚡",
+    "🔥 {font:boldItalic} 🔥",
+    "🌙 {font:script} 🌙",
+    "✨ {font:fullwidth} ✨"
+];
+
+
+/* =========================================================
+   CATEGORY TEMPLATES
+   ========================================================= */
+
+const CATEGORY_TEMPLATES = {
+
+    gaming: [
+        "亗 {name} 亗",
+        "乂 {name} 乂",
+        "彡 {name} 彡",
+        "★彡 {name} 彡★",
+        "『{name}』",
+        "꧁亗 {name} 亗꧂",
+        "꧁乂 {name} 乂꧂",
+        "乂★ {name} ★乂",
+        "亗〆 {name} 〆亗",
+        "メ亗 {name} 亗メ",
+        "⚔ {name} ⚔",
+        "☠ {name} ☠",
+        "⚡ {name} ⚡",
+        "🔥 {name} 🔥",
+        "༒ {name} ༒",
+        "☬ {name} ☬",
+        "꧁༺ {name} ༻꧂",
+        "꧁𓊈 {name} 𓊉꧂",
+        "𒆜 {name} 𒆜",
+        "『亗 {name} 亗』",
+        "【乂 {name} 乂】",
+        "彡⚡ {name} ⚡彡",
+        "ツ乂 {name} 乂ツ",
+        "〆★ {name} ★〆"
+    ],
+
+    attitude: [
+        "☠ {name} ☠",
+        "☠༺ {name} ༻☠",
+        "亗 {name} 亗",
+        "乂 {name} 乂",
+        "⚡ {name} ⚡",
+        "🔥 {name} 🔥",
+        "༒ {name} ༒",
+        "『☠ {name} ☠』",
+        "꧁☠ {name} ☠꧂",
+        "꧁亗 {name} 亗꧂",
+        "乂⚡ {name} ⚡乂",
+        "彡🔥 {name} 🔥彡",
+        "☠彡 {name} 彡☠",
+        "⚔༺ {name} ༻⚔",
+        "♛༺ {name} ༻♛",
+        "『⚡ {name} ⚡』",
+        "【☠ {name} ☠】",
+        "༺☠ {name} ☠༻",
+        "亗〆 {name} 〆亗",
+        "么 {name} 么"
+    ],
+
+    royal: [
+        "♛ {name} ♛",
+        "♕ {name} ♕",
+        "♚ {name} ♚",
+        "♔ {name} ♔",
+        "👑 {name} 👑",
+        "⚜ {name} ⚜",
+        "♛༺ {name} ༻♛",
+        "♚༺ {name} ༻♚",
+        "꧁♛ {name} ♛꧂",
+        "꧁♚ {name} ♚꧂",
+        "👑༺ {name} ༻👑",
+        "♕亗 {name} 亗♕",
+        "♛亗 {name} 亗♛",
+        "『♛ {name} ♛』",
+        "【♚ {name} ♚】",
+        "⚜༺ {name} ༻⚜",
+        "꧁༺♛ {name} ♛༻꧂",
+        "𓆩♛ {name} ♛𓆪"
+    ],
+
+    love: [
+        "♡ {name} ♡",
+        "♥ {name} ♥",
+        "ღ {name} ღ",
+        "❥ {name} ❥",
+        "❣ {name} ❣",
+        "♡༺ {name} ༻♡",
+        "♥༺ {name} ༻♥",
+        "ღ༺ {name} ༻ღ",
+        "❥༺ {name} ༻❥",
+        "『♡ {name} ♡』",
+        "꧁♡ {name} ♡꧂",
+        "𓆩♡ {name} ♡𓆪",
+        "🌸 {name} 🌸",
+        "🌸༺ {name} ༻🌸",
+        "💫 {name} 💫",
+        "✨ {name} ✨"
+    ],
+
+    cool: [
+        "★ {name} ★",
+        "☆ {name} ☆",
+        "✦ {name} ✦",
+        "✧ {name} ✧",
+        "✯ {name} ✯",
+        "✰ {name} ✰",
+        "❖ {name} ❖",
+        "◆ {name} ◆",
+        "◇ {name} ◇",
+        "◈ {name} ◈",
+        "★彡 {name} 彡★",
+        "☆彡 {name} 彡☆",
+        "꧁★ {name} ★꧂",
+        "『✦ {name} ✦』",
+        "【✧ {name} ✧】",
+        "༺✯ {name} ✯༻",
+        "✦༺ {name} ༻✦",
+        "💎 {name} 💎"
+    ],
+
+    dark: [
+        "☠ {name} ☠",
+        "☣ {name} ☣",
+        "☢ {name} ☢",
+        "༒ {name} ༒",
+        "☠༺ {name} ༻☠",
+        "꧁☠ {name} ☠꧂",
+        "『☠ {name} ☠』",
+        "【☠ {name} ☠】",
+        "𓆩☠ {name} ☠𓆪",
+        "彡☠ {name} ☠彡",
+        "乂☠ {name} ☠乂",
+        "⚔ {name} ⚔",
+        "⚔༺ {name} ༻⚔",
+        "༺☠ {name} ☠༻",
+        "꧁༒ {name} ༒꧂",
+        "☠彡 {name} 彡☠"
+    ],
+
+    fancy: [
+        "꧁༺ {name} ༻꧂",
+        "『{name}』",
+        "【{name}】",
+        "〖{name}〗",
+        "〘{name}〙",
+        "《{name}》",
+        "★彡 {name} 彡★",
+        "✦ {name} ✦",
+        "✧ {name} ✧",
+        "❖ {name} ❖",
+        "༺ {name} ༻",
+        "𓆩 {name} 𓆪",
+        "꧁✦ {name} ✦꧂",
+        "꧁❖ {name} ❖꧂",
+        "『★ {name} ★』",
+        "【✦ {name} ✦】",
+        "༺★ {name} ★༻",
+        "꧁𓊈 {name} 𓊉꧂"
+    ],
+
+    cute: [
+        "♡ {name} ♡",
+        "ღ {name} ღ",
+        "🌸 {name} 🌸",
+        "♡༺ {name} ༻♡",
+        "🌸༺ {name} ༻🌸",
+        "꧁♡ {name} ♡꧂",
+        "𓆩♡ {name} ♡𓆪",
+        "✿ {name} ✿",
+        "❀ {name} ❀",
+        "❁ {name} ❁",
+        "🌷 {name} 🌷",
+        "🦋 {name} 🦋",
+        "✨ {name} ✨",
+        "💫 {name} 💫",
+        "♡彡 {name} 彡♡"
+    ]
+};
+
+
+/* =========================================================
+   SAFE TEXT CLEANING
    ========================================================= */
 
 function cleanName(value) {
 
-    return String(value || "")
+    return value
         .replace(/\s+/g, " ")
         .trim()
         .slice(0, 30);
-
 }
 
 
 /* =========================================================
-   ESCAPE HTML
+   APPLY TEMPLATE
    ========================================================= */
 
-function escapeHTML(value) {
+function applyTemplate(template, name) {
 
-    const div = document.createElement("div");
-
-    div.textContent = value;
-
-    return div.innerHTML;
-
-}
-
-
-/* =========================================================
-   CREATE STYLED NAME
-   ========================================================= */
-
-function createStyledName(template, name) {
-
-    return template.replace(/\{name\}/g, name);
-
-}
-
-
-/* =========================================================
-   GET STYLES BY FILTER
-   ========================================================= */
-
-function getFilteredStyles(filter) {
-
-    if (filter === "all") {
-
-        return styles;
-
+    if (!template) {
+        return name;
     }
 
-    return styles.filter(function(style) {
+    let result = template;
 
-        return style.category === filter;
+    const fontMatches = result.match(/\{font:([^}]+)\}/g);
+
+    if (fontMatches) {
+
+        fontMatches.forEach(match => {
+
+            const fontName = match
+                .replace("{font:", "")
+                .replace("}", "");
+
+            result = result.replace(
+                match,
+                convertToFont(name, fontName)
+            );
+
+        });
+
+        return result;
+    }
+
+    return result.replace(/\{name\}/g, name);
+}
+
+
+/* =========================================================
+   CREATE RESULT LIST
+   ========================================================= */
+
+function buildResults(name, templates = STYLE_TEMPLATES) {
+
+    const output = [];
+
+    const used = new Set();
+
+    const combined = [
+        ...templates,
+        ...FONT_TEMPLATES
+    ];
+
+    for (const template of combined) {
+
+        const styled = applyTemplate(template, name);
+
+        if (!styled) {
+            continue;
+        }
+
+        if (styled === name) {
+            continue;
+        }
+
+        if (used.has(styled)) {
+            continue;
+        }
+
+        used.add(styled);
+        output.push(styled);
+    }
+
+    return output;
+}
+
+
+/* =========================================================
+   CREATE RESULT CARD
+   ========================================================= */
+
+function createResultCard(styledName) {
+
+    const card = document.createElement("div");
+
+    card.className = "style-result-card";
+
+    const nameElement = document.createElement("div");
+
+    nameElement.className = "style-result-name";
+
+    nameElement.textContent = styledName;
+
+    const copyButton = document.createElement("button");
+
+    copyButton.type = "button";
+
+    copyButton.className = "copy-style-button";
+
+    copyButton.textContent = "Copy";
+
+    copyButton.setAttribute(
+        "aria-label",
+        "Copy stylish name"
+    );
+
+    copyButton.addEventListener("click", async () => {
+
+        const copied = await copyText(styledName);
+
+        if (copied) {
+
+            copyButton.textContent = "Copied!";
+
+            showToast("Name copied!");
+
+            setTimeout(() => {
+
+                copyButton.textContent = "Copy";
+
+            }, 1200);
+
+        } else {
+
+            showToast("Copy failed");
+
+        }
 
     });
 
+    card.appendChild(nameElement);
+    card.appendChild(copyButton);
+
+    return card;
 }
 
 
@@ -994,107 +869,39 @@ function getFilteredStyles(filter) {
    RENDER RESULTS
    ========================================================= */
 
-function renderResults() {
+function renderResults(name, templates = STYLE_TEMPLATES) {
 
-    if (!currentName) {
-
+    if (!resultsContainer) {
         return;
-
     }
-
-    const filteredStyles = getFilteredStyles(currentFilter);
-
-    currentStyles = filteredStyles;
 
     resultsContainer.innerHTML = "";
 
-    if (filteredStyles.length === 0) {
+    const results = buildResults(name, templates);
 
-        resultsContainer.innerHTML = `
-            <div class="empty-results">
-                No styles found.
-            </div>
-        `;
+    results.forEach(styledName => {
 
-        return;
+        const card = createResultCard(styledName);
 
-    }
-
-
-    const fragment = document.createDocumentFragment();
-
-
-    filteredStyles.forEach(function(style) {
-
-        const styledName = createStyledName(
-            style.template,
-            currentName
-        );
-
-
-        const card = document.createElement("article");
-
-        card.className = "result-card";
-
-
-        const nameElement = document.createElement("div");
-
-        nameElement.className = "result-name";
-
-        nameElement.textContent = styledName;
-
-
-        const copyButton = document.createElement("button");
-
-        copyButton.type = "button";
-
-        copyButton.className = "copy-result-button";
-
-        copyButton.innerHTML = "📋 Copy";
-
-
-        copyButton.addEventListener("click", function() {
-
-            copyText(
-                styledName,
-                copyButton
-            );
-
-        });
-
-
-        card.appendChild(nameElement);
-
-        card.appendChild(copyButton);
-
-        fragment.appendChild(card);
+        resultsContainer.appendChild(card);
 
     });
 
-
-    resultsContainer.appendChild(fragment);
-
-
-    resultsSection.hidden = false;
-
-}
-
-
-/* =========================================================
-   UPDATE RESULTS TITLE
-   ========================================================= */
-
-function updateResultsTitle() {
-
-    if (!resultsTitle) {
-
-        return;
-
+    if (resultsSection) {
+        resultsSection.hidden = false;
     }
 
-    resultsTitle.textContent =
-        "Stylish Names for " + currentName;
+    if (resultsTitle) {
+        resultsTitle.textContent = "Stylish Names";
+    }
 
+    if (previewSection) {
+        previewSection.hidden = false;
+    }
+
+    if (previewName) {
+        previewName.textContent = name;
+    }
 }
 
 
@@ -1104,91 +911,37 @@ function updateResultsTitle() {
 
 function generateNames() {
 
-    const name = cleanName(nameInput.value);
+    const enteredName = cleanName(nameInput ? nameInput.value : "");
 
-    if (!name) {
+    if (!enteredName) {
 
-        showToast("Please enter your name.");
+        showToast("Please enter your name");
 
-        nameInput.focus();
-
-        return;
-
-    }
-
-
-    currentName = name;
-
-    currentFilter = "all";
-
-
-    updatePreview();
-
-    updateResultsTitle();
-
-    setActiveFilter("all");
-
-    renderResults();
-
-
-    previewSection.hidden = false;
-
-    resultsSection.hidden = false;
-
-
-    setTimeout(function() {
-
-        resultsSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }, 80);
-
-}
-
-
-/* =========================================================
-   UPDATE LIVE PREVIEW
-   ========================================================= */
-
-function updatePreview() {
-
-    const name = cleanName(nameInput.value);
-
-    if (!name) {
-
-        previewSection.hidden = true;
-
-        previewName.textContent = "Your Name";
+        if (nameInput) {
+            nameInput.focus();
+        }
 
         return;
-
     }
 
+    currentName = enteredName;
 
-    previewSection.hidden = false;
+    currentTemplate = null;
 
-    previewName.textContent = name;
+    renderResults(currentName);
 
-}
+    if (resultsSection) {
 
+        setTimeout(() => {
 
-/* =========================================================
-   INPUT EVENT
-   ========================================================= */
+            resultsSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
 
-if (nameInput) {
+        }, 100);
 
-    nameInput.addEventListener("input", function() {
-
-        updatePreview();
-
-        clearNameButton.hidden =
-            nameInput.value.length === 0;
-
-    });
-
+    }
 }
 
 
@@ -1198,7 +951,7 @@ if (nameInput) {
 
 if (nameForm) {
 
-    nameForm.addEventListener("submit", function(event) {
+    nameForm.addEventListener("submit", event => {
 
         event.preventDefault();
 
@@ -1210,24 +963,64 @@ if (nameForm) {
 
 
 /* =========================================================
+   LIVE PREVIEW
+   ========================================================= */
+
+if (nameInput) {
+
+    nameInput.addEventListener("input", () => {
+
+        const value = cleanName(nameInput.value);
+
+        if (clearName) {
+            clearName.hidden = value.length === 0;
+        }
+
+        if (previewName && value) {
+
+            previewName.textContent = value;
+
+            if (previewSection) {
+                previewSection.hidden = false;
+            }
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
    CLEAR NAME
    ========================================================= */
 
-if (clearNameButton) {
+if (clearName) {
 
-    clearNameButton.addEventListener("click", function() {
+    clearName.addEventListener("click", () => {
 
-        nameInput.value = "";
+        if (nameInput) {
+            nameInput.value = "";
+            nameInput.focus();
+        }
 
-        currentName = "";
+        clearName.hidden = true;
 
-        previewSection.hidden = true;
+        if (previewName) {
+            previewName.textContent = "Your Name";
+        }
 
-        resultsSection.hidden = true;
+        if (previewSection) {
+            previewSection.hidden = true;
+        }
 
-        clearNameButton.hidden = true;
+        if (resultsSection) {
+            resultsSection.hidden = true;
+        }
 
-        nameInput.focus();
+        if (resultsContainer) {
+            resultsContainer.innerHTML = "";
+        }
 
     });
 
@@ -1235,248 +1028,26 @@ if (clearNameButton) {
 
 
 /* =========================================================
-   FILTER BUTTONS
+   DISABLE OLD RESULT FILTERS
+   User does NOT want these filters.
    ========================================================= */
-
-function setActiveFilter(filter) {
-
-    currentFilter = filter;
-
-
-    const buttons =
-        document.querySelectorAll(".filter-button");
-
-
-    buttons.forEach(function(button) {
-
-        const buttonFilter =
-            button.dataset.filter;
-
-
-        button.classList.toggle(
-            "active",
-            buttonFilter === filter
-        );
-
-    });
-
-}
-
 
 if (styleFilters) {
 
-    styleFilters.addEventListener("click", function(event) {
-
-        const button =
-            event.target.closest(".filter-button");
-
-
-        if (!button) {
-
-            return;
-
-        }
-
-
-        const filter =
-            button.dataset.filter;
-
-
-        if (!filter) {
-
-            return;
-
-        }
-
-
-        if (!currentName) {
-
-            showToast("Enter your name first.");
-
-            nameInput.focus();
-
-            return;
-
-        }
-
-
-        setActiveFilter(filter);
-
-        renderResults();
-
-    });
+    styleFilters.style.display = "none";
 
 }
 
 
 /* =========================================================
-   CATEGORY CARDS
+   COPY TEXT
    ========================================================= */
 
-document
-    .querySelectorAll(".category-card")
-    .forEach(function(card) {
-
-        card.addEventListener("click", function() {
-
-            const category =
-                card.dataset.category;
-
-
-            if (!currentName) {
-
-                showToast("Enter your name first.");
-
-                nameInput.focus();
-
-                return;
-
-            }
-
-
-            /*
-             * Some categories do not have a direct filter
-             * button in the existing HTML.
-             *
-             * They still work here.
-             */
-
-            currentFilter = category;
-
-
-            const filtered =
-                styles.filter(function(style) {
-
-                    return style.category === category;
-
-                });
-
-
-            currentStyles = filtered;
-
-
-            resultsContainer.innerHTML = "";
-
-
-            if (filtered.length === 0) {
-
-                resultsContainer.innerHTML = `
-                    <div class="empty-results">
-                        No styles available.
-                    </div>
-                `;
-
-            } else {
-
-                const fragment =
-                    document.createDocumentFragment();
-
-
-                filtered.forEach(function(style) {
-
-                    const styledName =
-                        createStyledName(
-                            style.template,
-                            currentName
-                        );
-
-
-                    const cardElement =
-                        document.createElement("article");
-
-
-                    cardElement.className =
-                        "result-card";
-
-
-                    const nameElement =
-                        document.createElement("div");
-
-
-                    nameElement.className =
-                        "result-name";
-
-
-                    nameElement.textContent =
-                        styledName;
-
-
-                    const copyButton =
-                        document.createElement("button");
-
-
-                    copyButton.type = "button";
-
-                    copyButton.className =
-                        "copy-result-button";
-
-                    copyButton.innerHTML =
-                        "📋 Copy";
-
-
-                    copyButton.addEventListener(
-                        "click",
-                        function() {
-
-                            copyText(
-                                styledName,
-                                copyButton
-                            );
-
-                        }
-                    );
-
-
-                    cardElement.appendChild(
-                        nameElement
-                    );
-
-                    cardElement.appendChild(
-                        copyButton
-                    );
-
-
-                    fragment.appendChild(
-                        cardElement
-                    );
-
-                });
-
-
-                resultsContainer.appendChild(
-                    fragment
-                );
-
-            }
-
-
-            updateResultsTitle();
-
-            resultsSection.hidden = false;
-
-
-            setTimeout(function() {
-
-                resultsSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            }, 50);
-
-        });
-
-    });
-
-
-/* =========================================================
-   COPY FUNCTION
-   ========================================================= */
-
-async function copyText(text, button) {
-
-    let copied = false;
-
+async function copyText(text) {
+
+    if (!text) {
+        return false;
+    }
 
     try {
 
@@ -1487,121 +1058,79 @@ async function copyText(text, button) {
 
             await navigator.clipboard.writeText(text);
 
-            copied = true;
-
+            return true;
         }
 
     } catch (error) {
 
-        copied = false;
-
-    }
-
-
-    if (!copied) {
-
-        copied = legacyCopy(text);
-
-    }
-
-
-    if (copied) {
-
-        showToast("Copied!");
-
-        if (button) {
-
-            const oldText =
-                button.innerHTML;
-
-
-            button.innerHTML =
-                "✓ Copied";
-
-
-            button.classList.add("copied");
-
-
-            setTimeout(function() {
-
-                button.innerHTML =
-                    oldText;
-
-                button.classList.remove("copied");
-
-            }, 1200);
-
-        }
-
-    } else {
-
-        showToast(
-            "Copy failed. Please copy manually."
+        console.warn(
+            "Clipboard API failed:",
+            error
         );
 
     }
 
+    try {
+
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.style.top = "0";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(
+            0,
+            textarea.value.length
+        );
+
+        const successful = document.execCommand("copy");
+
+        textarea.remove();
+
+        return successful;
+
+    } catch (error) {
+
+        console.error(
+            "Fallback copy failed:",
+            error
+        );
+
+        return false;
+    }
 }
 
 
 /* =========================================================
-   OLD BROWSER COPY FALLBACK
+   TOAST
    ========================================================= */
 
-function legacyCopy(text) {
+function showToast(message) {
 
-    const textarea =
-        document.createElement("textarea");
-
-
-    textarea.value = text;
-
-    textarea.setAttribute(
-        "readonly",
-        ""
-    );
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.left =
-        "-9999px";
-
-    textarea.style.top =
-        "0";
-
-
-    document.body.appendChild(
-        textarea
-    );
-
-
-    textarea.focus();
-
-    textarea.select();
-
-
-    let success = false;
-
-
-    try {
-
-        success =
-            document.execCommand("copy");
-
-    } catch (error) {
-
-        success = false;
-
+    if (!toast) {
+        return;
     }
 
+    if (toastMessage) {
+        toastMessage.textContent = message;
+    }
 
-    document.body.removeChild(
-        textarea
-    );
+    toast.classList.add("show");
 
+    clearTimeout(toastTimer);
 
-    return success;
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 1800);
 
 }
 
@@ -1609,44 +1138,43 @@ function legacyCopy(text) {
 /* =========================================================
    SYMBOL COPY
    ========================================================= */
-
 if (symbolsGrid) {
 
-    symbolsGrid.addEventListener(
-        "click",
-        function(event) {
+    const symbolButtons =
+        symbolsGrid.querySelectorAll(
+            ".symbol-card"
+        );
 
-            const button =
-                event.target.closest(
-                    ".symbol-card"
-                );
+    symbolButtons.forEach(button => {
 
-
-            if (!button) {
-
-                return;
-
-            }
-
+        button.addEventListener("click", async () => {
 
             const symbol =
-                button.dataset.symbol;
-
+                button.dataset.symbol ||
+                button.querySelector("span")?.textContent ||
+                "";
 
             if (!symbol) {
-
                 return;
+            }
+
+            const copied = await copyText(symbol);
+
+            if (copied) {
+
+                showToast(
+                    `Copied: ${symbol}`
+                );
+
+            } else {
+
+                showToast("Copy failed");
 
             }
 
+        });
 
-            copyText(
-                symbol,
-                button
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -1655,74 +1183,180 @@ if (symbolsGrid) {
    TRENDING STYLE BUTTONS
    ========================================================= */
 
-document
-    .querySelectorAll(".use-style-button")
-    .forEach(function(button) {
+const useStyleButtons =
+    document.querySelectorAll(
+        ".use-style-button"
+    );
 
-        button.addEventListener(
-            "click",
-            function() {
+useStyleButtons.forEach(button => {
 
-                const template =
-                    button.dataset.template;
+    button.addEventListener("click", () => {
 
+        const template =
+            button.dataset.template;
 
-                if (!template) {
+        if (!template) {
+            return;
+        }
 
-                    return;
+        const name =
+            cleanName(
+                nameInput
+                    ? nameInput.value
+                    : ""
+            );
 
-                }
+        if (!name) {
 
+            showToast(
+                "Enter your name first"
+            );
 
-                const name =
-                    cleanName(
-                        nameInput.value
-                    );
+            if (nameInput) {
+                nameInput.focus();
+            }
 
+            return;
+        }
 
-                if (!name) {
+        currentName = name;
+        currentTemplate = template;
 
-                    showToast(
-                        "Enter your name first."
-                    );
+        const styledName =
+            applyTemplate(
+                template,
+                currentName
+            );
 
-                    nameInput.focus();
+        if (previewName) {
 
-                    return;
+            previewName.textContent =
+                styledName;
 
-                }
+        }
 
+        if (previewSection) {
 
-                const styledName =
-                    template.replace(
-                        /\{name\}/g,
-                        name
-                    );
+            previewSection.hidden =
+                false;
 
+        }
 
-                copyText(
-                    styledName,
-                    button
+        if (resultsContainer) {
+
+            resultsContainer.innerHTML = "";
+
+            const card =
+                createResultCard(
+                    styledName
                 );
 
+            resultsContainer.appendChild(card);
 
-                /*
-                 * Also show the selected
-                 * style in the generator.
-                 */
+        }
 
-                currentName = name;
+        if (resultsSection) {
 
-                previewName.textContent =
-                    styledName;
+            resultsSection.hidden =
+                false;
 
-                previewSection.hidden =
-                    false;
+            setTimeout(() => {
 
-            }
-        );
+                resultsSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }, 100);
+
+        }
 
     });
+
+});
+
+
+/* =========================================================
+   CATEGORY CARDS
+   ========================================================= */
+
+const categoryCards =
+    document.querySelectorAll(
+        ".category-card"
+    );
+
+categoryCards.forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        const category =
+            card.dataset.category;
+
+        if (!category) {
+            return;
+        }
+
+        const name =
+            cleanName(
+                nameInput
+                    ? nameInput.value
+                    : ""
+            );
+
+        if (!name) {
+
+            showToast(
+                "Enter your name first"
+            );
+
+            if (nameInput) {
+                nameInput.focus();
+            }
+
+            const generator =
+                document.getElementById(
+                    "generator"
+                );
+
+            if (generator) {
+
+                generator.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+
+            return;
+        }
+
+        currentName = name;
+
+        const templates =
+            CATEGORY_TEMPLATES[category] ||
+            STYLE_TEMPLATES;
+
+        renderResults(
+            currentName,
+            templates
+        );
+
+        if (resultsSection) {
+
+            setTimeout(() => {
+
+                resultsSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }, 100);
+
+        }
+
+    });
+
+});
 
 
 /* =========================================================
@@ -1730,17 +1364,12 @@ document
    ========================================================= */
 
 function closeMobileMenu() {
-      if (!mobileMenu) {
 
+    if (!mobileMenu) {
         return;
-
     }
 
-
-    mobileMenu.classList.remove(
-        "open"
-    );
-
+    mobileMenu.classList.remove("open");
 
     if (mobileMenuButton) {
 
@@ -1754,61 +1383,61 @@ function closeMobileMenu() {
 }
 
 
-function toggleMobileMenu() {
-
-    if (!mobileMenu) {
-
-        return;
-
-    }
-
-
-    const isOpen =
-        mobileMenu.classList.toggle(
-            "open"
-        );
-
-
-    if (mobileMenuButton) {
-
-        mobileMenuButton.setAttribute(
-            "aria-expanded",
-            String(isOpen)
-        );
-
-    }
-
-}
-
+/* OPEN / CLOSE MOBILE MENU */
 
 if (mobileMenuButton) {
 
     mobileMenuButton.addEventListener(
         "click",
-        toggleMobileMenu
+        () => {
+
+            if (!mobileMenu) {
+                return;
+            }
+
+            const isOpen =
+                mobileMenu.classList.contains(
+                    "open"
+                );
+
+            if (isOpen) {
+
+                closeMobileMenu();
+
+            } else {
+
+                mobileMenu.classList.add(
+                    "open"
+                );
+
+                mobileMenuButton.setAttribute(
+                    "aria-expanded",
+                    "true"
+                );
+
+            }
+
+        }
     );
 
 }
 
 
-/* =========================================================
-   CLOSE MOBILE MENU AFTER LINK CLICK
-   ========================================================= */
+/* CLOSE MENU AFTER NAVIGATION */
 
-document
-    .querySelectorAll(".mobile-nav-link")
-    .forEach(function(link) {
+const mobileNavLinks =
+    document.querySelectorAll(
+        ".mobile-nav-link"
+    );
 
-        link.addEventListener(
-            "click",
-            function() {
+mobileNavLinks.forEach(link => {
 
-                closeMobileMenu();
+    link.addEventListener(
+        "click",
+        closeMobileMenu
+    );
 
-            }
-        );
-
-    });
+});
 
 
 /* =========================================================
@@ -1819,9 +1448,37 @@ if (bottomMenuButton) {
 
     bottomMenuButton.addEventListener(
         "click",
-        function() {
+        () => {
 
-            toggleMobileMenu();
+            if (!mobileMenu) {
+                return;
+            }
+
+            const isOpen =
+                mobileMenu.classList.contains(
+                    "open"
+                );
+
+            if (isOpen) {
+
+                closeMobileMenu();
+
+            } else {
+
+                mobileMenu.classList.add(
+                    "open"
+                );
+
+                if (mobileMenuButton) {
+
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+                }
+
+            }
 
         }
     );
@@ -1830,32 +1487,112 @@ if (bottomMenuButton) {
 
 
 /* =========================================================
-   CLOSE MENU WHEN CLICKING OUTSIDE
+   DESKTOP NAV ACTIVE STATE
+   ========================================================= */
+
+const navLinks =
+    document.querySelectorAll(
+        ".nav-link"
+    );
+
+navLinks.forEach(link => {
+
+    link.addEventListener(
+        "click",
+        () => {
+
+            navLinks.forEach(item => {
+
+                item.classList.remove(
+                    "active"
+                );
+
+            });
+
+            link.classList.add(
+                "active"
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   MOBILE BOTTOM NAV ACTIVE STATE
+   ========================================================= */
+
+const bottomNavItems =
+    document.querySelectorAll(
+        ".bottom-nav-item"
+    );
+
+bottomNavItems.forEach(item => {
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            bottomNavItems.forEach(
+                navItem => {
+
+                    navItem.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+            item.classList.add(
+                "active"
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================================================
+   ESCAPE KEY
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Escape") {
+
+            closeMobileMenu();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLOSE MOBILE MENU WHEN CLICKING OUTSIDE
    ========================================================= */
 
 document.addEventListener(
     "click",
-    function(event) {
+    event => {
 
-        if (!mobileMenu ||
-            !mobileMenuButton) {
-
+        if (!mobileMenu || !mobileMenuButton) {
             return;
-
         }
-
 
         const clickedInsideMenu =
             mobileMenu.contains(
                 event.target
             );
 
-
         const clickedButton =
             mobileMenuButton.contains(
                 event.target
             );
-
 
         if (
             !clickedInsideMenu &&
@@ -1871,143 +1608,56 @@ document.addEventListener(
 
 
 /* =========================================================
-   CLOSE MENU WITH ESCAPE
+   SMOOTH SCROLL FOR INTERNAL LINKS
    ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Escape") {
-
-            closeMobileMenu();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-function showToast(message) {
-
-    if (!toast) {
-
-        return;
-
-    }
-
-
-    if (toastMessage) {
-
-        toastMessage.textContent =
-            message;
-
-    }
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(function() {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        }, 2200);
-
-}
-
-
-/* =========================================================
-   NAVIGATION ACTIVE STATE
-   ========================================================= */
-
-const allNavLinks =
+const internalLinks =
     document.querySelectorAll(
-        ".nav-link, .mobile-nav-link"
+        'a[href^="#"]'
     );
 
-
-allNavLinks.forEach(function(link) {
+internalLinks.forEach(link => {
 
     link.addEventListener(
         "click",
-        function() {
+        event => {
 
-            allNavLinks.forEach(
-                function(item) {
-
-                    item.classList.remove(
-                        "active"
-                    );
-
-                }
-            );
-
-
-            link.classList.add(
-                "active"
-            );
-
-        }
-    );
-
-});
-
-
-/* =========================================================
-   BOTTOM NAV ACTIVE STATE
-   ========================================================= */
-
-const bottomNavItems =
-    document.querySelectorAll(
-        ".bottom-nav-item"
-    );
-
-
-bottomNavItems.forEach(function(item) {
-
-    item.addEventListener(
-        "click",
-        function() {
+            const href =
+                link.getAttribute("href");
 
             if (
-                item.tagName.toLowerCase() ===
-                "button"
+                !href ||
+                href === "#"
             ) {
+
+                event.preventDefault();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
                 return;
 
             }
 
+            const target =
+                document.querySelector(
+                    href
+                );
 
-            bottomNavItems.forEach(
-                function(navItem) {
+            if (!target) {
+                return;
+            }
 
-                    navItem.classList.remove(
-                        "active"
-                    );
+            event.preventDefault();
 
-                }
-            );
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
 
-
-            item.classList.add(
-                "active"
-            );
+            closeMobileMenu();
 
         }
     );
@@ -2016,74 +1666,19 @@ bottomNavItems.forEach(function(item) {
 
 
 /* =========================================================
-   SMOOTH SCROLL FOR HASH LINKS
-   ========================================================= */
-
-document
-    .querySelectorAll(
-        'a[href^="#"]'
-    )
-    .forEach(function(link) {
-
-        link.addEventListener(
-            "click",
-            function(event) {
-
-                const targetId =
-                    link.getAttribute(
-                        "href"
-                    );
-
-
-                if (
-                    !targetId ||
-                    targetId === "#"
-                ) {
-
-                    return;
-
-                }
-
-
-                const target =
-                    document.querySelector(
-                        targetId
-                    );
-
-
-                if (!target) {
-
-                    return;
-
-                }
-
-
-                event.preventDefault();
-
-
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            }
-        );
-
-    });
-
-
-/* =========================================================
-   ENTER KEY SUPPORT
+   KEYBOARD SHORTCUT
+   Enter = Generate
    ========================================================= */
 
 if (nameInput) {
 
     nameInput.addEventListener(
         "keydown",
-        function(event) {
+        event => {
 
             if (
-                event.key === "Enter"
+                event.key === "Enter" &&
+                !event.shiftKey
             ) {
 
                 event.preventDefault();
@@ -2102,40 +1697,92 @@ if (nameInput) {
    INITIAL STATE
    ========================================================= */
 
-if (previewSection) {
+function initializeApp() {
 
-    previewSection.hidden = true;
+    if (resultsSection) {
+        resultsSection.hidden = true;
+    }
+
+    if (previewSection) {
+        previewSection.hidden = true;
+    }
+
+    if (resultsContainer) {
+        resultsContainer.innerHTML = "";
+    }
+
+    if (clearName) {
+        clearName.hidden = true;
+    }
+
+    if (styleFilters) {
+        styleFilters.style.display = "none";
+    }
 
 }
-
-
-if (resultsSection) {
-
-    resultsSection.hidden = true;
-
-}
-
-
-if (clearNameButton) {
-
-    clearNameButton.hidden = true;
-
-}
-
-
-setActiveFilter("all");
 
 
 /* =========================================================
-   FINAL CHECK
+   START
    ========================================================= */
 
-console.log(
-    "Z-Name Style is ready."
-);
+if (
+    document.readyState === "loading"
+) {
 
-console.log(
-    "Available styles:",
-    styles.length
-);
-       
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeApp
+    );
+
+} else {
+
+    initializeApp();
+
+}
+
+
+/* =========================================================
+   GLOBAL HELPERS
+   Optional:
+   window.ZNameStyle.generate("Rajvir")
+   window.ZNameStyle.copy("text")
+   ========================================================= */
+
+window.ZNameStyle = {
+
+    generate: function(name) {
+
+        if (nameInput) {
+            nameInput.value =
+                cleanName(name);
+
+            nameInput.dispatchEvent(
+                new Event("input")
+            );
+        }
+
+        generateNames();
+
+    },
+
+    copy: function(text) {
+
+        return copyText(text);
+
+    },
+
+    getStyles: function(name) {
+
+        return buildResults(
+            cleanName(name)
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   END OF SCRIPT
+   ========================================================= */
