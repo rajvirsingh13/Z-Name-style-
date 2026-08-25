@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================================================
        Z-NAME STYLE
-       SCRIPT.JS
-       PART 1 — CORE SETUP + NAME STYLES
+       NEW SCRIPT.JS
+       300+ DYNAMIC NAME STYLES
+       PART 1 — CORE + STYLE ENGINE
        ========================================================= */
 
 
@@ -13,10 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
        DOM ELEMENTS
        ========================================================= */
 
-    const nameForm = document.getElementById("nameForm");
-    const nameInput = document.getElementById("nameInput");
-    const clearName = document.getElementById("clearName");
-    const generateButton = document.getElementById("generateButton");
+    const nameForm =
+        document.getElementById("nameForm");
+
+    const nameInput =
+        document.getElementById("nameInput");
+
+    const clearName =
+        document.getElementById("clearName");
 
     const previewSection =
         document.getElementById("previewSection");
@@ -56,16 +61,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       APPLICATION STATE
+       STATE
        ========================================================= */
 
     let currentName = "";
-    let currentFilter = "all";
-    let toastTimer = null;
+
+    let activeFilter = "all";
+
+    let generatedStyles = [];
 
 
     /* =========================================================
-       NAME CLEANING
+       BASIC HELPERS
        ========================================================= */
 
     function cleanName(value) {
@@ -77,10 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-
-    /* =========================================================
-       HTML ESCAPE
-       ========================================================= */
 
     function escapeHTML(value) {
 
@@ -95,111 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       UNICODE FANCY FONT — SCRIPT
-       ========================================================= */
-
-    const scriptUpper = [
-        "𝒜","ℬ","𝒞","𝒟","ℰ","ℱ","𝒢","ℋ","ℐ","𝒥",
-        "𝒦","ℒ","ℳ","𝒩","𝒪","𝒫","𝒬","ℛ","𝒮","𝒯",
-        "𝒰","𝒱","𝒲","𝒳","𝒴","𝒵"
-    ];
-
-    const scriptLower = [
-        "𝒶","𝒷","𝒸","𝒹","ℯ","𝒻","ℊ","𝒽","𝒾","𝒿",
-        "𝓀","𝓁","𝓂","𝓃","ℴ","𝓅","𝓆","𝓇","𝓈","𝓉",
-        "𝓊","𝓋","𝓌","𝓍","𝓎","𝓏"
-    ];
-
-
-    function toScript(text) {
-
-        return text
-            .split("")
-            .map(function (character) {
-
-                const code =
-                    character.charCodeAt(0);
-
-                if (
-                    code >= 65 &&
-                    code <= 90
-                ) {
-
-                    return scriptUpper[code - 65];
-
-                }
-
-                if (
-                    code >= 97 &&
-                    code <= 122
-                ) {
-
-                    return scriptLower[code - 97];
-
-                }
-
-                return character;
-
-            })
-            .join("");
-
-    }
-
-
-    /* =========================================================
-       UNICODE FANCY FONT — MATHEMATICAL SCRIPT
-       ========================================================= */
-
-    const fancyUpper = [
-        "𝓐","𝓑","𝓒","𝓓","𝓔","𝓕","𝓖","𝓗","𝓘","𝓙",
-        "𝓚","𝓛","𝓜","𝓝","𝓞","𝓟","𝓠","𝓡","𝓢","𝓣",
-        "𝓤","𝓥","𝓦","𝓧","𝓨","𝓩"
-    ];
-
-    const fancyLower = [
-        "𝓪","𝓫","𝓬","𝓭","𝓮","𝓯","𝓰","𝓱","𝓲","𝓳",
-        "𝓴","𝓵","𝓶","𝓷","𝓸","𝓹","𝓺","𝓻","𝓼","𝓽",
-        "𝓾","𝓿","𝔀","𝔁","𝔂","𝔃"
-    ];
-
-
-    function toFancy(text) {
-
-        return text
-            .split("")
-            .map(function (character) {
-
-                const code =
-                    character.charCodeAt(0);
-
-                if (
-                    code >= 65 &&
-                    code <= 90
-                ) {
-
-                    return fancyUpper[code - 65];
-
-                }
-
-                if (
-                    code >= 97 &&
-                    code <= 122
-                ) {
-
-                    return fancyLower[code - 97];
-
-                }
-
-                return character;
-
-            })
-            .join("");
-
-    }
-
-
-    /* =========================================================
-       BOLD FONT
+       UNICODE FONT MAPS
        ========================================================= */
 
     const boldUpper = [
@@ -215,44 +114,18 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-    function toBold(text) {
+    const italicUpper = [
+        "𝐴","𝐵","𝐶","𝐷","𝐸","𝐹","𝐺","𝐻","𝐼","𝐽",
+        "𝐾","𝐿","𝑀","𝑁","𝑂","𝑃","𝑄","𝑅","𝑆","𝑇",
+        "𝑈","𝑉","𝑊","𝑋","𝑌","𝑍"
+    ];
 
-        return text
-            .split("")
-            .map(function (character) {
+    const italicLower = [
+        "𝑎","𝑏","𝑐","𝑑","𝑒","𝑓","𝑔","ℎ","𝑖","𝑗",
+        "𝑘","𝑙","𝑚","𝑛","𝑜","𝑝","𝑞","𝑟","𝑠","𝑡",
+        "𝑢","𝑣","𝑤","𝑥","𝑦","𝑧"
+    ];
 
-                const code =
-                    character.charCodeAt(0);
-
-                if (
-                    code >= 65 &&
-                    code <= 90
-                ) {
-
-                    return boldUpper[code - 65];
-
-                }
-
-                if (
-                    code >= 97 &&
-                    code <= 122
-                ) {
-
-                    return boldLower[code - 97];
-
-                }
-
-                return character;
-
-            })
-            .join("");
-
-    }
-
-
-    /* =========================================================
-       MONOSPACE FONT
-       ========================================================= */
 
     const monoUpper = [
         "𝙰","𝙱","𝙲","𝙳","𝙴","𝙵","𝙶","𝙷","𝙸","𝙹",
@@ -267,7 +140,37 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-    function toMono(text) {
+    const doubleUpper = [
+        "𝔸","𝔹","ℂ","𝔻","𝔼","𝔽","𝔾","ℍ","𝕀","𝕁",
+        "𝕂","𝕃","𝕄","ℕ","𝕆","ℙ","ℚ","ℝ","𝕊","𝕋",
+        "𝕌","𝕍","𝕎","𝕏","𝕐","ℤ"
+    ];
+
+    const doubleLower = [
+        "𝕒","𝕓","𝕔","𝕕","𝕖","𝕗","𝕘","𝕙","𝕚","𝕛",
+        "𝕜","𝕝","𝕞","𝕟","𝕠","𝕡","𝕢","𝕣","𝕤","𝕥",
+        "𝕦","𝕧","𝕨","𝕩","𝕪","𝕫"
+    ];
+
+
+    const scriptUpper = [
+        "𝒜","ℬ","𝒞","𝒟","ℰ","ℱ","𝒢","ℋ","ℐ","𝒥",
+        "𝒦","ℒ","ℳ","𝒩","𝒪","𝒫","𝒬","ℛ","𝒮","𝒯",
+        "𝒰","𝒱","𝒲","𝒳","𝒴","𝒵"
+    ];
+
+    const scriptLower = [
+        "𝒶","𝒷","𝒸","𝒹","ℯ","𝒻","ℊ","𝒽","𝒾","𝒿",
+        "𝓀","𝓁","𝓂","𝓃","ℴ","𝓅","𝓆","𝓇","𝓈","𝓉",
+        "𝓊","𝓋","𝓌","𝓍","𝓎","𝓏"
+    ];
+
+
+    /* =========================================================
+       FONT CONVERTER
+       ========================================================= */
+
+    function convertFont(text, upperMap, lowerMap) {
 
         return text
             .split("")
@@ -281,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     code <= 90
                 ) {
 
-                    return monoUpper[code - 65];
+                    return upperMap[code - 65];
 
                 }
 
@@ -290,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     code <= 122
                 ) {
 
-                    return monoLower[code - 97];
+                    return lowerMap[code - 97];
 
                 }
 
@@ -302,38 +205,93 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function toBold(text) {
+
+        return convertFont(
+            text,
+            boldUpper,
+            boldLower
+        );
+
+    }
+
+
+    function toItalic(text) {
+
+        return convertFont(
+            text,
+            italicUpper,
+            italicLower
+        );
+
+    }
+
+
+    function toMono(text) {
+
+        return convertFont(
+            text,
+            monoUpper,
+            monoLower
+        );
+
+    }
+
+
+    function toDouble(text) {
+
+        return convertFont(
+            text,
+            doubleUpper,
+            doubleLower
+        );
+
+    }
+
+
+    function toScript(text) {
+
+        return convertFont(
+            text,
+            scriptUpper,
+            scriptLower
+        );
+
+    }
+
+
     /* =========================================================
        SMALL CAPS
        ========================================================= */
 
-    const smallCapsMap = {
+    const smallCaps = {
 
-        a: "ᴀ",
-        b: "ʙ",
-        c: "ᴄ",
-        d: "ᴅ",
-        e: "ᴇ",
-        f: "ғ",
-        g: "ɢ",
-        h: "ʜ",
-        i: "ɪ",
-        j: "ᴊ",
-        k: "ᴋ",
-        l: "ʟ",
-        m: "ᴍ",
-        n: "ɴ",
-        o: "ᴏ",
-        p: "ᴘ",
-        q: "ǫ",
-        r: "ʀ",
-        s: "s",
-        t: "ᴛ",
-        u: "ᴜ",
-        v: "ᴠ",
-        w: "ᴡ",
-        x: "x",
-        y: "ʏ",
-        z: "ᴢ"
+        a:"ᴀ",
+        b:"ʙ",
+        c:"ᴄ",
+        d:"ᴅ",
+        e:"ᴇ",
+        f:"ғ",
+        g:"ɢ",
+        h:"ʜ",
+        i:"ɪ",
+        j:"ᴊ",
+        k:"ᴋ",
+        l:"ʟ",
+        m:"ᴍ",
+        n:"ɴ",
+        o:"ᴏ",
+        p:"ᴘ",
+        q:"ǫ",
+        r:"ʀ",
+        s:"s",
+        t:"ᴛ",
+        u:"ᴜ",
+        v:"ᴠ",
+        w:"ᴡ",
+        x:"x",
+        y:"ʏ",
+        z:"ᴢ"
 
     };
 
@@ -346,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .map(function (character) {
 
                 return (
-                    smallCapsMap[character] ||
+                    smallCaps[character] ||
                     character
                 );
 
@@ -357,678 +315,919 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       STYLE TEMPLATE BUILDER
+       STRIKE / UNDERLINE / SPACING
        ========================================================= */
 
-    function buildStyles(name) {
+    function addStrike(text) {
 
-        return [
+        return text
+            .split("")
+            .map(function (character) {
 
-            {
-                category: "fancy",
-                title: "Fancy Script",
-                value: toFancy(name)
-            },
+                return character + "̶";
 
-            {
-                category: "fancy",
-                title: "Elegant",
-                value: toScript(name)
-            },
+            })
+            .join("");
 
-            {
-                category: "fancy",
-                title: "Bold",
-                value: toBold(name)
-            },
+    }
 
-            {
-                category: "fancy",
-                title: "Monospace",
-                value: toMono(name)
-            },
 
-            {
-                category: "fancy",
-                title: "Small Caps",
-                value: toSmallCaps(name)
-            },
+    function addUnderline(text) {
 
-            {
-                category: "gaming",
-                title: "Gaming Pro",
-                value: "亗 " + name + " 亗"
-            },
+        return text
+            .split("")
+            .map(function (character) {
 
-            {
-                category: "gaming",
-                title: "Warrior",
-                value: "乂 " + name + " 乂"
-            },
+                return character + "̲";
 
-            {
-                category: "gaming",
-                title: "Elite",
-                value: "『" + name + "』"
-            },
+            })
+            .join("");
 
-            {
-                category: "gaming",
-                title: "Pro Player",
-                value: "〆 " + name + " 〆"
-            },
+    }
 
-            {
-                category: "attitude",
-                title: "Attitude",
-                value: "★彡 " + name + " 彡★"
-            },
 
-            {
-                category: "attitude",
-                title: "Savage",
-                value: "么 " + name + " 么"
-            },
+    function spaced(text) {
 
-            {
-                category: "attitude",
-                title: "Boss",
-                value: "⚡ " + name + " ⚡"
-            },
+        return text
+            .split("")
+            .join(" ");
 
-            {
-                category: "attitude",
-                title: "Danger",
-                value: "☠ " + name + " ☠"
-            },
+    }
 
-            {
-                category: "royal",
-                title: "Royal King",
-                value: "♛ " + name + " ♛"
-            },
 
-            {
-                category: "royal",
-                title: "Royal Queen",
-                value: "♕ " + name + " ♕"
-            },
+    function dotted(text) {
 
-            {
-                category: "love",
-                title: "Love",
-                value: "♡ " + name + " ♡"
-            },
+        return text
+            .split("")
+            .join("・");
 
-            {
-                category: "love",
-                title: "Heart",
-                value: "♥ " + name + " ♥"
-            },
+    }
 
-            {
-                category: "cool",
-                title: "Cool",
-                value: "ツ " + name + " ツ"
-            },
 
-            {
-                category: "cool",
-                title: "Electric",
-                value: "⚡ " + name + " ⚡"
-            },
+    function starSpaced(text) {
 
-            {
-                category: "dark",
-                title: "Dark Soul",
-                value: "☾ " + name + " ☽"
-            },
+        return text
+            .split("")
+            .join("★");
 
-            {
-                category: "dark",
-                title: "Dark",
-                value: "☠ " + name + " ☠"
-            },
+    }
 
-            {
-                category: "symbols",
-                title: "Decorated",
-                value: "꧁༺ " + name + " ༻꧂"
-            },
 
-            {
-                category: "symbols",
-                title: "Star",
-                value: "★ " + name + " ★"
-            },
+    /* =========================================================
+       STYLE COLLECTION
+       ========================================================= */
 
-            {
-                category: "symbols",
-                title: "Symbol",
-                value: "彡 " + name + " 彡"
-            },
+    generatedStyles = [];
 
-            {
-                category: "symbols",
-                title: "Classic",
-                value: "『 " + name + " 』"
+
+    function addStyle(
+        category,
+        title,
+        value
+    ) {
+
+        if (!value) {
+            return;
+        }
+
+        generatedStyles.push({
+
+            category: category,
+
+            title: title,
+
+            value: value
+
+        });
+
+    }
+
+
+    /* =========================================================
+       FANCY FONT STYLES
+       ========================================================= */
+
+    function createFancyStyles(name) {
+
+        addStyle(
+            "fancy",
+            "Bold",
+            toBold(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Italic",
+            toItalic(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Monospace",
+            toMono(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Double",
+            toDouble(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Elegant Script",
+            toScript(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Small Caps",
+            toSmallCaps(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Bold Spaced",
+            toBold(spaced(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Italic Spaced",
+            toItalic(spaced(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Bold Dotted",
+            toBold(dotted(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Double Spaced",
+            toDouble(spaced(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Script Spaced",
+            toScript(spaced(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Underline",
+            addUnderline(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Strike",
+            addStrike(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Bold Underline",
+            addUnderline(toBold(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Italic Underline",
+            addUnderline(toItalic(name))
+        );
+
+    }
+
+
+    /* =========================================================
+       DECORATION SETS
+       ========================================================= */
+
+    const decorations = [
+
+        ["★", "★"],
+        ["☆", "☆"],
+        ["✦", "✦"],
+        ["✧", "✧"],
+        ["✪", "✪"],
+        ["✯", "✯"],
+        ["✰", "✰"],
+        ["⚡", "⚡"],
+        ["亗", "亗"],
+        ["乂", "乂"],
+        ["ツ", "ツ"],
+        ["彡", "彡"],
+        ["〆", "〆"],
+        ["么", "么"],
+        ["々", "々"],
+        ["メ", "メ"],
+        ["シ", "シ"],
+        ["乛", "乛"],
+        ["♛", "♛"],
+        ["♕", "♕"],
+        ["♔", "♔"],
+        ["♚", "♚"],
+        ["♡", "♡"],
+        ["♥", "♥"],
+        ["☠", "☠"],
+        ["☾", "☽"],
+        ["☽", "☾"],
+        ["❖", "❖"],
+        ["◆", "◆"],
+        ["◇", "◇"],
+        ["●", "●"],
+        ["○", "○"],
+        ["✿", "✿"],
+        ["❀", "❀"],
+        ["❁", "❁"],
+        ["🌸", "🌸"],
+        ["🔥", "🔥"],
+        ["👑", "👑"],
+        ["⚔", "⚔"],
+        ["♠", "♠"],
+        ["♣", "♣"],
+        ["♦", "♦"],
+        ["♠️", "♠️"],
+        ["☯", "☯"],
+        ["☮", "☮"],
+        ["☪", "☪"],
+        ["∞", "∞"],
+        ["⚜", "⚜"],
+        ["༺", "༻"],
+        ["༒", "༒"],
+        ["࿐", "࿐"]
+
+    ];
+
+
+    /* =========================================================
+       DECORATED STYLES
+       ========================================================= */
+
+    function createDecorationStyles(name) {
+
+        decorations.forEach(
+            function (pair, index) {
+
+                addStyle(
+                    "symbols",
+                    "Decorated " + (index + 1),
+                    pair[0] +
+                    " " +
+                    name +
+                    " " +
+                    pair[1]
+                );
+
             }
+        );
+
+    }
+
+
+    /* =========================================================
+       BOX STYLES
+       ========================================================= */
+
+    const boxes = [
+
+        ["『", "』"],
+        ["【", "】"],
+        ["〖", "〗"],
+        ["〘", "〙"],
+        ["〚", "〛"],
+        ["〈", "〉"],
+        ["《", "》"],
+        ["「", "」"],
+        ["『", "』"],
+        ["〔", "〕"],
+        ["〝", "〞"],
+        ["⟦", "⟧"],
+        ["⟨", "⟩"],
+        ["❲", "❳"],
+        ["❬", "❭"],
+        ["꧁", "꧂"],
+        ["༺", "༻"],
+        ["༼", "༽"],
+        ["╰", "╯"],
+        ["╭", "╮"],
+        ["╔", "╗"],
+        ["╚", "╝"],
+        ["▌", "▐"],
+        ["◥", "◤"],
+        ["◢", "◣"]
+
+    ];
+
+
+    function createBoxStyles(name) {
+
+        boxes.forEach(
+            function (pair, index) {
+
+                addStyle(
+                    "symbols",
+                    "Frame " + (index + 1),
+                    pair[0] +
+                    name +
+                    pair[1]
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       GAMING STYLES
+       ========================================================= */
+
+    function createGamingStyles(name) {
+
+        const gamingPrefixes = [
+
+            "亗 ",
+            "乂 ",
+            "〆 ",
+            "么 ",
+            "メ ",
+            "シ ",
+            "ツ ",
+            "彡 ",
+            "乛 ",
+            "々 ",
+            "⚔ ",
+            "☠ ",
+            "♠ ",
+            "⚡ ",
+            "🔥 ",
+            "🎯 ",
+            "👑 ",
+            "☢ ",
+            "☣ ",
+            "༒ ",
+            "꧁༺ ",
+            "『 ",
+            "【 ",
+            "◥ ",
+            "╰ "
 
         ];
 
-    }
+        const gamingSuffixes = [
+
+            " 亗",
+            " 乂",
+            " 〆",
+            " 么",
+            " メ",
+            " シ",
+            " ツ",
+            " 彡",
+            " 乛",
+            " 々",
+            " ⚔",
+            " ☠",
+            " ♠",
+            " ⚡",
+            " 🔥",
+            " 🎯",
+            " 👑",
+            " ☢",
+            " ☣",
+            " ༒",
+            " ༻꧂",
+            " 』",
+            " 】",
+            " ◤",
+            " ╯"
+
+        ];
 
 
-    /* =========================================================
-       INPUT LIVE PREVIEW
-       ========================================================= */
-
-    if (nameInput) {
-
-        nameInput.addEventListener(
-            "input",
-            function () {
-
-                currentName =
-                    cleanName(nameInput.value);
-
-                if (clearName) {
-
-                    clearName.hidden =
-                        currentName.length === 0;
-
-                }
-
-                if (
-                    previewName &&
-                    currentName.length > 0
-                ) {
-
-                    previewName.textContent =
-                        currentName;
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       CLEAR BUTTON
-       ========================================================= */
-
-    if (clearName) {
-
-        clearName.addEventListener(
-            "click",
-            function () {
-
-                if (nameInput) {
-                    nameInput.value = "";
-                    nameInput.focus();
-                }
-
-                currentName = "";
-
-                clearName.hidden = true;
-
-                if (previewName) {
-                    previewName.textContent =
-                        "Your Name";
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       TOAST FUNCTION
-       ========================================================= */
-
-    function showToast(message) {
-
-        if (!toast) {
-            return;
-        }
-
-        if (toastMessage) {
-            toastMessage.textContent = message;
-        }
-
-        toast.classList.add("show");
-
-        clearTimeout(toastTimer);
-
-        toastTimer = setTimeout(
-            function () {
-
-                toast.classList.remove("show");
-
-            },
-            1800
-        );
-
-    }
-
-
-    /* =========================================================
-       COPY FUNCTION
-       ========================================================= */
-
-    function copyText(text) {
-
-        if (!text) {
-            return;
-        }
-
-        if (
-            navigator.clipboard &&
-            window.isSecureContext
+        for (
+            let i = 0;
+            i < gamingPrefixes.length;
+            i++
         ) {
 
-            navigator.clipboard
-                .writeText(text)
-                .then(function () {
-
-                    showToast("Copied!");
-
-                })
-                .catch(function () {
-
-                    fallbackCopy(text);
-
-                });
-
-        } else {
-
-            fallbackCopy(text);
+            addStyle(
+                "gaming",
+                "Gaming " + (i + 1),
+                gamingPrefixes[i] +
+                name +
+                gamingSuffixes[i]
+            );
 
         }
-
-    }
-
-
-    function fallbackCopy(text) {
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        textarea.style.top = "0";
-
-        document.body.appendChild(textarea);
-
-        textarea.focus();
-        textarea.select();
-
-        try {
-
-            document.execCommand("copy");
-
-            showToast("Copied!");
-
-        } catch (error) {
-
-            showToast("Copy failed");
-
-        }
-
-        document.body.removeChild(textarea);
 
     }
 
 
     /* =========================================================
-       PART 1 END
+       ATTITUDE STYLES
+       ========================================================= */
+
+    function createAttitudeStyles(name) {
+
+        const attitude = [
+
+            "★彡 " + name + " 彡★",
+            "乂 " + name + " 乂",
+            "么 " + name + " 么",
+            "⚡ " + name + " ⚡",
+            "☠ " + name + " ☠",
+            "♛ " + name + " ♛",
+            "👑 " + name + " 👑",
+            "亗 " + name + " 亗",
+            "『 " + name + " 』",
+            "【 " + name + " 】",
+            "〆 " + name + " 〆",
+            "メ " + name + " メ",
+            "彡 " + name + " 彡",
+            "ツ " + name + " ツ",
+            "༒ " + name + " ༒",
+            "⚔ " + name + " ⚔",
+            "🔥 " + name + " 🔥",
+            "☢ " + name + " ☢",
+            "☣ " + name + " ☣",
+            "♠ " + name + " ♠",
+            "♣ " + name + " ♣",
+            "♦ " + name + " ♦",
+            "★ " + name + " ★",
+            "✦ " + name + " ✦",
+            "✯ " + name + " ✯",
+            "❖ " + name + " ❖",
+            "∞ " + name + " ∞",
+            "⚜ " + name + " ⚜",
+            "☯ " + name + " ☯",
+            "☮ " + name + " ☮",
+            "꧁༺ " + name + " ༻꧂",
+            "『亗 " + name + " 亗』",
+            "【乂 " + name + " 乂】",
+            "★亗 " + name + " 亗★",
+            "⚡亗 " + name + " 亗⚡",
+            "☠亗 " + name + " 亗☠",
+            "♛亗 " + name + " 亗♛",
+            "༒亗 " + name + " 亗༒",
+            "彡乂 " + name + " 乂彡",
+            "メ〆 " + name + " 〆メ"
+
+        ];
+
+
+        attitude.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "attitude",
+                    "Attitude " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       PART 1 CONTINUES IN PART 2
+       =========================================================
+       
+       IMPORTANT:
+       Do not add another <script> tag.
+       Part 2 will continue this same file.
+       
        ========================================================= */
 
 });
-document.addEventListener("DOMContentLoaded", function () {
-
-    "use strict";
-
     /* =========================================================
-       Z-NAME STYLE
-       SCRIPT.JS
-       PART 2 — GENERATOR + RESULTS + FILTERS
+       ROYAL STYLES
        ========================================================= */
 
-
-    /* =========================================================
-       DOM ELEMENTS
-       ========================================================= */
-
-    const nameForm = document.getElementById("nameForm");
-    const nameInput = document.getElementById("nameInput");
-
-    const previewSection =
-        document.getElementById("previewSection");
-
-    const previewName =
-        document.getElementById("previewName");
-
-    const resultsSection =
-        document.getElementById("resultsSection");
-
-    const resultsContainer =
-        document.getElementById("resultsContainer");
-
-    const resultsTitle =
-        document.getElementById("resultsTitle");
-
-    const styleFilters =
-        document.getElementById("styleFilters");
-
-    const toast =
-        document.getElementById("toast");
-
-    const toastMessage =
-        document.getElementById("toastMessage");
-
-
-    /* =========================================================
-       STATE
-       ========================================================= */
-
-    let generatedName = "";
-    let activeFilter = "all";
-
-
-    /* =========================================================
-       CLEAN NAME
-       ========================================================= */
-
-    function getName() {
-
-        if (!nameInput) {
-            return "";
-        }
-
-        return nameInput.value
-            .replace(/\s+/g, " ")
-            .trim()
-            .slice(0, 30);
-
-    }
-
-
-    /* =========================================================
-       ESCAPE HTML
-       ========================================================= */
-
-    function safeHTML(value) {
-
-        const element =
-            document.createElement("div");
-
-        element.textContent = value;
-
-        return element.innerHTML;
-
-    }
-
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    function notify(message) {
-
-        if (!toast) {
-            return;
-        }
-
-        if (toastMessage) {
-            toastMessage.textContent = message;
-        }
-
-        toast.classList.add("show");
-
-        setTimeout(function () {
-
-            toast.classList.remove("show");
-
-        }, 1800);
-
-    }
-
-
-    /* =========================================================
-       COPY
-       ========================================================= */
-
-    function copyName(text) {
-
-        if (!text) {
-            return;
-        }
-
-        if (
-            navigator.clipboard &&
-            window.isSecureContext
-        ) {
-
-            navigator.clipboard
-                .writeText(text)
-                .then(function () {
-
-                    notify("Copied!");
-
-                })
-                .catch(function () {
-
-                    oldCopy(text);
-
-                });
-
-        } else {
-
-            oldCopy(text);
-
-        }
-
-    }
-
-
-    function oldCopy(text) {
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        textarea.style.top = "0";
-
-        document.body.appendChild(textarea);
-
-        textarea.focus();
-        textarea.select();
-
-        try {
-
-            document.execCommand("copy");
-
-            notify("Copied!");
-
-        } catch (error) {
-
-            notify("Copy failed");
-
-        }
-
-        document.body.removeChild(textarea);
-
-    }
-
-
-    /* =========================================================
-       CREATE ALL RESULTS
-       ========================================================= */
-
-    function createResults(name) {
-
-        return [
-
-            {
-                category: "fancy",
-                title: "Fancy Script",
-                value: toFancy(name)
-            },
-
-            {
-                category: "fancy",
-                title: "Elegant",
-                value: toScript(name)
-            },
-
-            {
-                category: "fancy",
-                title: "Bold",
-                value: toBold(name)
-            },
-
-            {
-                category: "fancy",
-                title: "Monospace",
-                value: toMono(name)
-            },
-
-            {
-                category: "fancy",
-                title: "Small Caps",
-                value: toSmallCaps(name)
-            },
-
-            {
-                category: "gaming",
-                title: "Gaming Pro",
-                value: "亗 " + name + " 亗"
-            },
-
-            {
-                category: "gaming",
-                title: "Warrior",
-                value: "乂 " + name + " 乂"
-            },
-
-            {
-                category: "gaming",
-                title: "Elite",
-                value: "『" + name + "』"
-            },
-
-            {
-                category: "gaming",
-                title: "Pro Player",
-                value: "〆 " + name + " 〆"
-            },
-
-            {
-                category: "attitude",
-                title: "Attitude",
-                value: "★彡 " + name + " 彡★"
-            },
-
-            {
-                category: "attitude",
-                title: "Savage",
-                value: "么 " + name + " 么"
-            },
-
-            {
-                category: "attitude",
-                title: "Boss",
-                value: "⚡ " + name + " ⚡"
-            },
-
-            {
-                category: "attitude",
-                title: "Danger",
-                value: "☠ " + name + " ☠"
-            },
-
-            {
-                category: "royal",
-                title: "Royal King",
-                value: "♛ " + name + " ♛"
-            },
-
-            {
-                category: "royal",
-                title: "Royal Queen",
-                value: "♕ " + name + " ♕"
-            },
-
-            {
-                category: "love",
-                title: "Love",
-                value: "♡ " + name + " ♡"
-            },
-
-            {
-                category: "love",
-                title: "Heart",
-                value: "♥ " + name + " ♥"
-            },
-
-            {
-                category: "cool",
-                title: "Cool",
-                value: "ツ " + name + " ツ"
-            },
-
-            {
-                category: "cool",
-                title: "Electric",
-                value: "⚡ " + name + " ⚡"
-            },
-
-            {
-                category: "dark",
-                title: "Dark Soul",
-                value: "☾ " + name + " ☽"
-            },
-
-            {
-                category: "dark",
-                title: "Dark",
-                value: "☠ " + name + " ☠"
-            },
-
-            {
-                category: "symbols",
-                title: "Decorated",
-                value: "꧁༺ " + name + " ༻꧂"
-            },
-
-            {
-                category: "symbols",
-                title: "Star",
-                value: "★ " + name + " ★"
-            },
-
-            {
-                category: "symbols",
-                title: "Symbol",
-                value: "彡 " + name + " 彡"
-            },
-
-            {
-                category: "symbols",
-                title: "Classic",
-                value: "『 " + name + " 』"
-            }
+    function createRoyalStyles(name) {
+
+        const royal = [
+
+            "♛ " + name + " ♛",
+            "♕ " + name + " ♕",
+            "♔ " + name + " ♔",
+            "♚ " + name + " ♚",
+            "👑 " + name + " 👑",
+            "♛༺ " + name + " ༻♛",
+            "꧁♛ " + name + " ♛꧂",
+            "꧁♕ " + name + " ♕꧂",
+            "『♛ " + name + " ♛』",
+            "【♔ " + name + " ♔】",
+            "亗♛ " + name + " ♛亗",
+            "༺♛ " + name + " ♛༻",
+            "⚜ " + name + " ⚜",
+            "⚜♛ " + name + " ♛⚜",
+            "♛★ " + name + " ★♛",
+            "♕✦ " + name + " ✦♕",
+            "👑亗 " + name + " 亗👑",
+            "♔༒ " + name + " ༒♔",
+            "♚⚡ " + name + " ⚡♚",
+            "꧁༺♛ " + name + " ♛༻꧂",
+            "╰♛ " + name + " ♛╯",
+            "╭♕ " + name + " ♕╮",
+            "『👑 " + name + " 👑』",
+            "【👑 " + name + " 👑】",
+            "★♛ " + name + " ♛★",
+            "✦♕ " + name + " ♕✦",
+            "❖♛ " + name + " ♛❖",
+            "༒♚ " + name + " ♚༒",
+            "亗👑 " + name + " 👑亗",
+            "♛∞ " + name + " ∞♛"
 
         ];
+
+        royal.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "royal",
+                    "Royal " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       LOVE STYLES
+       ========================================================= */
+
+    function createLoveStyles(name) {
+
+        const love = [
+
+            "♡ " + name + " ♡",
+            "♥ " + name + " ♥",
+            "❤ " + name + " ❤",
+            "💕 " + name + " 💕",
+            "💖 " + name + " 💖",
+            "💗 " + name + " 💗",
+            "💘 " + name + " 💘",
+            "💝 " + name + " 💝",
+            "❣ " + name + " ❣",
+            "ღ " + name + " ღ",
+            "♡彡 " + name + " 彡♡",
+            "♥彡 " + name + " 彡♥",
+            "꧁♡ " + name + " ♡꧂",
+            "꧁♥ " + name + " ♥꧂",
+            "『♡ " + name + " ♡』",
+            "【♥ " + name + " ♥】",
+            "♡亗 " + name + " 亗♡",
+            "♥亗 " + name + " 亗♥",
+            "༺♡ " + name + " ♡༻",
+            "༺♥ " + name + " ♥༻",
+            "★♡ " + name + " ♡★",
+            "✦♥ " + name + " ♥✦",
+            "❖♡ " + name + " ♡❖",
+            "🌸♡ " + name + " ♡🌸",
+            "🌹 " + name + " 🌹",
+            "💞 " + name + " 💞",
+            "💓 " + name + " 💓",
+            "💟 " + name + " 💟",
+            "💌 " + name + " 💌",
+            "💕♡ " + name + " ♡💕"
+
+        ];
+
+        love.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "love",
+                    "Love " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       COOL STYLES
+       ========================================================= */
+
+    function createCoolStyles(name) {
+
+        const cool = [
+
+            "★ " + name + " ★",
+            "☆ " + name + " ☆",
+            "✦ " + name + " ✦",
+            "✧ " + name + " ✧",
+            "✯ " + name + " ✯",
+            "✰ " + name + " ✰",
+            "❖ " + name + " ❖",
+            "◆ " + name + " ◆",
+            "◇ " + name + " ◇",
+            "⚡ " + name + " ⚡",
+            "∞ " + name + " ∞",
+            "☯ " + name + " ☯",
+            "☮ " + name + " ☮",
+            "⚜ " + name + " ⚜",
+            "亗 " + name + " 亗",
+            "乂 " + name + " 乂",
+            "ツ " + name + " ツ",
+            "彡 " + name + " 彡",
+            "メ " + name + " メ",
+            "〆 " + name + " 〆",
+            "么 " + name + " 么",
+            "々 " + name + " 々",
+            "★彡 " + name + " 彡★",
+            "✦彡 " + name + " 彡✦",
+            "亗★ " + name + " ★亗",
+            "⚡亗 " + name + " 亗⚡",
+            "❖亗 " + name + " 亗❖",
+            "꧁ " + name + " ꧂",
+            "༺ " + name + " ༻",
+            "『 " + name + " 』"
+
+        ];
+
+        cool.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "cool",
+                    "Cool " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       DARK STYLES
+       ========================================================= */
+
+    function createDarkStyles(name) {
+
+        const dark = [
+
+            "☠ " + name + " ☠",
+            "💀 " + name + " 💀",
+            "☣ " + name + " ☣",
+            "☢ " + name + " ☢",
+            "༒ " + name + " ༒",
+            "♠ " + name + " ♠",
+            "♤ " + name + " ♤",
+            "⚔ " + name + " ⚔",
+            "🖤 " + name + " 🖤",
+            "☾ " + name + " ☽",
+            "☽ " + name + " ☾",
+            "亗☠ " + name + " ☠亗",
+            "꧁☠ " + name + " ☠꧂",
+            "꧁༒ " + name + " ༒꧂",
+            "『☠ " + name + " ☠』",
+            "【☠ " + name + " ☠】",
+            "༺☠ " + name + " ☠༻",
+            "༺༒ " + name + " ༒༻",
+            "★☠ " + name + " ☠★",
+            "✦☠ " + name + " ☠✦",
+            "⚔亗 " + name + " 亗⚔",
+            "☢亗 " + name + " 亗☢",
+            "☣亗 " + name + " 亗☣",
+            "♠༒ " + name + " ༒♠",
+            "☾༒ " + name + " ༒☽"
+
+        ];
+
+        dark.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "dark",
+                    "Dark " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CUTE STYLES
+       ========================================================= */
+
+    function createCuteStyles(name) {
+
+        const cute = [
+
+            "🌸 " + name + " 🌸",
+            "🌷 " + name + " 🌷",
+            "🌺 " + name + " 🌺",
+            "🌼 " + name + " 🌼",
+            "🦋 " + name + " 🦋",
+            "🐰 " + name + " 🐰",
+            "🐻 " + name + " 🐻",
+            "🐼 " + name + " 🐼",
+            "🐨 " + name + " 🐨",
+            "♡ " + name + " ♡",
+            "ღ " + name + " ღ",
+            "꒰ " + name + " ꒱",
+            "꒰ა " + name + " ໒꒱",
+            "୨♡୧ " + name + " ୨♡୧",
+            "꧁♡ " + name + " ♡꧂",
+            "『🌸 " + name + " 🌸』",
+            "【🦋 " + name + " 🦋】",
+            "♡彡 " + name + " 彡♡",
+            "🌸彡 " + name + " 彡🌸",
+            "🦋彡 " + name + " 彡🦋",
+            "✿ " + name + " ✿",
+            "❀ " + name + " ❀",
+            "❁ " + name + " ❁",
+            "✾ " + name + " ✾",
+            "💗 " + name + " 💗"
+
+        ];
+
+        cute.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "cute",
+                    "Cute " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       EXTRA FANCY DECORATION COMBINATIONS
+       ========================================================= */
+
+    function createExtraFancyStyles(name) {
+
+        const fancyDecorations = [
+
+            "꧁༺ " + toBold(name) + " ༻꧂",
+            "꧁༺ " + toScript(name) + " ༻꧂",
+            "꧁༺ " + toDouble(name) + " ༻꧂",
+            "★彡 " + toBold(name) + " 彡★",
+            "★彡 " + toScript(name) + " 彡★",
+            "✦ " + toDouble(name) + " ✦",
+            "亗 " + toBold(name) + " 亗",
+            "『 " + toScript(name) + " 』",
+            "【 " + toDouble(name) + " 】",
+            "༺ " + toBold(name) + " ༻",
+            "༒ " + toBold(name) + " ༒",
+            "♛ " + toScript(name) + " ♛",
+            "♡ " + toScript(name) + " ♡",
+            "⚡ " + toBold(name) + " ⚡",
+            "☠ " + toDouble(name) + " ☠",
+            "✯ " + toScript(name) + " ✯",
+            "❖ " + toDouble(name) + " ❖",
+            "彡 " + toBold(name) + " 彡",
+            "ツ " + toScript(name) + " ツ",
+            "乂 " + toDouble(name) + " 乂"
+
+        ];
+
+        fancyDecorations.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "fancy",
+                    "Fancy Design " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       GENERATE ALL STYLES
+       ========================================================= */
+
+    function generateAllStyles(name) {
+
+        generatedStyles = [];
+
+        createFancyStyles(name);
+
+        createDecorationStyles(name);
+
+        createBoxStyles(name);
+
+        createGamingStyles(name);
+
+        createAttitudeStyles(name);
+
+        createRoyalStyles(name);
+
+        createLoveStyles(name);
+
+        createCoolStyles(name);
+
+        createDarkStyles(name);
+
+        createCuteStyles(name);
+
+        createExtraFancyStyles(name);
+
+        return generatedStyles;
+
+    }
+
+
+    /* =========================================================
+       FILTER HELPERS
+       ========================================================= */
+
+    function getFilteredStyles() {
+
+        if (activeFilter === "all") {
+
+            return generatedStyles;
+
+        }
+
+        return generatedStyles.filter(
+            function (style) {
+
+                return style.category === activeFilter;
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       RESULT CARD
+       ========================================================= */
+
+    function createResultCard(style, index) {
+
+        const card =
+            document.createElement("article");
+
+        card.className =
+            "result-card";
+
+        card.dataset.category =
+            style.category;
+
+        card.innerHTML = `
+
+            <div class="result-card-top">
+
+                <span class="result-number">
+                    ${String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span class="result-category">
+                    ${escapeHTML(style.category)}
+                </span>
+
+            </div>
+
+            <div class="result-style-name">
+                ${escapeHTML(style.title)}
+            </div>
+
+            <div class="result-value">
+                ${escapeHTML(style.value)}
+            </div>
+
+            <button
+                type="button"
+                class="copy-result-button"
+                data-copy="${escapeHTML(style.value)}"
+            >
+                📋 Copy
+            </button>
+
+        `;
+
+        return card;
 
     }
 
@@ -1043,157 +1242,59 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (!generatedName) {
-            return;
-        }
-
-        let results =
-            createResults(generatedName);
-
-        if (activeFilter !== "all") {
-
-            results =
-                results.filter(function (item) {
-
-                    return (
-                        item.category ===
-                        activeFilter
-                    );
-
-                });
-
-        }
+        const styles =
+            getFilteredStyles();
 
         resultsContainer.innerHTML = "";
 
-
-        /* =====================================================
-           NO RESULTS
-           ===================================================== */
-
-        if (results.length === 0) {
+        if (!styles.length) {
 
             resultsContainer.innerHTML = `
-                <div class="result-card">
-                    <div class="result-name">
-                        No styles found.
-                    </div>
+
+                <div class="no-results">
+
+                    <strong>No styles found</strong>
+
+                    <p>
+                        Try another category.
+                    </p>
+
                 </div>
+
             `;
 
             return;
 
         }
 
+        const fragment =
+            document.createDocumentFragment();
 
-        /* =====================================================
-           CREATE RESULT CARDS
-           ===================================================== */
+        styles.forEach(
+            function (style, index) {
 
-        results.forEach(function (item) {
-
-            const card =
-                document.createElement("div");
-
-            card.className = "result-card";
-
-            card.innerHTML = `
-                <div class="result-card-top">
-
-                    <span class="result-category">
-                        ${safeHTML(
-                            item.category
-                        )}
-                    </span>
-
-                    <span class="result-style">
-                        ${safeHTML(
-                            item.title
-                        )}
-                    </span>
-
-                </div>
-
-                <div class="result-name">
-                    ${safeHTML(
-                        item.value
-                    )}
-                </div>
-
-                <button
-                    type="button"
-                    class="copy-result-button"
-                >
-                    📋 Copy
-                </button>
-            `;
-
-
-            const copyButton =
-                card.querySelector(
-                    ".copy-result-button"
-                );
-
-
-            if (copyButton) {
-
-                copyButton.addEventListener(
-                    "click",
-                    function () {
-
-                        copyName(item.value);
-
-                    }
+                fragment.appendChild(
+                    createResultCard(
+                        style,
+                        index
+                    )
                 );
 
             }
+        );
 
-
-            resultsContainer.appendChild(card);
-
-        });
-
-
-        /* =====================================================
-           SHOW RESULTS
-           ===================================================== */
-
-        if (resultsSection) {
-
-            resultsSection.hidden = false;
-
-        }
-
-
-        /* =====================================================
-           RESULTS TITLE
-           ===================================================== */
+        resultsContainer.appendChild(
+            fragment
+        );
 
         if (resultsTitle) {
 
-            if (activeFilter === "all") {
-
-                resultsTitle.textContent =
-                    "Stylish Names for " +
-                    generatedName;
-
-            } else {
-
-                const firstLetter =
-                    activeFilter
-                        .charAt(0)
-                        .toUpperCase();
-
-                const rest =
-                    activeFilter.slice(1);
-
-                resultsTitle.textContent =
-                    firstLetter +
-                    rest +
-                    " Names for " +
-                    generatedName;
-
-            }
+            resultsTitle.textContent =
+                activeFilter === "all"
+                    ? "Stylish Names"
+                    : capitalize(
+                        activeFilter
+                    ) + " Names";
 
         }
 
@@ -1201,7 +1302,248 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       GENERATE BUTTON / FORM
+       CAPITALIZE
+       ========================================================= */
+
+    function capitalize(value) {
+
+        return String(value)
+            .charAt(0)
+            .toUpperCase() +
+            String(value).slice(1);
+
+    }
+
+
+    /* =========================================================
+       COPY FUNCTION
+       ========================================================= */
+
+    async function copyText(text) {
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+            } else {
+
+                const textarea =
+                    document.createElement("textarea");
+
+                textarea.value = text;
+
+                textarea.style.position =
+                    "fixed";
+
+                textarea.style.opacity =
+                    "0";
+
+                document.body.appendChild(
+                    textarea
+                );
+
+                textarea.focus();
+
+                textarea.select();
+
+                document.execCommand(
+                    "copy"
+                );
+
+                textarea.remove();
+
+            }
+
+            showToast(
+                "Name copied!"
+            );
+
+        } catch (error) {
+
+            showToast(
+                "Copy failed. Try again."
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       TOAST
+       ========================================================= */
+
+    let toastTimer = null;
+
+    function showToast(message) {
+
+        if (!toast) {
+            return;
+        }
+
+        if (toastMessage) {
+
+            toastMessage.textContent =
+                message;
+
+        }
+
+        toast.classList.add(
+            "show"
+        );
+
+        clearTimeout(
+            toastTimer
+        );
+
+        toastTimer =
+            setTimeout(
+                function () {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                1800
+            );
+
+    }
+
+
+    /* =========================================================
+       GENERATOR
+       ========================================================= */
+
+    function generateNames() {
+
+        const name =
+            cleanName(
+                nameInput
+                    ? nameInput.value
+                    : ""
+            );
+
+        if (!name) {
+
+            showToast(
+                "Please enter your name."
+            );
+
+            if (nameInput) {
+                nameInput.focus();
+            }
+
+            return;
+
+        }
+
+        currentName = name;
+
+        activeFilter = "all";
+
+        generateAllStyles(
+            currentName
+        );
+
+        if (previewName) {
+
+            previewName.textContent =
+                currentName;
+
+        }
+
+        if (previewSection) {
+
+            previewSection.hidden =
+                false;
+
+        }
+
+        if (resultsSection) {
+
+            resultsSection.hidden =
+                false;
+
+        }
+
+        updateFilterButtons();
+
+        renderResults();
+
+        if (resultsSection) {
+
+            setTimeout(
+                function () {
+
+                    resultsSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                80
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       FILTER BUTTON STATE
+       ========================================================= */
+
+    function updateFilterButtons() {
+
+        if (!styleFilters) {
+            return;
+        }
+
+        const buttons =
+            styleFilters.querySelectorAll(
+                ".filter-button"
+            );
+
+        buttons.forEach(
+            function (button) {
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.filter ===
+                    activeFilter
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       PART 2 END
+       =========================================================
+
+       PART 3 will add:
+       - Form events
+       - Copy events
+       - Symbol copy
+       - Trending style buttons
+       - Clear button
+       - Mobile menu
+       - Bottom menu
+       - Final safety checks
+
+       ========================================================= */
+    /* =========================================================
+       FORM SUBMIT
        ========================================================= */
 
     if (nameForm) {
@@ -1212,98 +1554,145 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.preventDefault();
 
+                generateNames();
 
-                const value = getName();
+            }
+        );
+
+    }
 
 
-                /* =============================================
-                   EMPTY INPUT
-                   ============================================= */
+    /* =========================================================
+       INPUT EVENTS
+       ========================================================= */
 
-                if (!value) {
+    if (nameInput) {
 
-                    if (nameInput) {
-                        nameInput.focus();
-                    }
+        nameInput.addEventListener(
+            "input",
+            function () {
 
-                    notify(
-                        "Please enter your name"
+                const value =
+                    cleanName(
+                        nameInput.value
                     );
 
-                    return;
+                if (clearName) {
+
+                    clearName.hidden =
+                        value.length === 0;
 
                 }
 
-
-                /* =============================================
-                   SAVE NAME
-                   ============================================= */
-
-                generatedName = value;
-
-                activeFilter = "all";
+            }
+        );
 
 
-                /* =============================================
-                   PREVIEW
-                   ============================================= */
+        nameInput.addEventListener(
+            "keydown",
+            function (event) {
 
-                if (previewSection) {
+                if (
+                    event.key === "Enter"
+                ) {
 
-                    previewSection.hidden =
-                        false;
+                    event.preventDefault();
+
+                    generateNames();
 
                 }
 
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CLEAR NAME
+       ========================================================= */
+
+    if (clearName) {
+
+        clearName.addEventListener(
+            "click",
+            function () {
+
+                if (nameInput) {
+
+                    nameInput.value = "";
+
+                    nameInput.focus();
+
+                }
+
+                clearName.hidden =
+                    true;
 
                 if (previewName) {
 
                     previewName.textContent =
-                        generatedName;
+                        "Your Name";
 
                 }
 
+            }
+        );
 
-                /* =============================================
-                   RESET FILTER BUTTON
-                   ============================================= */
+    }
 
-                if (styleFilters) {
 
-                    const buttons =
-                        styleFilters.querySelectorAll(
-                            ".filter-button"
-                        );
+    /* =========================================================
+       RESULT COPY BUTTONS
+       ========================================================= */
 
-                    buttons.forEach(
-                        function (button) {
+    if (resultsContainer) {
 
-                            button.classList.remove(
-                                "active"
-                            );
+        resultsContainer.addEventListener(
+            "click",
+            function (event) {
 
-                            if (
-                                button.dataset.filter ===
-                                "all"
-                            ) {
-
-                                button.classList.add(
-                                    "active"
-                                );
-
-                            }
-
-                        }
+                const button =
+                    event.target.closest(
+                        ".copy-result-button"
                     );
 
+                if (!button) {
+                    return;
                 }
 
+                const text =
+                    button.dataset.copy || "";
 
-                /* =============================================
-                   GENERATE RESULTS
-                   ============================================= */
+                if (!text) {
+                    return;
+                }
 
-                renderResults();
+                copyText(text);
+
+                const originalText =
+                    button.innerHTML;
+
+                button.innerHTML =
+                    "✓ Copied!";
+
+                button.classList.add(
+                    "copied"
+                );
+
+                setTimeout(
+                    function () {
+
+                        button.innerHTML =
+                            originalText;
+
+                        button.classList.remove(
+                            "copied"
+                        );
+
+                    },
+                    1400
+                );
 
             }
         );
@@ -1317,52 +1706,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (styleFilters) {
 
-        const filterButtons =
-            styleFilters.querySelectorAll(
-                ".filter-button"
-            );
+        styleFilters.addEventListener(
+            "click",
+            function (event) {
 
+                const button =
+                    event.target.closest(
+                        ".filter-button"
+                    );
 
-        filterButtons.forEach(
-            function (button) {
+                if (!button) {
+                    return;
+                }
 
-                button.addEventListener(
-                    "click",
-                    function () {
+                activeFilter =
+                    button.dataset.filter ||
+                    "all";
 
-                        const filter =
-                            button.dataset.filter ||
-                            "all";
+                updateFilterButtons();
 
-
-                        activeFilter =
-                            filter;
-
-
-                        filterButtons.forEach(
-                            function (item) {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                        button.classList.add(
-                            "active"
-                        );
-
-
-                        if (generatedName) {
-
-                            renderResults();
-
-                        }
-
-                    }
-                );
+                renderResults();
 
             }
         );
@@ -1390,87 +1753,56 @@ document.addEventListener("DOMContentLoaded", function () {
                     const category =
                         card.dataset.category;
 
-
                     if (!category) {
                         return;
                     }
 
-
-                    const value =
-                        getName();
-
-
-                    if (!value) {
-
-                        if (nameInput) {
-                            nameInput.focus();
-                        }
-
-                        notify(
-                            "Enter your name first"
-                        );
-
-                        return;
-
-                    }
-
-
-                    generatedName =
-                        value;
-
                     activeFilter =
                         category;
 
+                    if (
+                        !generatedStyles.length &&
+                        nameInput &&
+                        nameInput.value.trim()
+                    ) {
 
-                    if (previewSection) {
-
-                        previewSection.hidden =
-                            false;
-
-                    }
-
-
-                    if (previewName) {
-
-                        previewName.textContent =
-                            generatedName;
+                        generateNames();
 
                     }
 
+                    if (
+                        generatedStyles.length
+                    ) {
 
-                    renderResults();
+                        updateFilterButtons();
 
+                        renderResults();
 
-                    /* =========================================
-                       UPDATE FILTER BUTTON
-                       ========================================= */
+                        if (resultsSection) {
 
-                    if (styleFilters) {
+                            resultsSection.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
 
-                        styleFilters
-                            .querySelectorAll(
-                                ".filter-button"
-                            )
-                            .forEach(
-                                function (button) {
+                        }
 
-                                    button.classList.remove(
-                                        "active"
-                                    );
+                    } else {
 
-                                    if (
-                                        button.dataset.filter ===
-                                        category
-                                    ) {
+                        if (nameInput) {
 
-                                        button.classList.add(
-                                            "active"
-                                        );
+                            nameInput.focus();
 
-                                    }
+                            nameInput.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center"
+                            });
 
-                                }
-                            );
+                        }
+
+                        showToast(
+                            "Enter your name first."
+                        );
 
                     }
 
@@ -1482,430 +1814,60 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       SMOOTH SCROLL AFTER GENERATION
+       SYMBOL COPY
        ========================================================= */
 
-    function scrollToResults() {
+    if (symbolsGrid) {
 
-        if (!resultsSection) {
-            return;
-        }
+        symbolsGrid.addEventListener(
+            "click",
+            function (event) {
 
-        setTimeout(
-            function () {
+                const button =
+                    event.target.closest(
+                        ".symbol-card"
+                    );
 
-                resultsSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
+                if (!button) {
+                    return;
+                }
 
-            },
-            120
-        );
+                const symbol =
+                    button.dataset.symbol || "";
 
-    }
+                if (!symbol) {
+                    return;
+                }
 
+                copyText(symbol);
 
-    /* =========================================================
-       REPLACE RENDER FUNCTION WITH SCROLL
-       ========================================================= */
+                const small =
+                    button.querySelector(
+                        "small"
+                    );
 
-    const originalRenderResults =
-        renderResults;
+                if (small) {
 
+                    const original =
+                        small.textContent;
 
-    /* =========================================================
-       GENERATION OBSERVER
-       ========================================================= */
+                    small.textContent =
+                        "Copied!";
 
-    if (nameForm) {
+                    setTimeout(
+                        function () {
 
-        nameForm.addEventListener(
-            "submit",
-            function () {
+                            small.textContent =
+                                original;
 
-                if (generatedName) {
-
-                    scrollToResults();
+                        },
+                        1200
+                    );
 
                 }
 
             }
         );
-
-    }
-
-
-    /* =========================================================
-       PART 2 END
-       ========================================================= */
-
-});
-/* =========================================================
-   Z-NAME STYLE
-   SCRIPT.JS
-   PART 3 — FINAL FUNCTIONS + SYMBOLS + TRENDING + MENU
-   ========================================================= */
-
-
-/* =========================================================
-   FANCY FONT FUNCTIONS
-   These are global so Part 2 can use them.
-   ========================================================= */
-
-const zScriptUpper = [
-    "𝒜","ℬ","𝒞","𝒟","ℰ","ℱ","𝒢","ℋ","ℐ","𝒥",
-    "𝒦","ℒ","ℳ","𝒩","𝒪","𝒫","𝒬","ℛ","𝒮","𝒯",
-    "𝒰","𝒱","𝒲","𝒳","𝒴","𝒵"
-];
-
-const zScriptLower = [
-    "𝒶","𝒷","𝒸","𝒹","ℯ","𝒻","ℊ","𝒽","𝒾","𝒿",
-    "𝓀","𝓁","𝓂","𝓃","ℴ","𝓅","𝓆","𝓇","𝓈","𝓉",
-    "𝓊","𝓋","𝓌","𝓍","𝓎","𝓏"
-];
-
-
-function toScript(text) {
-
-    return text.split("").map(function (character) {
-
-        const code = character.charCodeAt(0);
-
-        if (code >= 65 && code <= 90) {
-            return zScriptUpper[code - 65];
-        }
-
-        if (code >= 97 && code <= 122) {
-            return zScriptLower[code - 97];
-        }
-
-        return character;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   FANCY
-   ========================================================= */
-
-const zFancyUpper = [
-    "𝓐","𝓑","𝓒","𝓓","𝓔","𝓕","𝓖","𝓗","𝓘","𝓙",
-    "𝓚","𝓛","𝓜","𝓝","𝓞","𝓟","𝓠","𝓡","𝓢","𝓣",
-    "𝓤","𝓥","𝓦","𝓧","𝓨","𝓩"
-];
-
-const zFancyLower = [
-    "𝓪","𝓫","𝓬","𝓭","𝓮","𝓯","𝓰","𝓱","𝓲","𝓳",
-    "𝓴","𝓵","𝓶","𝓷","𝓸","𝓹","𝓺","𝓻","𝓼","𝓽",
-    "𝓾","𝓿","𝔀","𝔁","𝔂","𝔃"
-];
-
-
-function toFancy(text) {
-
-    return text.split("").map(function (character) {
-
-        const code = character.charCodeAt(0);
-
-        if (code >= 65 && code <= 90) {
-            return zFancyUpper[code - 65];
-        }
-
-        if (code >= 97 && code <= 122) {
-            return zFancyLower[code - 97];
-        }
-
-        return character;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   BOLD
-   ========================================================= */
-
-const zBoldUpper = [
-    "𝐀","𝐁","𝐂","𝐃","𝐄","𝐅","𝐆","𝐇","𝐈","𝐉",
-    "𝐊","𝐋","𝐌","𝐍","𝐎","𝐏","𝐐","𝐑","𝐒","𝐓",
-    "𝐔","𝐕","𝐖","𝐗","𝐘","𝐙"
-];
-
-const zBoldLower = [
-    "𝐚","𝐛","𝐜","𝐝","𝐞","𝐟","𝐠","𝐡","𝐢","𝐣",
-    "𝐤","𝐥","𝐦","𝐧","𝐨","𝐩","𝐪","𝐫","𝐬","𝐭",
-    "𝐮","𝐯","𝐰","𝐱","𝐲","𝐳"
-];
-
-
-function toBold(text) {
-
-    return text.split("").map(function (character) {
-
-        const code = character.charCodeAt(0);
-
-        if (code >= 65 && code <= 90) {
-            return zBoldUpper[code - 65];
-        }
-
-        if (code >= 97 && code <= 122) {
-            return zBoldLower[code - 97];
-        }
-
-        return character;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   MONOSPACE
-   ========================================================= */
-
-const zMonoUpper = [
-    "𝙰","𝙱","𝙲","𝙳","𝙴","𝙵","𝙶","𝙷","𝙸","𝙹",
-    "𝙺","𝙻","𝙼","𝙽","𝙾","𝙿","𝚀","𝚁","𝚂","𝚃",
-    "𝚄","𝚅","𝚆","𝚇","𝚈","𝚉"
-];
-
-const zMonoLower = [
-    "𝚊","𝚋","𝚌","𝚍","𝚎","𝚏","𝚐","𝚑","𝚒","𝚓",
-    "𝚔","𝚕","𝚖","𝚗","𝚘","𝚙","𝚚","𝚛","𝚜","𝚝",
-    "𝚞","𝚟","𝚠","𝚡","𝚢","𝚣"
-];
-
-
-function toMono(text) {
-
-    return text.split("").map(function (character) {
-
-        const code = character.charCodeAt(0);
-
-        if (code >= 65 && code <= 90) {
-            return zMonoUpper[code - 65];
-        }
-
-        if (code >= 97 && code <= 122) {
-            return zMonoLower[code - 97];
-        }
-
-        return character;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   SMALL CAPS
-   ========================================================= */
-
-const zSmallCaps = {
-
-    a: "ᴀ",
-    b: "ʙ",
-    c: "ᴄ",
-    d: "ᴅ",
-    e: "ᴇ",
-    f: "ғ",
-    g: "ɢ",
-    h: "ʜ",
-    i: "ɪ",
-    j: "ᴊ",
-    k: "ᴋ",
-    l: "ʟ",
-    m: "ᴍ",
-    n: "ɴ",
-    o: "ᴏ",
-    p: "ᴘ",
-    q: "ǫ",
-    r: "ʀ",
-    s: "s",
-    t: "ᴛ",
-    u: "ᴜ",
-    v: "ᴠ",
-    w: "ᴡ",
-    x: "x",
-    y: "ʏ",
-    z: "ᴢ"
-
-};
-
-
-function toSmallCaps(text) {
-
-    return text.toLowerCase().split("").map(function (character) {
-
-        return zSmallCaps[character] || character;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   SYMBOL COPY
-   ========================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const symbolsGrid =
-        document.getElementById("symbolsGrid");
-
-    const toast =
-        document.getElementById("toast");
-
-    const toastMessage =
-        document.getElementById("toastMessage");
-
-
-    function showFinalToast(message) {
-
-        if (!toast) {
-            return;
-        }
-
-        if (toastMessage) {
-            toastMessage.textContent = message;
-        }
-
-        toast.classList.add("show");
-
-        clearTimeout(
-            window.zNameToastTimer
-        );
-
-        window.zNameToastTimer =
-            setTimeout(function () {
-
-                toast.classList.remove("show");
-
-            }, 1800);
-
-    }
-
-
-    function copyFinalText(text) {
-
-        if (!text) {
-            return;
-        }
-
-
-        if (
-            navigator.clipboard &&
-            window.isSecureContext
-        ) {
-
-            navigator.clipboard
-                .writeText(text)
-                .then(function () {
-
-                    showFinalToast("Copied!");
-
-                })
-                .catch(function () {
-
-                    fallbackFinalCopy(text);
-
-                });
-
-        } else {
-
-            fallbackFinalCopy(text);
-
-        }
-
-    }
-
-
-    function fallbackFinalCopy(text) {
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        textarea.style.top = "0";
-
-        document.body.appendChild(textarea);
-
-        textarea.focus();
-        textarea.select();
-
-        try {
-
-            document.execCommand("copy");
-
-            showFinalToast("Copied!");
-
-        } catch (error) {
-
-            showFinalToast("Copy failed");
-
-        }
-
-        document.body.removeChild(textarea);
-
-    }
-
-
-    /* =====================================================
-       SYMBOL BUTTONS
-       ===================================================== */
-
-    if (symbolsGrid) {
-
-        const symbolButtons =
-            symbolsGrid.querySelectorAll(
-                ".symbol-card"
-            );
-
-
-        symbolButtons.forEach(function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const symbol =
-                        button.dataset.symbol ||
-                        button.querySelector("span")?.textContent ||
-                        "";
-
-
-                    if (!symbol) {
-                        return;
-                    }
-
-
-                    copyFinalText(symbol);
-
-
-                    button.classList.add(
-                        "copied"
-                    );
-
-
-                    setTimeout(function () {
-
-                        button.classList.remove(
-                            "copied"
-                        );
-
-                    }, 700);
-
-                }
-            );
-
-        });
 
     }
 
@@ -1914,161 +1876,165 @@ document.addEventListener("DOMContentLoaded", function () {
        TRENDING STYLE BUTTONS
        ========================================================= */
 
-    const styleButtons =
+    const useStyleButtons =
         document.querySelectorAll(
             ".use-style-button"
         );
 
 
-    styleButtons.forEach(function (button) {
+    useStyleButtons.forEach(
+        function (button) {
 
-        button.addEventListener(
-            "click",
-            function () {
+            button.addEventListener(
+                "click",
+                function () {
 
-                const template =
-                    button.dataset.template ||
-                    "";
+                    const template =
+                        button.dataset.template || "";
 
+                    if (!template) {
+                        return;
+                    }
 
-                const nameInput =
-                    document.getElementById(
-                        "nameInput"
-                    );
+                    if (nameInput) {
 
+                        const name =
+                            cleanName(
+                                nameInput.value
+                            );
 
-                const generator =
-                    document.getElementById(
-                        "generator"
-                    );
+                        if (!name) {
 
+                            nameInput.focus();
 
-                if (!nameInput) {
-                    return;
+                            nameInput.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center"
+                            });
+
+                            showToast(
+                                "Enter your name first."
+                            );
+
+                            return;
+
+                        }
+
+                        const styled =
+                            template.replace(
+                                "{name}",
+                                name
+                            );
+
+                        copyText(styled);
+
+                        showToast(
+                            "Style copied!"
+                        );
+
+                        return;
+
+                    }
+
                 }
+            );
 
-
-                let currentName =
-                    nameInput.value
-                        .replace(/\s+/g, " ")
-                        .trim();
-
-
-                if (!currentName) {
-
-                    nameInput.focus();
-
-                    showFinalToast(
-                        "Enter your name first"
-                    );
-
-                    return;
-
-                }
-
-
-                const finalName =
-                    template.replace(
-                        "{name}",
-                        currentName
-                    );
-
-
-                copyFinalText(finalName);
-
-            }
-        );
-
-    });
+        }
+    );
 
 
     /* =========================================================
        MOBILE MENU
        ========================================================= */
 
-    const mobileMenuButton =
-        document.getElementById(
-            "mobileMenuButton"
+    function closeMobileMenu() {
+
+        if (!mobileMenu) {
+            return;
+        }
+
+        mobileMenu.classList.remove(
+            "open"
         );
 
-    const mobileMenu =
-        document.getElementById(
-            "mobileMenu"
-        );
+        if (mobileMenuButton) {
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+    }
 
 
-    if (
-        mobileMenuButton &&
-        mobileMenu
-    ) {
+    function toggleMobileMenu() {
+
+        if (!mobileMenu) {
+            return;
+        }
+
+        const isOpen =
+            mobileMenu.classList.toggle(
+                "open"
+            );
+
+        if (mobileMenuButton) {
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+        }
+
+    }
+
+
+    if (mobileMenuButton) {
 
         mobileMenuButton.addEventListener(
             "click",
             function () {
 
-                const isOpen =
-                    mobileMenu.classList.toggle(
-                        "open"
-                    );
-
-
-                mobileMenuButton.setAttribute(
-                    "aria-expanded",
-                    String(isOpen)
-                );
-
-
-                mobileMenuButton.classList.toggle(
-                    "active",
-                    isOpen
-                );
+                toggleMobileMenu();
 
             }
         );
-
-
-        const mobileLinks =
-            mobileMenu.querySelectorAll(
-                "a"
-            );
-
-
-        mobileLinks.forEach(function (link) {
-
-            link.addEventListener(
-                "click",
-                function () {
-
-                    mobileMenu.classList.remove(
-                        "open"
-                    );
-
-                    mobileMenuButton.classList.remove(
-                        "active"
-                    );
-
-                    mobileMenuButton.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
-                }
-            );
-
-        });
 
     }
 
 
     /* =========================================================
-       MOBILE BOTTOM MORE BUTTON
+       MOBILE NAV LINKS
        ========================================================= */
 
-    const bottomMenuButton =
-        document.getElementById(
-            "bottomMenuButton"
+    const mobileNavLinks =
+        document.querySelectorAll(
+            ".mobile-nav-link"
         );
 
+
+    mobileNavLinks.forEach(
+        function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    closeMobileMenu();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       BOTTOM MENU
+       ========================================================= */
 
     if (bottomMenuButton) {
 
@@ -2076,29 +2042,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                if (
-                    mobileMenuButton &&
-                    mobileMenu
-                ) {
-
-                    const isOpen =
-                        mobileMenu.classList.toggle(
-                            "open"
-                        );
-
-
-                    mobileMenuButton.classList.toggle(
-                        "active",
-                        isOpen
-                    );
-
-
-                    mobileMenuButton.setAttribute(
-                        "aria-expanded",
-                        String(isOpen)
-                    );
-
-                }
+                toggleMobileMenu();
 
             }
         );
@@ -2107,73 +2051,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       BOTTOM NAV ACTIVE STATE
-       ========================================================= */
-
-    const bottomNavItems =
-        document.querySelectorAll(
-            ".bottom-nav-item"
-        );
-
-
-    bottomNavItems.forEach(function (item) {
-
-        if (item.tagName.toLowerCase() === "button") {
-            return;
-        }
-
-
-        item.addEventListener(
-            "click",
-            function () {
-
-                bottomNavItems.forEach(
-                    function (navItem) {
-
-                        navItem.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                item.classList.add(
-                    "active"
-                );
-
-            }
-        );
-
-    });
-
-
-    /* =========================================================
-       ESC KEY — CLOSE MOBILE MENU
+       CLOSE MENU WHEN CLICKING OUTSIDE
        ========================================================= */
 
     document.addEventListener(
-        "keydown",
+        "click",
         function (event) {
 
+            if (!mobileMenu) {
+                return;
+            }
+
+            const clickedInsideMenu =
+                mobileMenu.contains(
+                    event.target
+                );
+
+            const clickedMenuButton =
+                mobileMenuButton &&
+                mobileMenuButton.contains(
+                    event.target
+                );
+
             if (
-                event.key === "Escape" &&
-                mobileMenu &&
-                mobileMenuButton
+                !clickedInsideMenu &&
+                !clickedMenuButton
             ) {
 
-                mobileMenu.classList.remove(
-                    "open"
-                );
-
-                mobileMenuButton.classList.remove(
-                    "active"
-                );
-
-                mobileMenuButton.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
+                closeMobileMenu();
 
             }
 
@@ -2182,78 +2087,150 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       GENERATOR LINK FROM TRENDING
+       ESC KEY
        ========================================================= */
 
-    styleButtons.forEach(function (button) {
+    document.addEventListener(
+        "keydown",
+        function (event) {
 
-        button.addEventListener(
-            "dblclick",
-            function () {
+            if (
+                event.key === "Escape"
+            ) {
 
-                const generator =
-                    document.getElementById(
-                        "generator"
-                    );
-
-                if (generator) {
-
-                    generator.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }
+                closeMobileMenu();
 
             }
-        );
 
-    });
+        }
+    );
 
 
     /* =========================================================
-       FINAL INITIALIZATION
+       SMOOTH ANCHOR SCROLL
        ========================================================= */
 
-    const nameInput =
-        document.getElementById(
-            "nameInput"
-        );
+    document.addEventListener(
+        "click",
+        function (event) {
 
+            const link =
+                event.target.closest(
+                    'a[href^="#"]'
+                );
 
-    if (nameInput) {
+            if (!link) {
+                return;
+            }
 
-        nameInput.addEventListener(
-            "keydown",
-            function (event) {
+            const href =
+                link.getAttribute(
+                    "href"
+                );
 
-                if (
-                    event.key === "Enter"
-                ) {
+            if (
+                !href ||
+                href === "#"
+            ) {
 
-                    event.preventDefault();
-
-                    const form =
-                        document.getElementById(
-                            "nameForm"
-                        );
-
-                    if (form) {
-
-                        form.requestSubmit();
-
-                    }
-
-                }
+                return;
 
             }
-        );
+
+            const target =
+                document.querySelector(
+                    href
+                );
+
+            if (!target) {
+                return;
+            }
+
+            event.preventDefault();
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+            closeMobileMenu();
+
+        }
+    );
+
+
+    /* =========================================================
+       INITIAL STATE
+       ========================================================= */
+
+    if (clearName) {
+
+        clearName.hidden =
+            !(
+                nameInput &&
+                nameInput.value.trim()
+            );
+
+    }
+
+
+    if (previewSection) {
+
+        previewSection.hidden =
+            true;
+
+    }
+
+
+    if (resultsSection) {
+
+        resultsSection.hidden =
+            true;
 
     }
 
 
     /* =========================================================
-       PART 3 COMPLETE
+       INITIAL FILTER
        ========================================================= */
+
+    activeFilter =
+        "all";
+
+    updateFilterButtons();
+
+
+    /* =========================================================
+       FINAL SAFETY CHECK
+       ========================================================= */
+
+    window.ZNameStyle = {
+
+        generate: generateNames,
+
+        copy: copyText,
+
+        getStyles: function () {
+
+            return generatedStyles.slice();
+
+        },
+
+        getCurrentName: function () {
+
+            return currentName;
+
+        }
+
+    };
+
+
+    /* =========================================================
+       SCRIPT READY
+       ========================================================= */
+
+    console.log(
+        "Z-Name Style: Generator ready."
+    );
 
 });
