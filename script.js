@@ -4,9 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================================================
        Z-NAME STYLE
-       NEW SCRIPT.JS
-       300+ DYNAMIC NAME STYLES
-       PART 1 — CORE + STYLE ENGINE
+       CORRECTED SCRIPT.JS
+       PART 1
+       CORE + FONT ENGINE + STYLE GENERATOR
        ========================================================= */
 
 
@@ -97,8 +97,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function capitalize(value) {
+
+        value = String(value || "");
+
+        return value.charAt(0).toUpperCase() +
+               value.slice(1);
+
+    }
+
+
     /* =========================================================
-       UNICODE FONT MAPS
+       FONT MAPS
        ========================================================= */
 
     const boldUpper = [
@@ -170,9 +180,13 @@ document.addEventListener("DOMContentLoaded", function () {
        FONT CONVERTER
        ========================================================= */
 
-    function convertFont(text, upperMap, lowerMap) {
+    function convertFont(
+        text,
+        upperMap,
+        lowerMap
+    ) {
 
-        return text
+        return String(text || "")
             .split("")
             .map(function (character) {
 
@@ -298,7 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function toSmallCaps(text) {
 
-        return text
+        return String(text || "")
             .toLowerCase()
             .split("")
             .map(function (character) {
@@ -315,12 +329,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       STRIKE / UNDERLINE / SPACING
+       BASIC DECORATION HELPERS
        ========================================================= */
 
     function addStrike(text) {
 
-        return text
+        return String(text || "")
             .split("")
             .map(function (character) {
 
@@ -334,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addUnderline(text) {
 
-        return text
+        return String(text || "")
             .split("")
             .map(function (character) {
 
@@ -348,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function spaced(text) {
 
-        return text
+        return String(text || "")
             .split("")
             .join(" ");
 
@@ -357,18 +371,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function dotted(text) {
 
-        return text
+        return String(text || "")
             .split("")
             .join("・");
-
-    }
-
-
-    function starSpaced(text) {
-
-        return text
-            .split("")
-            .join("★");
 
     }
 
@@ -376,9 +381,6 @@ document.addEventListener("DOMContentLoaded", function () {
     /* =========================================================
        STYLE COLLECTION
        ========================================================= */
-
-    generatedStyles = [];
-
 
     function addStyle(
         category,
@@ -503,69 +505,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       DECORATION SETS
+       DECORATIONS
        ========================================================= */
 
     const decorations = [
 
-        ["★", "★"],
-        ["☆", "☆"],
-        ["✦", "✦"],
-        ["✧", "✧"],
-        ["✪", "✪"],
-        ["✯", "✯"],
-        ["✰", "✰"],
-        ["⚡", "⚡"],
-        ["亗", "亗"],
-        ["乂", "乂"],
-        ["ツ", "ツ"],
-        ["彡", "彡"],
-        ["〆", "〆"],
-        ["么", "么"],
-        ["々", "々"],
-        ["メ", "メ"],
-        ["シ", "シ"],
-        ["乛", "乛"],
-        ["♛", "♛"],
-        ["♕", "♕"],
-        ["♔", "♔"],
-        ["♚", "♚"],
-        ["♡", "♡"],
-        ["♥", "♥"],
-        ["☠", "☠"],
-        ["☾", "☽"],
-        ["☽", "☾"],
-        ["❖", "❖"],
-        ["◆", "◆"],
-        ["◇", "◇"],
-        ["●", "●"],
-        ["○", "○"],
-        ["✿", "✿"],
-        ["❀", "❀"],
-        ["❁", "❁"],
-        ["🌸", "🌸"],
-        ["🔥", "🔥"],
-        ["👑", "👑"],
-        ["⚔", "⚔"],
-        ["♠", "♠"],
-        ["♣", "♣"],
-        ["♦", "♦"],
-        ["♠️", "♠️"],
-        ["☯", "☯"],
-        ["☮", "☮"],
-        ["☪", "☪"],
-        ["∞", "∞"],
-        ["⚜", "⚜"],
-        ["༺", "༻"],
-        ["༒", "༒"],
-        ["࿐", "࿐"]
+        ["★","★"],
+        ["☆","☆"],
+        ["✦","✦"],
+        ["✧","✧"],
+        ["✪","✪"],
+        ["✯","✯"],
+        ["✰","✰"],
+        ["⚡","⚡"],
+        ["亗","亗"],
+        ["乂","乂"],
+        ["ツ","ツ"],
+        ["彡","彡"],
+        ["〆","〆"],
+        ["么","么"],
+        ["々","々"],
+        ["メ","メ"],
+        ["シ","シ"],
+        ["♛","♛"],
+        ["♕","♕"],
+        ["♔","♔"],
+        ["♚","♚"],
+        ["♡","♡"],
+        ["♥","♥"],
+        ["☠","☠"],
+        ["☾","☽"],
+        ["☽","☾"],
+        ["❖","❖"],
+        ["◆","◆"],
+        ["◇","◇"],
+        ["●","●"],
+        ["○","○"],
+        ["✿","✿"],
+        ["❀","❀"],
+        ["❁","❁"],
+        ["🌸","🌸"],
+        ["🔥","🔥"],
+        ["👑","👑"],
+        ["⚔","⚔"],
+        ["♠","♠"],
+        ["♣","♣"],
+        ["♦","♦"],
+        ["☯","☯"],
+        ["☮","☮"],
+        ["∞","∞"],
+        ["⚜","⚜"],
+        ["༺","༻"],
+        ["༒","༒"],
+        ["࿐","࿐"]
 
     ];
 
-
-    /* =========================================================
-       DECORATED STYLES
-       ========================================================= */
 
     function createDecorationStyles(name) {
 
@@ -594,31 +589,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const boxes = [
 
-        ["『", "』"],
-        ["【", "】"],
-        ["〖", "〗"],
-        ["〘", "〙"],
-        ["〚", "〛"],
-        ["〈", "〉"],
-        ["《", "》"],
-        ["「", "」"],
-        ["『", "』"],
-        ["〔", "〕"],
-        ["〝", "〞"],
-        ["⟦", "⟧"],
-        ["⟨", "⟩"],
-        ["❲", "❳"],
-        ["❬", "❭"],
-        ["꧁", "꧂"],
-        ["༺", "༻"],
-        ["༼", "༽"],
-        ["╰", "╯"],
-        ["╭", "╮"],
-        ["╔", "╗"],
-        ["╚", "╝"],
-        ["▌", "▐"],
-        ["◥", "◤"],
-        ["◢", "◣"]
+        ["『","』"],
+        ["【","】"],
+        ["〖","〗"],
+        ["〘","〙"],
+        ["〚","〛"],
+        ["〈","〉"],
+        ["《","》"],
+        ["「","」"],
+        ["〔","〕"],
+        ["〝","〞"],
+        ["⟦","⟧"],
+        ["⟨","⟩"],
+        ["❲","❳"],
+        ["❬","❭"],
+        ["꧁","꧂"],
+        ["༺","༻"],
+        ["༼","༽"],
+        ["╰","╯"],
+        ["╭","╮"],
+        ["╔","╗"],
+        ["╚","╝"],
+        ["▌","▐"],
+        ["◥","◤"],
+        ["◢","◣"]
 
     ];
 
@@ -648,7 +642,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function createGamingStyles(name) {
 
-        const gamingPrefixes = [
+        const prefixes = [
 
             "亗 ",
             "乂 ",
@@ -658,7 +652,6 @@ document.addEventListener("DOMContentLoaded", function () {
             "シ ",
             "ツ ",
             "彡 ",
-            "乛 ",
             "々 ",
             "⚔ ",
             "☠ ",
@@ -678,7 +671,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ];
 
-        const gamingSuffixes = [
+        const suffixes = [
 
             " 亗",
             " 乂",
@@ -688,7 +681,6 @@ document.addEventListener("DOMContentLoaded", function () {
             " シ",
             " ツ",
             " 彡",
-            " 乛",
             " 々",
             " ⚔",
             " ☠",
@@ -711,16 +703,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         for (
             let i = 0;
-            i < gamingPrefixes.length;
+            i < prefixes.length;
             i++
         ) {
 
             addStyle(
                 "gaming",
                 "Gaming " + (i + 1),
-                gamingPrefixes[i] +
+                prefixes[i] +
                 name +
-                gamingSuffixes[i]
+                suffixes[i]
             );
 
         }
@@ -796,1440 +788,1257 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       PART 1 CONTINUES IN PART 2
-       =========================================================
+       PART 1 END
        
        IMPORTANT:
-       Do not add another <script> tag.
-       Part 2 will continue this same file.
+       DO NOT ADD ANYTHING AFTER THIS PART YET.
+       DO NOT TYPE });
        
+       PART 2 WILL CONTINUE INSIDE THE SAME
+       DOMContentLoaded FUNCTION.
        ========================================================= */
+       /* =========================================================
+   PART 2 — STYLE GENERATION + RESULTS
+   ========================================================= */
 
-    /* =========================================================
-       ROYAL STYLES
-       ========================================================= */
+function createRoyalStyles(name) {
 
-    function createRoyalStyles(name) {
+    const royal = [
+        "♛ " + name + " ♛",
+        "♕ " + name + " ♕",
+        "♔ " + name + " ♔",
+        "♚ " + name + " ♚",
+        "👑 " + name + " 👑",
+        "♛༺ " + name + " ༻♛",
+        "꧁♛ " + name + " ♛꧂",
+        "꧁♕ " + name + " ♕꧂",
+        "『♛ " + name + " ♛』",
+        "【♔ " + name + " ♔】",
+        "亗♛ " + name + " ♛亗",
+        "༺♛ " + name + " ♛༻",
+        "⚜ " + name + " ⚜",
+        "⚜♛ " + name + " ♛⚜",
+        "♛★ " + name + " ★♛",
+        "♕✦ " + name + " ✦♕",
+        "👑亗 " + name + " 亗👑",
+        "♔༒ " + name + " ༒♔",
+        "♚⚡ " + name + " ⚡♚",
+        "꧁༺♛ " + name + " ♛༻꧂",
+        "╰♛ " + name + " ♛╯",
+        "╭♕ " + name + " ♕╮",
+        "『👑 " + name + " 👑』",
+        "【👑 " + name + " 👑】",
+        "★♛ " + name + " ♛★",
+        "✦♕ " + name + " ♕✦",
+        "❖♛ " + name + " ♛❖",
+        "༒♚ " + name + " ♚༒",
+        "亗👑 " + name + " 👑亗",
+        "♛∞ " + name + " ∞♛"
+    ];
 
-        const royal = [
+    royal.forEach(function (value, index) {
 
-            "♛ " + name + " ♛",
-            "♕ " + name + " ♕",
-            "♔ " + name + " ♔",
-            "♚ " + name + " ♚",
-            "👑 " + name + " 👑",
-            "♛༺ " + name + " ༻♛",
-            "꧁♛ " + name + " ♛꧂",
-            "꧁♕ " + name + " ♕꧂",
-            "『♛ " + name + " ♛』",
-            "【♔ " + name + " ♔】",
-            "亗♛ " + name + " ♛亗",
-            "༺♛ " + name + " ♛༻",
-            "⚜ " + name + " ⚜",
-            "⚜♛ " + name + " ♛⚜",
-            "♛★ " + name + " ★♛",
-            "♕✦ " + name + " ✦♕",
-            "👑亗 " + name + " 亗👑",
-            "♔༒ " + name + " ༒♔",
-            "♚⚡ " + name + " ⚡♚",
-            "꧁༺♛ " + name + " ♛༻꧂",
-            "╰♛ " + name + " ♛╯",
-            "╭♕ " + name + " ♕╮",
-            "『👑 " + name + " 👑』",
-            "【👑 " + name + " 👑】",
-            "★♛ " + name + " ♛★",
-            "✦♕ " + name + " ♕✦",
-            "❖♛ " + name + " ♛❖",
-            "༒♚ " + name + " ♚༒",
-            "亗👑 " + name + " 👑亗",
-            "♛∞ " + name + " ∞♛"
-
-        ];
-
-        royal.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "royal",
-                    "Royal " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "royal",
+            "Royal " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       LOVE STYLES
-       ========================================================= */
+function createLoveStyles(name) {
 
-    function createLoveStyles(name) {
+    const love = [
+        "♡ " + name + " ♡",
+        "♥ " + name + " ♥",
+        "❤ " + name + " ❤",
+        "💕 " + name + " 💕",
+        "💖 " + name + " 💖",
+        "💗 " + name + " 💗",
+        "💘 " + name + " 💘",
+        "💝 " + name + " 💝",
+        "❣ " + name + " ❣",
+        "ღ " + name + " ღ",
+        "♡彡 " + name + " 彡♡",
+        "♥彡 " + name + " 彡♥",
+        "꧁♡ " + name + " ♡꧂",
+        "꧁♥ " + name + " ♥꧂",
+        "『♡ " + name + " ♡』",
+        "【♥ " + name + " ♥】",
+        "♡亗 " + name + " 亗♡",
+        "♥亗 " + name + " 亗♥",
+        "༺♡ " + name + " ♡༻",
+        "༺♥ " + name + " ♥༻",
+        "★♡ " + name + " ♡★",
+        "✦♥ " + name + " ♥✦",
+        "❖♡ " + name + " ♡❖",
+        "🌸♡ " + name + " ♡🌸",
+        "🌹 " + name + " 🌹",
+        "💞 " + name + " 💞",
+        "💓 " + name + " 💓",
+        "💟 " + name + " 💟",
+        "💌 " + name + " 💌",
+        "💕♡ " + name + " ♡💕"
+    ];
 
-        const love = [
+    love.forEach(function (value, index) {
 
-            "♡ " + name + " ♡",
-            "♥ " + name + " ♥",
-            "❤ " + name + " ❤",
-            "💕 " + name + " 💕",
-            "💖 " + name + " 💖",
-            "💗 " + name + " 💗",
-            "💘 " + name + " 💘",
-            "💝 " + name + " 💝",
-            "❣ " + name + " ❣",
-            "ღ " + name + " ღ",
-            "♡彡 " + name + " 彡♡",
-            "♥彡 " + name + " 彡♥",
-            "꧁♡ " + name + " ♡꧂",
-            "꧁♥ " + name + " ♥꧂",
-            "『♡ " + name + " ♡』",
-            "【♥ " + name + " ♥】",
-            "♡亗 " + name + " 亗♡",
-            "♥亗 " + name + " 亗♥",
-            "༺♡ " + name + " ♡༻",
-            "༺♥ " + name + " ♥༻",
-            "★♡ " + name + " ♡★",
-            "✦♥ " + name + " ♥✦",
-            "❖♡ " + name + " ♡❖",
-            "🌸♡ " + name + " ♡🌸",
-            "🌹 " + name + " 🌹",
-            "💞 " + name + " 💞",
-            "💓 " + name + " 💓",
-            "💟 " + name + " 💟",
-            "💌 " + name + " 💌",
-            "💕♡ " + name + " ♡💕"
-
-        ];
-
-        love.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "love",
-                    "Love " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "love",
+            "Love " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       COOL STYLES
-       ========================================================= */
+function createCoolStyles(name) {
 
-    function createCoolStyles(name) {
+    const cool = [
+        "★ " + name + " ★",
+        "☆ " + name + " ☆",
+        "✦ " + name + " ✦",
+        "✧ " + name + " ✧",
+        "✯ " + name + " ✯",
+        "✰ " + name + " ✰",
+        "❖ " + name + " ❖",
+        "◆ " + name + " ◆",
+        "◇ " + name + " ◇",
+        "⚡ " + name + " ⚡",
+        "∞ " + name + " ∞",
+        "☯ " + name + " ☯",
+        "☮ " + name + " ☮",
+        "⚜ " + name + " ⚜",
+        "亗 " + name + " 亗",
+        "乂 " + name + " 乂",
+        "ツ " + name + " ツ",
+        "彡 " + name + " 彡",
+        "メ " + name + " メ",
+        "〆 " + name + " 〆",
+        "么 " + name + " 么",
+        "々 " + name + " 々",
+        "★彡 " + name + " 彡★",
+        "✦彡 " + name + " 彡✦",
+        "亗★ " + name + " ★亗",
+        "⚡亗 " + name + " 亗⚡",
+        "❖亗 " + name + " 亗❖",
+        "꧁ " + name + " ꧂",
+        "༺ " + name + " ༻",
+        "『 " + name + " 』"
+    ];
 
-        const cool = [
+    cool.forEach(function (value, index) {
 
-            "★ " + name + " ★",
-            "☆ " + name + " ☆",
-            "✦ " + name + " ✦",
-            "✧ " + name + " ✧",
-            "✯ " + name + " ✯",
-            "✰ " + name + " ✰",
-            "❖ " + name + " ❖",
-            "◆ " + name + " ◆",
-            "◇ " + name + " ◇",
-            "⚡ " + name + " ⚡",
-            "∞ " + name + " ∞",
-            "☯ " + name + " ☯",
-            "☮ " + name + " ☮",
-            "⚜ " + name + " ⚜",
-            "亗 " + name + " 亗",
-            "乂 " + name + " 乂",
-            "ツ " + name + " ツ",
-            "彡 " + name + " 彡",
-            "メ " + name + " メ",
-            "〆 " + name + " 〆",
-            "么 " + name + " 么",
-            "々 " + name + " 々",
-            "★彡 " + name + " 彡★",
-            "✦彡 " + name + " 彡✦",
-            "亗★ " + name + " ★亗",
-            "⚡亗 " + name + " 亗⚡",
-            "❖亗 " + name + " 亗❖",
-            "꧁ " + name + " ꧂",
-            "༺ " + name + " ༻",
-            "『 " + name + " 』"
-
-        ];
-
-        cool.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "cool",
-                    "Cool " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "cool",
+            "Cool " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       DARK STYLES
-       ========================================================= */
+function createDarkStyles(name) {
 
-    function createDarkStyles(name) {
+    const dark = [
+        "☠ " + name + " ☠",
+        "💀 " + name + " 💀",
+        "☣ " + name + " ☣",
+        "☢ " + name + " ☢",
+        "༒ " + name + " ༒",
+        "♠ " + name + " ♠",
+        "♤ " + name + " ♤",
+        "⚔ " + name + " ⚔",
+        "🖤 " + name + " 🖤",
+        "☾ " + name + " ☽",
+        "☽ " + name + " ☾",
+        "亗☠ " + name + " ☠亗",
+        "꧁☠ " + name + " ☠꧂",
+        "꧁༒ " + name + " ༒꧂",
+        "『☠ " + name + " ☠』",
+        "【☠ " + name + " ☠】",
+        "༺☠ " + name + " ☠༻",
+        "༺༒ " + name + " ༒༻",
+        "★☠ " + name + " ☠★",
+        "✦☠ " + name + " ☠✦",
+        "⚔亗 " + name + " 亗⚔",
+        "☢亗 " + name + " 亗☢",
+        "☣亗 " + name + " 亗☣",
+        "♠༒ " + name + " ༒♠",
+        "☾༒ " + name + " ༒☽"
+    ];
 
-        const dark = [
+    dark.forEach(function (value, index) {
 
-            "☠ " + name + " ☠",
-            "💀 " + name + " 💀",
-            "☣ " + name + " ☣",
-            "☢ " + name + " ☢",
-            "༒ " + name + " ༒",
-            "♠ " + name + " ♠",
-            "♤ " + name + " ♤",
-            "⚔ " + name + " ⚔",
-            "🖤 " + name + " 🖤",
-            "☾ " + name + " ☽",
-            "☽ " + name + " ☾",
-            "亗☠ " + name + " ☠亗",
-            "꧁☠ " + name + " ☠꧂",
-            "꧁༒ " + name + " ༒꧂",
-            "『☠ " + name + " ☠』",
-            "【☠ " + name + " ☠】",
-            "༺☠ " + name + " ☠༻",
-            "༺༒ " + name + " ༒༻",
-            "★☠ " + name + " ☠★",
-            "✦☠ " + name + " ☠✦",
-            "⚔亗 " + name + " 亗⚔",
-            "☢亗 " + name + " 亗☢",
-            "☣亗 " + name + " 亗☣",
-            "♠༒ " + name + " ༒♠",
-            "☾༒ " + name + " ༒☽"
-
-        ];
-
-        dark.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "dark",
-                    "Dark " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "dark",
+            "Dark " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       CUTE STYLES
-       ========================================================= */
+function createCuteStyles(name) {
 
-    function createCuteStyles(name) {
+    const cute = [
+        "🌸 " + name + " 🌸",
+        "🌷 " + name + " 🌷",
+        "🌺 " + name + " 🌺",
+        "🌼 " + name + " 🌼",
+        "🦋 " + name + " 🦋",
+        "🐰 " + name + " 🐰",
+        "🐻 " + name + " 🐻",
+        "🐼 " + name + " 🐼",
+        "🐨 " + name + " 🐨",
+        "♡ " + name + " ♡",
+        "ღ " + name + " ღ",
+        "꒰ " + name + " ꒱",
+        "꒰ა " + name + " ໒꒱",
+        "୨♡୧ " + name + " ୨♡୧",
+        "꧁♡ " + name + " ♡꧂",
+        "『🌸 " + name + " 🌸』",
+        "【🦋 " + name + " 🦋】",
+        "♡彡 " + name + " 彡♡",
+        "🌸彡 " + name + " 彡🌸",
+        "🦋彡 " + name + " 彡🦋",
+        "✿ " + name + " ✿",
+        "❀ " + name + " ❀",
+        "❁ " + name + " ❁",
+        "✾ " + name + " ✾",
+        "💗 " + name + " 💗"
+    ];
 
-        const cute = [
+    cute.forEach(function (value, index) {
 
-            "🌸 " + name + " 🌸",
-            "🌷 " + name + " 🌷",
-            "🌺 " + name + " 🌺",
-            "🌼 " + name + " 🌼",
-            "🦋 " + name + " 🦋",
-            "🐰 " + name + " 🐰",
-            "🐻 " + name + " 🐻",
-            "🐼 " + name + " 🐼",
-            "🐨 " + name + " 🐨",
-            "♡ " + name + " ♡",
-            "ღ " + name + " ღ",
-            "꒰ " + name + " ꒱",
-            "꒰ა " + name + " ໒꒱",
-            "୨♡୧ " + name + " ୨♡୧",
-            "꧁♡ " + name + " ♡꧂",
-            "『🌸 " + name + " 🌸』",
-            "【🦋 " + name + " 🦋】",
-            "♡彡 " + name + " 彡♡",
-            "🌸彡 " + name + " 彡🌸",
-            "🦋彡 " + name + " 彡🦋",
-            "✿ " + name + " ✿",
-            "❀ " + name + " ❀",
-            "❁ " + name + " ❁",
-            "✾ " + name + " ✾",
-            "💗 " + name + " 💗"
-
-        ];
-
-        cute.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "cute",
-                    "Cute " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "cute",
+            "Cute " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       EXTRA FANCY DECORATION COMBINATIONS
-       ========================================================= */
+function createExtraFancyStyles(name) {
 
-    function createExtraFancyStyles(name) {
+    const fancyDecorations = [
+        "꧁༺ " + toBold(name) + " ༻꧂",
+        "꧁༺ " + toScript(name) + " ༻꧂",
+        "꧁༺ " + toDouble(name) + " ༻꧂",
+        "★彡 " + toBold(name) + " 彡★",
+        "★彡 " + toScript(name) + " 彡★",
+        "✦ " + toDouble(name) + " ✦",
+        "亗 " + toBold(name) + " 亗",
+        "『 " + toScript(name) + " 』",
+        "【 " + toDouble(name) + " 】",
+        "༺ " + toBold(name) + " ༻",
+        "༒ " + toBold(name) + " ༒",
+        "♛ " + toScript(name) + " ♛",
+        "♡ " + toScript(name) + " ♡",
+        "⚡ " + toBold(name) + " ⚡",
+        "☠ " + toDouble(name) + " ☠",
+        "✯ " + toScript(name) + " ✯",
+        "❖ " + toDouble(name) + " ❖",
+        "彡 " + toBold(name) + " 彡",
+        "ツ " + toScript(name) + " ツ",
+        "乂 " + toDouble(name) + " 乂"
+    ];
 
-        const fancyDecorations = [
+    fancyDecorations.forEach(function (value, index) {
 
-            "꧁༺ " + toBold(name) + " ༻꧂",
-            "꧁༺ " + toScript(name) + " ༻꧂",
-            "꧁༺ " + toDouble(name) + " ༻꧂",
-            "★彡 " + toBold(name) + " 彡★",
-            "★彡 " + toScript(name) + " 彡★",
-            "✦ " + toDouble(name) + " ✦",
-            "亗 " + toBold(name) + " 亗",
-            "『 " + toScript(name) + " 』",
-            "【 " + toDouble(name) + " 】",
-            "༺ " + toBold(name) + " ༻",
-            "༒ " + toBold(name) + " ༒",
-            "♛ " + toScript(name) + " ♛",
-            "♡ " + toScript(name) + " ♡",
-            "⚡ " + toBold(name) + " ⚡",
-            "☠ " + toDouble(name) + " ☠",
-            "✯ " + toScript(name) + " ✯",
-            "❖ " + toDouble(name) + " ❖",
-            "彡 " + toBold(name) + " 彡",
-            "ツ " + toScript(name) + " ツ",
-            "乂 " + toDouble(name) + " 乂"
-
-        ];
-
-        fancyDecorations.forEach(
-            function (value, index) {
-
-                addStyle(
-                    "fancy",
-                    "Fancy Design " + (index + 1),
-                    value
-                );
-
-            }
+        addStyle(
+            "fancy",
+            "Fancy Design " + (index + 1),
+            value
         );
 
-    }
+    });
+
+}
 
 
-    /* =========================================================
-       GENERATE ALL STYLES
-       ========================================================= */
+function generateAllStyles(name) {
 
-    function generateAllStyles(name) {
+    generatedStyles = [];
 
-        generatedStyles = [];
+    createFancyStyles(name);
+    createDecorationStyles(name);
+    createBoxStyles(name);
+    createGamingStyles(name);
+    createAttitudeStyles(name);
+    createRoyalStyles(name);
+    createLoveStyles(name);
+    createCoolStyles(name);
+    createDarkStyles(name);
+    createCuteStyles(name);
+    createExtraFancyStyles(name);
 
-        createFancyStyles(name);
+    return generatedStyles;
 
-        createDecorationStyles(name);
+}
 
-        createBoxStyles(name);
 
-        createGamingStyles(name);
+function getFilteredStyles() {
 
-        createAttitudeStyles(name);
-
-        createRoyalStyles(name);
-
-        createLoveStyles(name);
-
-        createCoolStyles(name);
-
-        createDarkStyles(name);
-
-        createCuteStyles(name);
-
-        createExtraFancyStyles(name);
-
+    if (activeFilter === "all") {
         return generatedStyles;
-
     }
 
+    return generatedStyles.filter(function (style) {
+        return style.category === activeFilter;
+    });
 
-    /* =========================================================
-       FILTER HELPERS
-       ========================================================= */
+}
 
-    function getFilteredStyles() {
 
-        if (activeFilter === "all") {
+function capitalize(value) {
 
-            return generatedStyles;
+    return String(value)
+        .charAt(0)
+        .toUpperCase() +
+        String(value).slice(1);
 
-        }
+}
 
-        return generatedStyles.filter(
-            function (style) {
 
-                return style.category === activeFilter;
+function createResultCard(style, index) {
 
-            }
-        );
+    const card =
+        document.createElement("article");
 
+    card.className =
+        "result-card";
+
+    card.dataset.category =
+        style.category;
+
+    card.innerHTML = `
+        <div class="result-card-top">
+            <span class="result-number">
+                ${String(index + 1).padStart(2, "0")}
+            </span>
+
+            <span class="result-category">
+                ${escapeHTML(style.category)}
+            </span>
+        </div>
+
+        <div class="result-style-name">
+            ${escapeHTML(style.title)}
+        </div>
+
+        <div class="result-value">
+            ${escapeHTML(style.value)}
+        </div>
+
+        <button
+            type="button"
+            class="copy-result-button"
+            data-copy="${escapeHTML(style.value)}"
+        >
+            📋 Copy
+        </button>
+    `;
+
+    return card;
+
+}
+
+
+function renderResults() {
+
+    if (!resultsContainer) {
+        return;
     }
 
+    const styles =
+        getFilteredStyles();
 
-    /* =========================================================
-       RESULT CARD
-       ========================================================= */
+    resultsContainer.innerHTML = "";
 
-    function createResultCard(style, index) {
+    if (!styles.length) {
 
-        const card =
-            document.createElement("article");
-
-        card.className =
-            "result-card";
-
-        card.dataset.category =
-            style.category;
-
-        card.innerHTML = `
-
-            <div class="result-card-top">
-
-                <span class="result-number">
-                    ${String(index + 1).padStart(2, "0")}
-                </span>
-
-                <span class="result-category">
-                    ${escapeHTML(style.category)}
-                </span>
-
+        resultsContainer.innerHTML = `
+            <div class="no-results">
+                <strong>No styles found</strong>
+                <p>Try another category.</p>
             </div>
-
-            <div class="result-style-name">
-                ${escapeHTML(style.title)}
-            </div>
-
-            <div class="result-value">
-                ${escapeHTML(style.value)}
-            </div>
-
-            <button
-                type="button"
-                class="copy-result-button"
-                data-copy="${escapeHTML(style.value)}"
-            >
-                📋 Copy
-            </button>
-
         `;
 
-        return card;
+        return;
 
     }
 
+    const fragment =
+        document.createDocumentFragment();
 
+    styles.forEach(function (style, index) {
+
+        fragment.appendChild(
+            createResultCard(
+                style,
+                index
+            )
+        );
+
+    });
+
+    resultsContainer.appendChild(
+        fragment
+    );
+
+    if (resultsTitle) {
+
+        resultsTitle.textContent =
+            activeFilter === "all"
+                ? "Stylish Names"
+                : capitalize(activeFilter) + " Names";
+
+    }
+
+}
+
+
+function generateNames() {
+
+    const name =
+        cleanName(
+            nameInput
+                ? nameInput.value
+                : ""
+        );
+
+    if (!name) {
+
+        showToast(
+            "Please enter your name."
+        );
+
+        if (nameInput) {
+            nameInput.focus();
+        }
+
+        return;
+
+    }
+
+    currentName = name;
+
+    activeFilter = "all";
+
+    generateAllStyles(
+        currentName
+    );
+
+    if (previewName) {
+        previewName.textContent =
+            currentName;
+    }
+
+    if (previewSection) {
+        previewSection.hidden = false;
+    }
+
+    if (resultsSection) {
+        resultsSection.hidden = false;
+    }
+
+    updateFilterButtons();
+
+    renderResults();
+
+    if (resultsSection) {
+
+        setTimeout(function () {
+
+            resultsSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }, 80);
+
+    }
+
+        }
     /* =========================================================
-       RENDER RESULTS
-       ========================================================= */
+   PART 3 — EVENTS + COPY + FILTERS + MENU
+   ========================================================= */
 
-    function renderResults() {
+function updateFilterButtons() {
 
-        if (!resultsContainer) {
-            return;
+    if (!styleFilters) {
+        return;
+    }
+
+    const buttons =
+        styleFilters.querySelectorAll(
+            ".filter-button"
+        );
+
+    buttons.forEach(function (button) {
+
+        button.classList.toggle(
+            "active",
+            button.dataset.filter === activeFilter
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   COPY FUNCTION
+   ========================================================= */
+
+async function copyText(text) {
+
+    try {
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            await navigator.clipboard.writeText(text);
+
+        } else {
+
+            const textarea =
+                document.createElement("textarea");
+
+            textarea.value = text;
+
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+
+            document.body.appendChild(textarea);
+
+            textarea.focus();
+            textarea.select();
+
+            document.execCommand("copy");
+
+            textarea.remove();
+
         }
 
-        const styles =
-            getFilteredStyles();
+        showToast("Name copied!");
 
-        resultsContainer.innerHTML = "";
+    } catch (error) {
 
-        if (!styles.length) {
+        showToast("Copy failed. Try again.");
 
-            resultsContainer.innerHTML = `
+    }
 
-                <div class="no-results">
+}
 
-                    <strong>No styles found</strong>
 
-                    <p>
-                        Try another category.
-                    </p>
+/* =========================================================
+   TOAST
+   ========================================================= */
 
-                </div>
+let toastTimer = null;
 
-            `;
+function showToast(message) {
 
-            return;
+    if (!toast) {
+        return;
+    }
+
+    if (toastMessage) {
+
+        toastMessage.textContent =
+            message;
+
+    }
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(function () {
+
+            toast.classList.remove("show");
+
+        }, 1800);
+
+}
+
+
+/* =========================================================
+   FORM SUBMIT
+   ========================================================= */
+
+if (nameForm) {
+
+    nameForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+            generateNames();
 
         }
+    );
 
-        const fragment =
-            document.createDocumentFragment();
+}
 
-        styles.forEach(
-            function (style, index) {
 
-                fragment.appendChild(
-                    createResultCard(
-                        style,
-                        index
-                    )
+/* =========================================================
+   INPUT EVENTS
+   ========================================================= */
+
+if (nameInput) {
+
+    nameInput.addEventListener(
+        "input",
+        function () {
+
+            const value =
+                cleanName(
+                    nameInput.value
                 );
+
+            if (clearName) {
+
+                clearName.hidden =
+                    value.length === 0;
 
             }
-        );
-
-        resultsContainer.appendChild(
-            fragment
-        );
-
-        if (resultsTitle) {
-
-            resultsTitle.textContent =
-                activeFilter === "all"
-                    ? "Stylish Names"
-                    : capitalize(
-                        activeFilter
-                    ) + " Names";
 
         }
+    );
 
-    }
 
+    nameInput.addEventListener(
+        "keydown",
+        function (event) {
 
-    /* =========================================================
-       CAPITALIZE
-       ========================================================= */
-
-    function capitalize(value) {
-
-        return String(value)
-            .charAt(0)
-            .toUpperCase() +
-            String(value).slice(1);
-
-    }
-
-
-    /* =========================================================
-       COPY FUNCTION
-       ========================================================= */
-
-    async function copyText(text) {
-
-        try {
-
-            if (
-                navigator.clipboard &&
-                window.isSecureContext
-            ) {
-
-                await navigator.clipboard.writeText(
-                    text
-                );
-
-            } else {
-
-                const textarea =
-                    document.createElement("textarea");
-
-                textarea.value = text;
-
-                textarea.style.position =
-                    "fixed";
-
-                textarea.style.opacity =
-                    "0";
-
-                document.body.appendChild(
-                    textarea
-                );
-
-                textarea.focus();
-
-                textarea.select();
-
-                document.execCommand(
-                    "copy"
-                );
-
-                textarea.remove();
-
-            }
-
-            showToast(
-                "Name copied!"
-            );
-
-        } catch (error) {
-
-            showToast(
-                "Copy failed. Try again."
-            );
-
-        }
-
-    }
-
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    let toastTimer = null;
-
-    function showToast(message) {
-
-        if (!toast) {
-            return;
-        }
-
-        if (toastMessage) {
-
-            toastMessage.textContent =
-                message;
-
-        }
-
-        toast.classList.add(
-            "show"
-        );
-
-        clearTimeout(
-            toastTimer
-        );
-
-        toastTimer =
-            setTimeout(
-                function () {
-
-                    toast.classList.remove(
-                        "show"
-                    );
-
-                },
-                1800
-            );
-
-    }
-
-
-    /* =========================================================
-       GENERATOR
-       ========================================================= */
-
-    function generateNames() {
-
-        const name =
-            cleanName(
-                nameInput
-                    ? nameInput.value
-                    : ""
-            );
-
-        if (!name) {
-
-            showToast(
-                "Please enter your name."
-            );
-
-            if (nameInput) {
-                nameInput.focus();
-            }
-
-            return;
-
-        }
-
-        currentName = name;
-
-        activeFilter = "all";
-
-        generateAllStyles(
-            currentName
-        );
-
-        if (previewName) {
-
-            previewName.textContent =
-                currentName;
-
-        }
-
-        if (previewSection) {
-
-            previewSection.hidden =
-                false;
-
-        }
-
-        if (resultsSection) {
-
-            resultsSection.hidden =
-                false;
-
-        }
-
-        updateFilterButtons();
-
-        renderResults();
-
-        if (resultsSection) {
-
-            setTimeout(
-                function () {
-
-                    resultsSection.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                },
-                80
-            );
-
-        }
-
-    }
-
-
-    /* =========================================================
-       FILTER BUTTON STATE
-       ========================================================= */
-
-    function updateFilterButtons() {
-
-        if (!styleFilters) {
-            return;
-        }
-
-        const buttons =
-            styleFilters.querySelectorAll(
-                ".filter-button"
-            );
-
-        buttons.forEach(
-            function (button) {
-
-                button.classList.toggle(
-                    "active",
-                    button.dataset.filter ===
-                    activeFilter
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       PART 2 END
-       =========================================================
-
-       PART 3 will add:
-       - Form events
-       - Copy events
-       - Symbol copy
-       - Trending style buttons
-       - Clear button
-       - Mobile menu
-       - Bottom menu
-       - Final safety checks
-
-       ========================================================= */
-    /* =========================================================
-       FORM SUBMIT
-       ========================================================= */
-
-    if (nameForm) {
-
-        nameForm.addEventListener(
-            "submit",
-            function (event) {
+            if (event.key === "Enter") {
 
                 event.preventDefault();
 
                 generateNames();
 
             }
-        );
 
-    }
+        }
+    );
+
+}
 
 
-    /* =========================================================
-       INPUT EVENTS
-       ========================================================= */
+/* =========================================================
+   CLEAR NAME
+   ========================================================= */
 
-    if (nameInput) {
+if (clearName) {
 
-        nameInput.addEventListener(
-            "input",
-            function () {
+    clearName.addEventListener(
+        "click",
+        function () {
 
-                const value =
-                    cleanName(
-                        nameInput.value
-                    );
+            if (nameInput) {
 
-                if (clearName) {
+                nameInput.value = "";
 
-                    clearName.hidden =
-                        value.length === 0;
-
-                }
+                nameInput.focus();
 
             }
-        );
+
+            clearName.hidden = true;
+
+            if (previewName) {
+
+                previewName.textContent =
+                    "Your Name";
+
+            }
+
+        }
+    );
+
+}
 
 
-        nameInput.addEventListener(
-            "keydown",
-            function (event) {
+/* =========================================================
+   RESULT COPY BUTTONS
+   ========================================================= */
+
+if (resultsContainer) {
+
+    resultsContainer.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".copy-result-button"
+                );
+
+            if (!button) {
+                return;
+            }
+
+            const text =
+                button.dataset.copy || "";
+
+            if (!text) {
+                return;
+            }
+
+            copyText(text);
+
+            const originalText =
+                button.innerHTML;
+
+            button.innerHTML =
+                "✓ Copied!";
+
+            button.classList.add("copied");
+
+            setTimeout(
+                function () {
+
+                    button.innerHTML =
+                        originalText;
+
+                    button.classList.remove(
+                        "copied"
+                    );
+
+                },
+                1400
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTER BUTTONS
+   ========================================================= */
+
+if (styleFilters) {
+
+    styleFilters.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".filter-button"
+                );
+
+            if (!button) {
+                return;
+            }
+
+            activeFilter =
+                button.dataset.filter ||
+                "all";
+
+            updateFilterButtons();
+
+            renderResults();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CATEGORY CARDS
+   ========================================================= */
+
+const categoryCards =
+    document.querySelectorAll(
+        ".category-card"
+    );
+
+
+categoryCards.forEach(
+    function (card) {
+
+        card.addEventListener(
+            "click",
+            function () {
+
+                const category =
+                    card.dataset.category;
+
+                if (!category) {
+                    return;
+                }
+
+                activeFilter =
+                    category;
 
                 if (
-                    event.key === "Enter"
+                    !generatedStyles.length &&
+                    nameInput &&
+                    nameInput.value.trim()
                 ) {
-
-                    event.preventDefault();
 
                     generateNames();
 
                 }
 
-            }
-        );
+                if (generatedStyles.length) {
 
-    }
+                    updateFilterButtons();
 
+                    renderResults();
 
-    /* =========================================================
-       CLEAR NAME
-       ========================================================= */
+                    if (resultsSection) {
 
-    if (clearName) {
+                        resultsSection.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
 
-        clearName.addEventListener(
-            "click",
-            function () {
+                    }
 
-                if (nameInput) {
+                } else {
 
-                    nameInput.value = "";
+                    if (nameInput) {
 
-                    nameInput.focus();
+                        nameInput.focus();
 
-                }
+                        nameInput.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
 
-                clearName.hidden =
-                    true;
+                    }
 
-                if (previewName) {
-
-                    previewName.textContent =
-                        "Your Name";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       RESULT COPY BUTTONS
-       ========================================================= */
-
-    if (resultsContainer) {
-
-        resultsContainer.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".copy-result-button"
+                    showToast(
+                        "Enter your name first."
                     );
 
-                if (!button) {
-                    return;
                 }
 
-                const text =
-                    button.dataset.copy || "";
+            }
+        );
 
-                if (!text) {
-                    return;
-                }
+    }
+);
 
-                copyText(text);
 
-                const originalText =
-                    button.innerHTML;
+/* =========================================================
+   SYMBOL COPY
+   ========================================================= */
 
-                button.innerHTML =
-                    "✓ Copied!";
+if (symbolsGrid) {
 
-                button.classList.add(
-                    "copied"
+    symbolsGrid.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".symbol-card"
                 );
+
+            if (!button) {
+                return;
+            }
+
+            const symbol =
+                button.dataset.symbol || "";
+
+            if (!symbol) {
+                return;
+            }
+
+            copyText(symbol);
+
+            const small =
+                button.querySelector("small");
+
+            if (small) {
+
+                const original =
+                    small.textContent;
+
+                small.textContent =
+                    "Copied!";
 
                 setTimeout(
                     function () {
 
-                        button.innerHTML =
-                            originalText;
-
-                        button.classList.remove(
-                            "copied"
-                        );
+                        small.textContent =
+                            original;
 
                     },
-                    1400
+                    1200
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TRENDING STYLE BUTTONS
+   ========================================================= */
+
+const useStyleButtons =
+    document.querySelectorAll(
+        ".use-style-button"
+    );
+
+
+useStyleButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const template =
+                    button.dataset.template || "";
+
+                if (!template) {
+                    return;
+                }
+
+                if (!nameInput) {
+                    return;
+                }
+
+                const name =
+                    cleanName(
+                        nameInput.value
+                    );
+
+                if (!name) {
+
+                    nameInput.focus();
+
+                    nameInput.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                    showToast(
+                        "Enter your name first."
+                    );
+
+                    return;
+
+                }
+
+                const styled =
+                    template.replace(
+                        "{name}",
+                        name
+                    );
+
+                copyText(styled);
+
+                showToast(
+                    "Style copied!"
                 );
 
             }
         );
 
     }
+);
 
 
-    /* =========================================================
-       FILTER BUTTONS
-       ========================================================= */
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
 
-    if (styleFilters) {
+function closeMobileMenu() {
 
-        styleFilters.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".filter-button"
-                    );
-
-                if (!button) {
-                    return;
-                }
-
-                activeFilter =
-                    button.dataset.filter ||
-                    "all";
-
-                updateFilterButtons();
-
-                renderResults();
-
-            }
-        );
-
+    if (!mobileMenu) {
+        return;
     }
 
-
-    /* =========================================================
-       CATEGORY CARDS
-       ========================================================= */
-
-    const categoryCards =
-        document.querySelectorAll(
-            ".category-card"
-        );
-
-
-    categoryCards.forEach(
-        function (card) {
-
-            card.addEventListener(
-                "click",
-                function () {
-
-                    const category =
-                        card.dataset.category;
-
-                    if (!category) {
-                        return;
-                    }
-
-                    activeFilter =
-                        category;
-
-                    if (
-                        !generatedStyles.length &&
-                        nameInput &&
-                        nameInput.value.trim()
-                    ) {
-
-                        generateNames();
-
-                    }
-
-                    if (
-                        generatedStyles.length
-                    ) {
-
-                        updateFilterButtons();
-
-                        renderResults();
-
-                        if (resultsSection) {
-
-                            resultsSection.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
-                            });
-
-                        }
-
-                    } else {
-
-                        if (nameInput) {
-
-                            nameInput.focus();
-
-                            nameInput.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center"
-                            });
-
-                        }
-
-                        showToast(
-                            "Enter your name first."
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-    );
-
-
-    /* =========================================================
-       SYMBOL COPY
-       ========================================================= */
-
-    if (symbolsGrid) {
-
-        symbolsGrid.addEventListener(
-            "click",
-            function (event) {
-
-                const button =
-                    event.target.closest(
-                        ".symbol-card"
-                    );
-
-                if (!button) {
-                    return;
-                }
-
-                const symbol =
-                    button.dataset.symbol || "";
-
-                if (!symbol) {
-                    return;
-                }
-
-                copyText(symbol);
-
-                const small =
-                    button.querySelector(
-                        "small"
-                    );
-
-                if (small) {
-
-                    const original =
-                        small.textContent;
-
-                    small.textContent =
-                        "Copied!";
-
-                    setTimeout(
-                        function () {
-
-                            small.textContent =
-                                original;
-
-                        },
-                        1200
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       TRENDING STYLE BUTTONS
-       ========================================================= */
-
-    const useStyleButtons =
-        document.querySelectorAll(
-            ".use-style-button"
-        );
-
-
-    useStyleButtons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const template =
-                        button.dataset.template || "";
-
-                    if (!template) {
-                        return;
-                    }
-
-                    if (nameInput) {
-
-                        const name =
-                            cleanName(
-                                nameInput.value
-                            );
-
-                        if (!name) {
-
-                            nameInput.focus();
-
-                            nameInput.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center"
-                            });
-
-                            showToast(
-                                "Enter your name first."
-                            );
-
-                            return;
-
-                        }
-
-                        const styled =
-                            template.replace(
-                                "{name}",
-                                name
-                            );
-
-                        copyText(styled);
-
-                        showToast(
-                            "Style copied!"
-                        );
-
-                        return;
-
-                    }
-
-                }
-            );
-
-        }
-    );
-
-
-    /* =========================================================
-       MOBILE MENU
-       ========================================================= */
-
-    function closeMobileMenu() {
-
-        if (!mobileMenu) {
-            return;
-        }
-
-        mobileMenu.classList.remove(
-            "open"
-        );
-
-        if (mobileMenuButton) {
-
-            mobileMenuButton.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-        }
-
-    }
-
-
-    function toggleMobileMenu() {
-
-        if (!mobileMenu) {
-            return;
-        }
-
-        const isOpen =
-            mobileMenu.classList.toggle(
-                "open"
-            );
-
-        if (mobileMenuButton) {
-
-            mobileMenuButton.setAttribute(
-                "aria-expanded",
-                String(isOpen)
-            );
-
-        }
-
-    }
-
+    mobileMenu.classList.remove("open");
 
     if (mobileMenuButton) {
 
-        mobileMenuButton.addEventListener(
+        mobileMenuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+}
+
+
+function toggleMobileMenu() {
+
+    if (!mobileMenu) {
+        return;
+    }
+
+    const isOpen =
+        mobileMenu.classList.toggle("open");
+
+    if (mobileMenuButton) {
+
+        mobileMenuButton.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+
+    }
+
+}
+
+
+if (mobileMenuButton) {
+
+    mobileMenuButton.addEventListener(
+        "click",
+        function () {
+
+            toggleMobileMenu();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   MOBILE NAV LINKS
+   ========================================================= */
+
+const mobileNavLinks =
+    document.querySelectorAll(
+        ".mobile-nav-link"
+    );
+
+
+mobileNavLinks.forEach(
+    function (link) {
+
+        link.addEventListener(
             "click",
             function () {
 
-                toggleMobileMenu();
+                closeMobileMenu();
 
             }
         );
 
     }
+);
 
 
-    /* =========================================================
-       MOBILE NAV LINKS
-       ========================================================= */
+/* =========================================================
+   BOTTOM MENU
+   ========================================================= */
 
-    const mobileNavLinks =
-        document.querySelectorAll(
-            ".mobile-nav-link"
-        );
+if (bottomMenuButton) {
+
+    bottomMenuButton.addEventListener(
+        "click",
+        function () {
+
+            toggleMobileMenu();
+
+        }
+    );
+
+}
 
 
-    mobileNavLinks.forEach(
-        function (link) {
+/* =========================================================
+   CLOSE MENU OUTSIDE
+   ========================================================= */
 
-            link.addEventListener(
-                "click",
-                function () {
+document.addEventListener(
+    "click",
+    function (event) {
 
-                    closeMobileMenu();
+        if (!mobileMenu) {
+            return;
+        }
 
-                }
+        const clickedInsideMenu =
+            mobileMenu.contains(
+                event.target
             );
 
-        }
-    );
+        const clickedMenuButton =
+            mobileMenuButton &&
+            mobileMenuButton.contains(
+                event.target
+            );
 
-
-    /* =========================================================
-       BOTTOM MENU
-       ========================================================= */
-
-    if (bottomMenuButton) {
-
-        bottomMenuButton.addEventListener(
-            "click",
-            function () {
-
-                toggleMobileMenu();
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       CLOSE MENU WHEN CLICKING OUTSIDE
-       ========================================================= */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            if (!mobileMenu) {
-                return;
-            }
-
-            const clickedInsideMenu =
-                mobileMenu.contains(
-                    event.target
-                );
-
-            const clickedMenuButton =
-                mobileMenuButton &&
-                mobileMenuButton.contains(
-                    event.target
-                );
-
-            if (
-                !clickedInsideMenu &&
-                !clickedMenuButton
-            ) {
-
-                closeMobileMenu();
-
-            }
-
-        }
-    );
-
-
-    /* =========================================================
-       ESC KEY
-       ========================================================= */
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Escape"
-            ) {
-
-                closeMobileMenu();
-
-            }
-
-        }
-    );
-
-
-    /* =========================================================
-       SMOOTH ANCHOR SCROLL
-       ========================================================= */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const link =
-                event.target.closest(
-                    'a[href^="#"]'
-                );
-
-            if (!link) {
-                return;
-            }
-
-            const href =
-                link.getAttribute(
-                    "href"
-                );
-
-            if (
-                !href ||
-                href === "#"
-            ) {
-
-                return;
-
-            }
-
-            const target =
-                document.querySelector(
-                    href
-                );
-
-            if (!target) {
-                return;
-            }
-
-            event.preventDefault();
-
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+        if (
+            !clickedInsideMenu &&
+            !clickedMenuButton
+        ) {
 
             closeMobileMenu();
 
         }
-    );
-
-
-    /* =========================================================
-       INITIAL STATE
-       ========================================================= */
-
-    if (clearName) {
-
-        clearName.hidden =
-            !(
-                nameInput &&
-                nameInput.value.trim()
-            );
 
     }
+);
 
 
-    if (previewSection) {
+/* =========================================================
+   ESC KEY
+   ========================================================= */
 
-        previewSection.hidden =
-            true;
+document.addEventListener(
+    "keydown",
+    function (event) {
 
-    }
+        if (event.key === "Escape") {
 
-
-    if (resultsSection) {
-
-        resultsSection.hidden =
-            true;
-
-    }
-
-
-    /* =========================================================
-       INITIAL FILTER
-       ========================================================= */
-
-    activeFilter =
-        "all";
-
-    updateFilterButtons();
-
-
-    /* =========================================================
-       FINAL SAFETY CHECK
-       ========================================================= */
-
-    window.ZNameStyle = {
-
-        generate: generateNames,
-
-        copy: copyText,
-
-        getStyles: function () {
-
-            return generatedStyles.slice();
-
-        },
-
-        getCurrentName: function () {
-
-            return currentName;
+            closeMobileMenu();
 
         }
 
-    };
+    }
+);
 
 
-    /* =========================================================
-       SCRIPT READY
-       ========================================================= */
+/* =========================================================
+   SMOOTH ANCHOR SCROLL
+   ========================================================= */
 
-    console.log(
-        "Z-Name Style: Generator ready."
-    );
+document.addEventListener(
+    "click",
+    function (event) {
 
-});
+        const link =
+            event.target.closest(
+                'a[href^="#"]'
+            );
+
+        if (!link) {
+            return;
+        }
+
+        const href =
+            link.getAttribute("href");
+
+        if (
+            !href ||
+            href === "#"
+        ) {
+
+            return;
+
+        }
+
+        const target =
+            document.querySelector(href);
+
+        if (!target) {
+            return;
+        }
+
+        event.preventDefault();
+
+        target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        closeMobileMenu();
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL STATE
+   ========================================================= */
+
+if (clearName) {
+
+    clearName.hidden =
+        !(
+            nameInput &&
+            nameInput.value.trim()
+        );
+
+}
+
+
+if (previewSection) {
+
+    previewSection.hidden = true;
+
+}
+
+
+if (resultsSection) {
+
+    resultsSection.hidden = true;
+
+}
+
+
+activeFilter = "all";
+
+updateFilterButtons();
+
+
+/* =========================================================
+   GLOBAL API
+   ========================================================= */
+
+window.ZNameStyle = {
+
+    generate: generateNames,
+
+    copy: copyText,
+
+    getStyles: function () {
+
+        return generatedStyles.slice();
+
+    },
+
+    getCurrentName: function () {
+
+        return currentName;
+
+    }
+
+};
+
+
+/* =========================================================
+   SCRIPT READY
+   ========================================================= */
+
+console.log(
+    "Z-Name Style: Generator ready."
+);
