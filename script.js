@@ -1,8 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("nameForm");
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+
+    /* =========================================================
+       Z-NAME STYLE - COMPLETE SCRIPT
+       ========================================================= */
+
+    const nameForm = document.getElementById("nameForm");
     const nameInput = document.getElementById("nameInput");
     const clearName = document.getElementById("clearName");
-    const generateButton = document.getElementById("generateButton");
 
     const previewSection = document.getElementById("previewSection");
     const previewName = document.getElementById("previewName");
@@ -10,676 +15,2363 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultsSection = document.getElementById("resultsSection");
     const resultsContainer = document.getElementById("resultsContainer");
     const resultsTitle = document.getElementById("resultsTitle");
+    const styleFilters = document.getElementById("styleFilters");
+
+    const symbolsGrid = document.getElementById("symbolsGrid");
 
     const toast = document.getElementById("toast");
     const toastMessage = document.getElementById("toastMessage");
 
-    const mobileMenuButton = document.getElementById("mobileMenuButton");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const bottomMenuButton = document.getElementById("bottomMenuButton");
+    const mobileMenuButton =
+        document.getElementById("mobileMenuButton");
 
-    const filterButtons = document.querySelectorAll(".filter-button");
-    const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+    const mobileMenu =
+        document.getElementById("mobileMenu");
 
-    let currentFilter = "all";
+    const bottomMenuButton =
+        document.getElementById("bottomMenuButton");
+
     let currentName = "";
+    let activeFilter = "all";
+    let generatedStyles = [];
 
-    /*
-     * =========================================================
-     * 220 NAME DESIGNS
-     * 22 readable text styles × 10 decorative designs
-     * =========================================================
-     */
 
-    const fontMaps = [
-        {
-            name: "Bold",
-            map: {
-                A:"𝐀",B:"𝐁",C:"𝐂",D:"𝐃",E:"𝐄",F:"𝐅",G:"𝐆",H:"𝐇",
-                I:"𝐈",J:"𝐉",K:"𝐊",L:"𝐋",M:"𝐌",N:"𝐍",O:"𝐎",P:"𝐏",
-                Q:"𝐐",R:"𝐑",S:"𝐒",T:"𝐓",U:"𝐔",V:"𝐕",W:"𝐖",X:"𝐗",
-                Y:"𝐘",Z:"𝐙",
-                a:"𝐚",b:"𝐛",c:"𝐜",d:"𝐝",e:"𝐞",f:"𝐟",g:"𝐠",h:"𝐡",
-                i:"𝐢",j:"𝐣",k:"𝐤",l:"𝐥",m:"𝐦",n:"𝐧",o:"𝐨",p:"𝐩",
-                q:"𝐪",r:"𝐫",s:"𝐬",t:"𝐭",u:"𝐮",v:"𝐯",w:"𝐰",x:"𝐱",
-                y:"𝐲",z:"𝐳"
-            }
-        },
+    /* =========================================================
+       BASIC HELPERS
+       ========================================================= */
 
-        {
-            name: "Italic",
-            map: {
-                A:"𝘈",B:"𝘉",C:"𝘊",D:"𝘋",E:"𝘌",F:"𝘍",G:"𝘎",H:"𝘏",
-                I:"𝘐",J:"𝘑",K:"𝘒",L:"𝘓",M:"𝘔",N:"𝘕",O:"𝘖",P:"𝘗",
-                Q:"𝘘",R:"𝘙",S:"𝘚",T:"𝘛",U:"𝘜",V:"𝘝",W:"𝘞",X:"𝘟",
-                Y:"𝘠",Z:"𝘡",
-                a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",
-                i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",
-                q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",
-                y:"𝘺",z:"𝘻"
-            }
-        },
-
-        {
-            name: "Bold Italic",
-            map: {
-                A:"𝑨",B:"𝑩",C:"𝑪",D:"𝑫",E:"𝑬",F:"𝑭",G:"𝑮",H:"𝑯",
-                I:"𝑰",J:"𝑱",K:"𝑲",L:"𝑳",M:"𝑴",N:"𝑵",O:"𝑶",P:"𝑷",
-                Q:"𝑸",R:"𝑹",S:"𝑺",T:"𝑻",U:"𝑼",V:"𝑽",W:"𝑾",X:"𝑿",
-                Y:"𝒀",Z:"𝒁",
-                a:"𝒂",b:"𝒃",c:"𝒄",d:"𝒅",e:"𝒆",f:"𝒇",g:"𝒈",h:"𝒉",
-                i:"𝒊",j:"𝒋",k:"𝒌",l:"𝒍",m:"𝒎",n:"𝒏",o:"𝒐",p:"𝒑",
-                q:"𝒒",r:"𝒓",s:"𝒔",t:"𝒕",u:"𝒖",v:"𝒗",w:"𝒘",x:"𝒙",
-                y:"𝒚",z:"𝒛"
-            }
-        },
-
-        {
-            name: "Script",
-            map: {
-                A:"𝒜",B:"ℬ",C:"𝒞",D:"𝒟",E:"ℰ",F:"ℱ",G:"𝒢",H:"ℋ",
-                I:"ℐ",J:"𝒥",K:"𝒦",L:"ℒ",M:"ℳ",N:"𝒩",O:"𝒪",P:"𝒫",
-                Q:"𝒬",R:"ℛ",S:"𝒮",T:"𝒯",U:"𝒰",V:"𝒱",W:"𝒲",X:"𝒳",
-                Y:"𝒴",Z:"𝒵",
-                a:"𝒶",b:"𝒷",c:"𝒸",d:"𝒹",e:"ℯ",f:"𝒻",g:"ℊ",h:"𝒽",
-                i:"𝒾",j:"𝒿",k:"𝓀",l:"𝓁",m:"𝓂",n:"𝓃",o:"ℴ",p:"𝓅",
-                q:"𝓆",r:"𝓇",s:"𝓈",t:"𝓉",u:"𝓊",v:"𝓋",w:"𝓌",x:"𝓍",
-                y:"𝓎",z:"𝓏"
-            }
-        },
-
-        {
-            name: "Double",
-            map: {
-                A:"𝔸",B:"𝔹",C:"ℂ",D:"𝔻",E:"𝔼",F:"𝔽",G:"𝔾",H:"ℍ",
-                I:"𝕀",J:"𝕁",K:"𝕂",L:"𝕃",M:"𝕄",N:"ℕ",O:"𝕆",P:"ℙ",
-                Q:"ℚ",R:"ℝ",S:"𝕊",T:"𝕋",U:"𝕌",V:"𝕍",W:"𝕎",X:"𝕏",
-                Y:"𝕐",Z:"ℤ",
-                a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",
-                i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",
-                q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",
-                y:"𝕪",z:"𝕫"
-            }
-        },
-
-        {
-            name: "Sans Bold",
-            map: {
-                A:"𝗔",B:"𝗕",C:"𝗖",D:"𝗗",E:"𝗘",F:"𝗙",G:"𝗚",H:"𝗛",
-                I:"𝗜",J:"𝗝",K:"𝗞",L:"𝗟",M:"𝗠",N:"𝗡",O:"𝗢",P:"𝗣",
-                Q:"𝗤",R:"𝗥",S:"𝗦",T:"𝗧",U:"𝗨",V:"𝗩",W:"𝗪",X:"𝗫",
-                Y:"𝗬",Z:"𝗭",
-                a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",
-                i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",
-                q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",
-                y:"𝘆",z:"𝘇"
-            }
-        },
-
-        {
-            name: "Sans Italic",
-            map: {
-                A:"𝘈",B:"𝘉",C:"𝘊",D:"𝘋",E:"𝘌",F:"𝘍",G:"𝘎",H:"𝘏",
-                I:"𝘐",J:"𝘑",K:"𝘒",L:"𝘓",M:"𝘔",N:"𝘕",O:"𝘖",P:"𝘗",
-                Q:"𝘘",R:"𝘙",S:"𝘚",T:"𝘛",U:"𝘜",V:"𝘝",W:"𝘞",X:"𝘟",
-                Y:"𝘠",Z:"𝘡",
-                a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",
-                i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",
-                q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",
-                y:"𝘺",z:"𝘻"
-            }
-        },
-
-        {
-            name: "Monospace",
-            map: {
-                A:"𝙰",B:"𝙱",C:"𝙲",D:"𝙳",E:"𝙴",F:"𝙵",G:"𝙶",H:"𝙷",
-                I:"𝙸",J:"𝙹",K:"𝙺",L:"𝙻",M:"𝙼",N:"𝙽",O:"𝙾",P:"𝙿",
-                Q:"𝚀",R:"𝚁",S:"𝚂",T:"𝚃",U:"𝚄",V:"𝚅",W:"𝚆",X:"𝚇",
-                Y:"𝚈",Z:"𝚉",
-                a:"𝚊",b:"𝚋",c:"𝚌",d:"𝚍",e:"𝚎",f:"𝚏",g:"𝚐",h:"𝚑",
-                i:"𝚒",j:"𝚓",k:"𝚔",l:"𝚕",m:"𝚖",n:"𝚗",o:"𝚘",p:"𝚙",
-                q:"𝚚",r:"𝚛",s:"𝚜",t:"𝚝",u:"𝚞",v:"𝚟",w:"𝚠",x:"𝚡",
-                y:"𝚢",z:"𝚣"
-            }
-        },
-
-        {
-            name: "Small Caps",
-            map: {
-                a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ꜰ",g:"ɢ",h:"ʜ",
-                i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",
-                q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",
-                y:"ʏ",z:"ᴢ"
-            }
-        },
-
-        {
-            name: "Circled",
-            map: {
-                A:"Ⓐ",B:"Ⓑ",C:"Ⓒ",D:"Ⓓ",E:"Ⓔ",F:"Ⓕ",G:"Ⓖ",H:"Ⓗ",
-                I:"Ⓘ",J:"Ⓙ",K:"Ⓚ",L:"Ⓛ",M:"Ⓜ",N:"Ⓝ",O:"Ⓞ",P:"Ⓟ",
-                Q:"Ⓠ",R:"Ⓡ",S:"Ⓢ",T:"Ⓣ",U:"Ⓤ",V:"Ⓥ",W:"Ⓦ",X:"Ⓧ",
-                Y:"Ⓨ",Z:"Ⓩ"
-            }
-        },
-
-        {
-            name: "Squared",
-            map: {
-                A:"🅰",B:"🅱",C:"🅲",D:"🅳",E:"🅴",F:"🅵",G:"🅶",H:"🅷",
-                I:"🅸",J:"🅹",K:"🅺",L:"🅻",M:"🅼",N:"🅽",O:"🅾",P:"🅿",
-                Q:"🆀",R:"🆁",S:"🆂",T:"🆃",U:"🆄",V:"🆅",W:"🆆",X:"🆇",
-                Y:"🆈",Z:"🆉"
-            }
-        },
-
-        {
-            name: "Fullwidth",
-            map: {
-                A:"Ａ",B:"Ｂ",C:"Ｃ",D:"Ｄ",E:"Ｅ",F:"Ｆ",G:"Ｇ",H:"Ｈ",
-                I:"Ｉ",J:"Ｊ",K:"Ｋ",L:"Ｌ",M:"Ｍ",N:"Ｎ",O:"Ｏ",P:"Ｐ",
-                Q:"Ｑ",R:"Ｒ",S:"Ｓ",T:"Ｔ",U:"Ｕ",V:"Ｖ",W:"Ｗ",X:"Ｘ",
-                Y:"Ｙ",Z:"Ｚ"
-            }
-        },
-
-        {
-            name: "Fraktur",
-            map: {
-                A:"𝔄",B:"𝔅",C:"ℭ",D:"𝔇",E:"𝔈",F:"𝔉",G:"𝔊",H:"ℌ",
-                I:"ℑ",J:"𝔍",K:"𝔎",L:"𝔏",M:"𝔐",N:"𝔑",O:"𝔒",P:"𝔓",
-                Q:"𝔔",R:"ℜ",S:"𝔖",T:"𝔗",U:"𝔘",V:"𝔙",W:"𝔚",X:"𝔛",
-                Y:"𝔜",Z:"ℨ",
-                a:"𝔞",b:"𝔟",c:"𝔠",d:"𝔡",e:"𝔢",f:"𝔣",g:"𝔤",h:"𝔥",
-                i:"𝔦",j:"𝔧",k:"𝔨",l:"𝔩",m:"𝔪",n:"𝔫",o:"𝔬",p:"𝔭",
-                q:"𝔮",r:"𝔯",s:"𝔰",t:"𝔱",u:"𝔲",v:"𝔳",w:"𝔴",x:"𝔵",
-                y:"𝔶",z:"𝔷"
-            }
-        },
-
-        {
-            name: "Bold Fraktur",
-            map: {
-                A:"𝕬",B:"𝕭",C:"𝕮",D:"𝕯",E:"𝕰",F:"𝕱",G:"𝕲",H:"𝕳",
-                I:"𝕴",J:"𝕵",K:"𝕶",L:"𝕷",M:"𝕸",N:"𝕹",O:"𝕺",P:"𝕻",
-                Q:"𝕼",R:"𝕽",S:"𝕾",T:"𝕿",U:"𝖀",V:"𝖁",W:"𝖂",X:"𝖃",
-                Y:"𝖄",Z:"𝖅"
-            }
-        },
-
-        {
-            name: "Bold Script",
-            map: {
-                A:"𝓐",B:"𝓑",C:"𝓒",D:"𝓓",E:"𝓔",F:"𝓕",G:"𝓖",H:"𝓗",
-                I:"𝓘",J:"𝓙",K:"𝓚",L:"𝓛",M:"𝓜",N:"𝓝",O:"𝓞",P:"𝓟",
-                Q:"𝓠",R:"𝓡",S:"𝓢",T:"𝓣",U:"𝓤",V:"𝓥",W:"𝓦",X:"𝓧",
-                Y:"𝓨",Z:"𝓩"
-            }
-        },
-
-        {
-            name: "Negative",
-            map: {
-                A:"🅰",B:"🅱",C:"🅲",D:"🅳",E:"🅴",F:"🅵",G:"🅶",H:"🅷",
-                I:"🅸",J:"🅹",K:"🅺",L:"🅻",M:"🅼",N:"🅽",O:"🅾",P:"🅿",
-                Q:"🆀",R:"🆁",S:"🆂",T:"🆃",U:"🆄",V:"🆅",W:"🆆",X:"🆇",
-                Y:"🆈",Z:"🆉"
-            }
-        },
-
-        {
-            name: "Tiny",
-            map: {
-                a:"ᵃ",b:"ᵇ",c:"ᶜ",d:"ᵈ",e:"ᵉ",f:"ᶠ",g:"ᵍ",h:"ʰ",
-                i:"ⁱ",j:"ʲ",k:"ᵏ",l:"ˡ",m:"ᵐ",n:"ⁿ",o:"ᵒ",p:"ᵖ",
-                q:"ᑫ",r:"ʳ",s:"ˢ",t:"ᵗ",u:"ᵘ",v:"ᵛ",w:"ʷ",x:"ˣ",
-                y:"ʸ",z:"ᶻ"
-            }
-        },
-
-        {
-            name: "Underline",
-            map: {}
-        },
-
-        {
-            name: "Spaced",
-            map: {}
-        },
-
-        {
-            name: "Wave",
-            map: {}
-        }
-    ];
-
-    /*
-     * 10 decorative templates.
-     * 22 fonts × 10 templates = 220 results.
-     */
-    const templates = [
-        name => `꧁༺ ${name} ༻꧂`,
-        name => `★彡 ${name} 彡★`,
-        name => `亗 ${name} 亗`,
-        name => `『${name}』`,
-        name => `乂 ${name} 乂`,
-        name => `〆 ${name} 〆`,
-        name => `メ ${name} メ`,
-        name => `༒ ${name} ༒`,
-        name => `♛ ${name} ♛`,
-        name => `⚡ ${name} ⚡`
-    ];
-
-    const categories = [
-        "fancy",
-        "fancy",
-        "gaming",
-        "gaming",
-        "attitude",
-        "attitude",
-        "symbols",
-        "symbols",
-        "fancy",
-        "gaming"
-    ];
-
-    function transformText(text, font) {
-        if (!font.map || Object.keys(font.map).length === 0) {
-            if (font.name === "Underline") {
-                return [...text].map(char => {
-                    return /[a-zA-Z]/.test(char) ? char + "\u0332" : char;
-                }).join("");
-            }
-
-            if (font.name === "Spaced") {
-                return [...text].join(" ");
-            }
-
-            if (font.name === "Wave") {
-                return [...text].map((char, i) => {
-                    return i % 2 === 0
-                        ? char + "\u0301"
-                        : char + "\u0303";
-                }).join("");
-            }
-
-            return text;
-        }
-
-        return [...text].map(char => {
-            return font.map[char] || font.map[char.toLowerCase()] || char;
-        }).join("");
-    }
-
-    const allStyles = [];
-
-    fontMaps.forEach((font, fontIndex) => {
-        templates.forEach((template, templateIndex) => {
-            allStyles.push({
-                id: `${fontIndex}-${templateIndex}`,
-                category: categories[templateIndex],
-                create(name) {
-                    const styled = transformText(name, font);
-                    return template(styled);
-                }
-            });
-        });
-    });
-
-    /*
-     * Make sure we have at least 200 styles.
-     */
-    console.log(`Z-Name Style: ${allStyles.length} styles loaded.`);
-
-    function getFilteredStyles() {
-        if (currentFilter === "all") {
-            return allStyles;
-        }
-
-        return allStyles.filter(style => style.category === currentFilter);
-    }
-
-    function renderResults() {
-        if (!currentName) return;
-
-        const styles = getFilteredStyles();
-
-        resultsContainer.innerHTML = "";
-
-        styles.forEach((style, index) => {
-            const styledName = style.create(currentName);
-
-            const card = document.createElement("article");
-            card.className = "result-card";
-            card.style.animationDelay = `${Math.min(index * 15, 300)}ms`;
-
-            /*
-             * IMPORTANT:
-             * Only styled name + Copy button.
-             * No A / category / font / style name.
-             */
-            card.innerHTML = `
-                <div class="result-name">${escapeHTML(styledName)}</div>
-
-                <button
-                    type="button"
-                    class="copy-result-button"
-                    data-copy="${escapeHTML(styledName)}"
-                >
-                    <span class="copy-icon">📋</span>
-                    <span>Copy</span>
-                </button>
-            `;
-
-            resultsContainer.appendChild(card);
-        });
-
-        resultsSection.hidden = false;
-
-        resultsTitle.textContent =
-            currentFilter === "all"
-                ? "Stylish Names"
-                : "Stylish Names";
-
-        setTimeout(() => {
-            resultsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }, 100);
-    }
-
-    function escapeHTML(value) {
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    async function copyText(text) {
-        try {
-            if (navigator.clipboard) {
-                await navigator.clipboard.writeText(text);
-            } else {
-                fallbackCopy(text);
-            }
-
-            showToast("Copied!");
-
-            return true;
-        } catch {
-            try {
-                fallbackCopy(text);
-                showToast("Copied!");
-                return true;
-            } catch {
-                showToast("Copy failed");
-                return false;
-            }
-        }
-    }
-
-    function fallbackCopy(text) {
-        const textarea = document.createElement("textarea");
-
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-
-        document.body.appendChild(textarea);
-
-        textarea.focus();
-        textarea.select();
-
-        document.execCommand("copy");
-
-        textarea.remove();
+    function cleanName(value) {
+        return String(value || "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 30);
     }
 
     function showToast(message) {
         if (!toast) return;
 
-        toastMessage.textContent = message;
+        if (toastMessage) {
+            toastMessage.textContent = message;
+        }
 
         toast.classList.add("show");
 
-        clearTimeout(window.zNameToastTimer);
+        clearTimeout(showToast.timer);
 
-        window.zNameToastTimer = setTimeout(() => {
+        showToast.timer = setTimeout(function () {
             toast.classList.remove("show");
         }, 1800);
     }
 
-    function updatePreview() {
-        const value = nameInput.value.trim();
 
-        if (value) {
-            clearName.hidden = false;
-            previewSection.hidden = false;
-            previewName.textContent = value;
-        } else {
-            clearName.hidden = true;
-            previewSection.hidden = true;
-        }
+    /* =========================================================
+       FONT MAPS
+       ========================================================= */
+
+    const boldUpper =
+        "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙".split("");
+
+    const boldLower =
+        "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳".split("");
+
+
+    const italicUpper =
+        "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍".split("");
+
+    const italicLower =
+        "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧".split("");
+
+
+    const monoUpper =
+        "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉".split("");
+
+    const monoLower =
+        "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣".split("");
+
+
+    const doubleUpper =
+        "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ".split("");
+
+    const doubleLower =
+        "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫".split("");
+
+
+    const scriptUpper =
+        "𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵".split("");
+
+    const scriptLower =
+        "𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏".split("");
+
+
+    const frakturUpper =
+        "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ".split("");
+
+    const frakturLower =
+        "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷".split("");
+
+
+    function convertFont(text, upper, lower) {
+        return String(text)
+            .split("")
+            .map(function (character) {
+
+                const code = character.charCodeAt(0);
+
+                if (code >= 65 && code <= 90) {
+                    return upper[code - 65] || character;
+                }
+
+                if (code >= 97 && code <= 122) {
+                    return lower[code - 97] || character;
+                }
+
+                return character;
+            })
+            .join("");
     }
 
-    nameInput.addEventListener("input", updatePreview);
 
-    clearName.addEventListener("click", () => {
-        nameInput.value = "";
-        currentName = "";
+    function toBold(text) {
+        return convertFont(text, boldUpper, boldLower);
+    }
 
-        updatePreview();
+    function toItalic(text) {
+        return convertFont(text, italicUpper, italicLower);
+    }
 
-        nameInput.focus();
+    function toMono(text) {
+        return convertFont(text, monoUpper, monoLower);
+    }
 
-        resultsSection.hidden = true;
+    function toDouble(text) {
+        return convertFont(text, doubleUpper, doubleLower);
+    }
+
+    function toScript(text) {
+        return convertFont(text, scriptUpper, scriptLower);
+    }
+
+    function toFraktur(text) {
+        return convertFont(text, frakturUpper, frakturLower);
+    }
+
+
+    /* =========================================================
+       SMALL CAPS
+       ========================================================= */
+
+    const smallCaps = {
+        a: "ᴀ",
+        b: "ʙ",
+        c: "ᴄ",
+        d: "ᴅ",
+        e: "ᴇ",
+        f: "ғ",
+        g: "ɢ",
+        h: "ʜ",
+        i: "ɪ",
+        j: "ᴊ",
+        k: "ᴋ",
+        l: "ʟ",
+        m: "ᴍ",
+        n: "ɴ",
+        o: "ᴏ",
+        p: "ᴘ",
+        q: "ǫ",
+        r: "ʀ",
+        s: "s",
+        t: "ᴛ",
+        u: "ᴜ",
+        v: "ᴠ",
+        w: "ᴡ",
+        x: "x",
+        y: "ʏ",
+        z: "ᴢ"
+    };
+
+
+    function toSmallCaps(text) {
+        return String(text)
+            .toLowerCase()
+            .split("")
+            .map(function (character) {
+                return smallCaps[character] || character;
+            })
+            .join("");
+    }
+
+
+    function addStrike(text) {
+        return String(text)
+            .split("")
+            .map(function (character) {
+                return character + "̶";
+            })
+            .join("");
+    }
+
+
+    function addUnderline(text) {
+        return String(text)
+            .split("")
+            .map(function (character) {
+                return character + "̲";
+            })
+            .join("");
+    }
+
+
+    function addOverline(text) {
+        return String(text)
+            .split("")
+            .map(function (character) {
+                return character + "̅";
+            })
+            .join("");
+    }
+
+
+    function spaced(text) {
+        return String(text)
+            .split("")
+            .join(" ");
+    }
+
+
+    function dotted(text) {
+        return String(text)
+            .split("")
+            .join("・");
+    }
+
+
+    function slashSpaced(text) {
+        return String(text)
+            .split("")
+            .join(" / ");
+    }
+
+
+    function dotSpaced(text) {
+        return String(text)
+            .split("")
+            .join(" • ");
+    }
+
+
+    /* =========================================================
+       STYLE STORAGE
+       ========================================================= */
+
+    function addStyle(category, title, value) {
+
+        if (!value) return;
+
+        generatedStyles.push({
+            category: category,
+            title: title,
+            value: value
+        });
+    }
+
+
+    /* =========================================================
+       SYMBOLS
+       ========================================================= */
+
+    const decorations = [
+
+        ["★", "★"],
+        ["☆", "☆"],
+        ["✦", "✦"],
+        ["✧", "✧"],
+        ["✪", "✪"],
+        ["✯", "✯"],
+        ["✰", "✰"],
+        ["⚡", "⚡"],
+        ["亗", "亗"],
+        ["乂", "乂"],
+        ["ツ", "ツ"],
+        ["彡", "彡"],
+        ["〆", "〆"],
+        ["么", "么"],
+        ["々", "々"],
+        ["メ", "メ"],
+        ["シ", "シ"],
+        ["乛", "乛"],
+        ["♛", "♛"],
+        ["♕", "♕"],
+        ["♔", "♔"],
+        ["♚", "♚"],
+        ["♡", "♡"],
+        ["♥", "♥"],
+        ["☠", "☠"],
+        ["☾", "☽"],
+        ["☽", "☾"],
+        ["❖", "❖"],
+        ["◆", "◆"],
+        ["◇", "◇"],
+        ["●", "●"],
+        ["○", "○"],
+        ["✿", "✿"],
+        ["❀", "❀"],
+        ["❁", "❁"],
+        ["🌸", "🌸"],
+        ["🔥", "🔥"],
+        ["👑", "👑"],
+        ["⚔", "⚔"],
+        ["♠", "♠"],
+        ["♣", "♣"],
+        ["♦", "♦"],
+        ["☯", "☯"],
+        ["☮", "☮"],
+        ["∞", "∞"],
+        ["⚜", "⚜"],
+        ["༺", "༻"],
+        ["༒", "༒"],
+        ["࿐", "࿐"],
+        ["❣", "❣"],
+        ["ღ", "ღ"],
+        ["☘", "☘"],
+        ["☀", "☀"]
+    ];
+
+
+    const boxes = [
+
+        ["『", "』"],
+        ["【", "】"],
+        ["〖", "〗"],
+        ["〘", "〙"],
+        ["〚", "〛"],
+        ["〈", "〉"],
+        ["《", "》"],
+        ["「", "」"],
+        ["〔", "〕"],
+        ["〝", "〞"],
+        ["⟦", "⟧"],
+        ["⟨", "⟩"],
+        ["❲", "❳"],
+        ["❬", "❭"],
+        ["꧁", "꧂"],
+        ["༺", "༻"],
+        ["༼", "༽"],
+        ["╰", "╯"],
+        ["╭", "╮"],
+        ["╔", "╗"],
+        ["╚", "╝"],
+        ["▌", "▐"],
+        ["◥", "◤"],
+        ["◢", "◣"],
+        ["⟪", "⟫"],
+        ["⟮", "⟯"],
+        ["﹝", "﹞"],
+        ["﹙", "﹚"],
+        ["⦅", "⦆"],
+        ["⟬", "⟭"]
+    ];
+
+
+    /* =========================================================
+       FANCY STYLES
+       ========================================================= */
+
+    function createFancyStyles(name) {
+
+        const styles = [
+
+            ["Bold", toBold(name)],
+            ["Italic", toItalic(name)],
+            ["Monospace", toMono(name)],
+            ["Double", toDouble(name)],
+            ["Script", toScript(name)],
+            ["Fraktur", toFraktur(name)],
+            ["Small Caps", toSmallCaps(name)],
+
+            ["Bold Spaced", toBold(spaced(name))],
+            ["Italic Spaced", toItalic(spaced(name))],
+            ["Bold Dotted", toBold(dotted(name))],
+            ["Double Spaced", toDouble(spaced(name))],
+            ["Script Spaced", toScript(spaced(name))],
+            ["Underline", addUnderline(name)],
+            ["Strike", addStrike(name)],
+            ["Overline", addOverline(name)],
+
+            ["Bold Underline", addUnderline(toBold(name))],
+            ["Italic Underline", addUnderline(toItalic(name))],
+            ["Bold Dotted Space", toBold(dotSpaced(name))],
+            ["Script Dotted", toScript(dotted(name))],
+            ["Fraktur Spaced", toFraktur(spaced(name))],
+            ["Bold Slash", toBold(slashSpaced(name))],
+            ["Double Dotted", toDouble(dotted(name))],
+            ["Small Caps Spaced", spaced(toSmallCaps(name))],
+            ["Script Underline", addUnderline(toScript(name))],
+            ["Double Underline", addUnderline(toDouble(name))],
+            ["Fraktur Underline", addUnderline(toFraktur(name))]
+        ];
+
+
+        styles.forEach(function (item) {
+            addStyle("fancy", item[0], item[1]);
+        });
+    }
+
+
+    /* =========================================================
+       DECORATION STYLES
+       ========================================================= */
+
+    function createDecorationStyles(name) {
+
+        decorations.forEach(function (pair, index) {
+
+            addStyle(
+                "symbols",
+                "Symbol " + (index + 1),
+                pair[0] + " " + name + " " + pair[1]
+            );
+
+        });
+
+
+        decorations.forEach(function (pair, index) {
+
+            addStyle(
+                "symbols",
+                "Bold Symbol " + (index + 1),
+                pair[0] + " " + toBold(name) + " " + pair[1]
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       BOX STYLES
+       ========================================================= */
+
+    function createBoxStyles(name) {
+
+        boxes.forEach(function (pair, index) {
+
+            addStyle(
+                "symbols",
+                "Frame " + (index + 1),
+                pair[0] + name + pair[1]
+            );
+
+        });
+
+
+        boxes.forEach(function (pair, index) {
+
+            addStyle(
+                "symbols",
+                "Bold Frame " + (index + 1),
+                pair[0] + toBold(name) + pair[1]
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       GAMING STYLES
+       ========================================================= */
+
+    function createGamingStyles(name) {
+
+        const gaming = [
+
+            ["亗", "亗"],
+            ["乂", "乂"],
+            ["〆", "〆"],
+            ["么", "么"],
+            ["メ", "メ"],
+            ["シ", "シ"],
+            ["ツ", "ツ"],
+            ["彡", "彡"],
+            ["乛", "乛"],
+            ["々", "々"],
+            ["⚔", "⚔"],
+            ["☠", "☠"],
+            ["♠", "♠"],
+            ["⚡", "⚡"],
+            ["🔥", "🔥"],
+            ["🎯", "🎯"],
+            ["👑", "👑"],
+            ["☢", "☢"],
+            ["☣", "☣"],
+            ["༒", "༒"],
+            ["꧁༺", "༻꧂"],
+            ["『", "』"],
+            ["【", "】"],
+            ["◥", "◤"],
+            ["╰", "╯"],
+            ["♛", "♛"],
+            ["★亗", "亗★"],
+            ["⚡亗", "亗⚡"],
+            ["☠亗", "亗☠"],
+            ["彡乂", "乂彡"],
+            ["メ〆", "〆メ"],
+            ["༺༒", "༒༻"],
+            ["꧁", "꧂"]
+        ];
+
+
+        gaming.forEach(function (pair, index) {
+
+            addStyle(
+                "gaming",
+                "Gaming " + (index + 1),
+                pair[0] + " " + toBold(name) + " " + pair[1]
+            );
+
+        });
+
+
+        gaming.forEach(function (pair, index) {
+
+            addStyle(
+                "gaming",
+                "Pro Gaming " + (index + 1),
+                pair[0] + " " + toDouble(name) + " " + pair[1]
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       ATTITUDE
+       ========================================================= */
+
+    function createAttitudeStyles(name) {
+
+        const attitude = [
+
+            "★彡 {name} 彡★",
+            "乂 {name} 乂",
+            "么 {name} 么",
+            "⚡ {name} ⚡",
+            "☠ {name} ☠",
+            "♛ {name} ♛",
+            "👑 {name} 👑",
+            "亗 {name} 亗",
+            "『 {name} 』",
+            "【 {name} 】",
+            "〆 {name} 〆",
+            "メ {name} メ",
+            "彡 {name} 彡",
+            "ツ {name} ツ",
+            "༒ {name} ༒",
+            "⚔ {name} ⚔",
+            "🔥 {name} 🔥",
+            "☢ {name} ☢",
+            "☣ {name} ☣",
+            "♠ {name} ♠",
+            "★ {name} ★",
+            "✦ {name} ✦",
+            "✯ {name} ✯",
+            "❖ {name} ❖",
+            "∞ {name} ∞",
+            "⚜ {name} ⚜",
+            "☯ {name} ☯",
+            "☮ {name} ☮",
+            "꧁༺ {name} ༻꧂",
+            "『亗 {name} 亗』",
+            "【乂 {name} 乂】",
+            "★亗 {name} 亗★",
+            "⚡亗 {name} 亗⚡",
+            "☠亗 {name} 亗☠",
+            "♛亗 {name} 亗♛",
+            "༒亗 {name} 亗༒",
+            "彡乂 {name} 乂彡",
+            "メ〆 {name} 〆メ",
+            "꧁ {name} ꧂",
+            "༺ {name} ༻"
+        ];
+
+
+        attitude.forEach(function (template, index) {
+
+            addStyle(
+                "attitude",
+                "Attitude " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        attitude.forEach(function (template, index) {
+
+            addStyle(
+                "attitude",
+                "Attitude Fancy " + (index + 1),
+                template.replace("{name}", toDouble(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       ROYAL
+       ========================================================= */
+
+    function createRoyalStyles(name) {
+
+        const royal = [
+
+            "♛ {name} ♛",
+            "♕ {name} ♕",
+            "♔ {name} ♔",
+            "♚ {name} ♚",
+            "👑 {name} 👑",
+            "♛༺ {name} ༻♛",
+            "꧁♛ {name} ♛꧂",
+            "꧁♕ {name} ♕꧂",
+            "『♛ {name} ♛』",
+            "【♔ {name} ♔】",
+            "亗♛ {name} ♛亗",
+            "༺♛ {name} ♛༻",
+            "⚜ {name} ⚜",
+            "⚜♛ {name} ♛⚜",
+            "♛★ {name} ★♛",
+            "♕✦ {name} ✦♕",
+            "👑亗 {name} 亗👑",
+            "♔༒ {name} ༒♔",
+            "♚⚡ {name} ⚡♚",
+            "꧁༺♛ {name} ♛༻꧂",
+            "╰♛ {name} ♛╯",
+            "╭♕ {name} ♕╮",
+            "『👑 {name} 👑』",
+            "【👑 {name} 👑】",
+            "★♛ {name} ♛★",
+            "✦♕ {name} ♕✦",
+            "❖♛ {name} ♛❖",
+            "༒♚ {name} ♚༒",
+            "亗👑 {name} 👑亗",
+            "♛∞ {name} ∞♛"
+        ];
+
+
+        royal.forEach(function (template, index) {
+
+            addStyle(
+                "royal",
+                "Royal " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        royal.forEach(function (template, index) {
+
+            addStyle(
+                "royal",
+                "Royal Script " + (index + 1),
+                template.replace("{name}", toScript(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       LOVE
+       ========================================================= */
+
+    function createLoveStyles(name) {
+
+        const love = [
+
+            "♡ {name} ♡",
+            "♥ {name} ♥",
+            "❤ {name} ❤",
+            "💕 {name} 💕",
+            "💖 {name} 💖",
+            "💗 {name} 💗",
+            "💘 {name} 💘",
+            "💝 {name} 💝",
+            "❣ {name} ❣",
+            "ღ {name} ღ",
+            "♡彡 {name} 彡♡",
+            "♥彡 {name} 彡♥",
+            "꧁♡ {name} ♡꧂",
+            "꧁♥ {name} ♥꧂",
+            "『♡ {name} ♡』",
+            "【♥ {name} ♥】",
+            "♡亗 {name} 亗♡",
+            "♥亗 {name} 亗♥",
+            "༺♡ {name} ♡༻",
+            "༺♥ {name} ♥༻",
+            "★♡ {name} ♡★",
+            "✦♥ {name} ♥✦",
+            "❖♡ {name} ♡❖",
+            "🌸♡ {name} ♡🌸",
+            "🌹 {name} 🌹",
+            "💞 {name} 💞",
+            "💓 {name} 💓",
+            "💟 {name} 💟",
+            "💌 {name} 💌",
+            "💕♡ {name} ♡💕"
+        ];
+
+
+        love.forEach(function (template, index) {
+
+            addStyle(
+                "love",
+                "Love " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        love.forEach(function (template, index) {
+
+            addStyle(
+                "love",
+                "Love Script " + (index + 1),
+                template.replace("{name}", toScript(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       COOL
+       ========================================================= */
+
+    function createCoolStyles(name) {
+
+        const cool = [
+
+            "★ {name} ★",
+            "☆ {name} ☆",
+            "✦ {name} ✦",
+            "✧ {name} ✧",
+            "✯ {name} ✯",
+            "✰ {name} ✰",
+            "❖ {name} ❖",
+            "◆ {name} ◆",
+            "◇ {name} ◇",
+            "⚡ {name} ⚡",
+            "∞ {name} ∞",
+            "☯ {name} ☯",
+            "☮ {name} ☮",
+            "⚜ {name} ⚜",
+            "亗 {name} 亗",
+            "乂 {name} 乂",
+            "ツ {name} ツ",
+            "彡 {name} 彡",
+            "メ {name} メ",
+            "〆 {name} 〆",
+            "么 {name} 么",
+            "々 {name} 々",
+            "★彡 {name} 彡★",
+            "✦彡 {name} 彡✦",
+            "亗★ {name} ★亗",
+            "⚡亗 {name} 亗⚡",
+            "❖亗 {name} 亗❖",
+            "꧁ {name} ꧂",
+            "༺ {name} ༻",
+            "『 {name} 』"
+        ];
+
+
+        cool.forEach(function (template, index) {
+
+            addStyle(
+                "cool",
+                "Cool " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        cool.forEach(function (template, index) {
+
+            addStyle(
+                "cool",
+                "Cool Script " + (index + 1),
+                template.replace("{name}", toScript(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       DARK
+       ========================================================= */
+
+    function createDarkStyles(name) {
+
+        const dark = [
+
+            "☠ {name} ☠",
+            "💀 {name} 💀",
+            "☣ {name} ☣",
+            "☢ {name} ☢",
+            "༒ {name} ༒",
+            "♠ {name} ♠",
+            "♤ {name} ♤",
+            "⚔ {name} ⚔",
+            "🖤 {name} 🖤",
+            "☾ {name} ☽",
+            "☽ {name} ☾",
+            "亗☠ {name} ☠亗",
+            "꧁☠ {name} ☠꧂",
+            "꧁༒ {name} ༒꧂",
+            "『☠ {name} ☠』",
+            "【☠ {name} ☠】",
+            "༺☠ {name} ☠༻",
+            "༺༒ {name} ༒༻",
+            "★☠ {name} ☠★",
+            "✦☠ {name} ☠✦",
+            "⚔亗 {name} 亗⚔",
+            "☢亗 {name} 亗☢",
+            "☣亗 {name} 亗☣",
+            "♠༒ {name} ༒♠",
+            "☾༒ {name} ༒☽"
+        ];
+
+
+        dark.forEach(function (template, index) {
+
+            addStyle(
+                "dark",
+                "Dark " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        dark.forEach(function (template, index) {
+
+            addStyle(
+                "dark",
+                "Dark Fraktur " + (index + 1),
+                template.replace("{name}", toFraktur(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       CUTE
+       ========================================================= */
+
+    function createCuteStyles(name) {
+
+        const cute = [
+
+            "🌸 {name} 🌸",
+            "🌷 {name} 🌷",
+            "🌺 {name} 🌺",
+            "🌼 {name} 🌼",
+            "🦋 {name} 🦋",
+            "🐰 {name} 🐰",
+            "🐻 {name} 🐻",
+            "🐼 {name} 🐼",
+            "🐨 {name} 🐨",
+            "♡ {name} ♡",
+            "ღ {name} ღ",
+            "꒰ {name} ꒱",
+            "꒰ა {name} ໒꒱",
+            "୨♡୧ {name} ୨♡୧",
+            "꧁♡ {name} ♡꧂",
+            "『🌸 {name} 🌸』",
+            "【🦋 {name} 🦋】",
+            "♡彡 {name} 彡♡",
+            "🌸彡 {name} 彡🌸",
+            "🦋彡 {name} 彡🦋",
+            "✿ {name} ✿",
+            "❀ {name} ❀",
+            "❁ {name} ❁",
+            "✾ {name} ✾",
+            "💗 {name} 💗"
+        ];
+
+
+        cute.forEach(function (template, index) {
+
+            addStyle(
+                "cute",
+                "Cute " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        cute.forEach(function (template, index) {
+
+            addStyle(
+                "cute",
+                "Cute Script " + (index + 1),
+                template.replace("{name}", toScript(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       SOCIAL
+       ========================================================= */
+
+    function createSocialStyles(name) {
+
+        const social = [
+
+            "• {name} •",
+            "× {name} ×",
+            "— {name} —",
+            "_ {name} _",
+            "~ {name} ~",
+            "| {name} |",
+            "《 {name} 》",
+            "「 {name} 」",
+            "『 {name} 』",
+            "【 {name} 】",
+            "〈 {name} 〉",
+            "✦ {name} ✦",
+            "♡ {name} ♡",
+            "☆ {name} ☆",
+            "•° {name} °•",
+            "°• {name} •°",
+            "×͜× {name} ×͜×",
+            "ツ {name} ツ",
+            "彡 {name} 彡",
+            "亗 {name} 亗"
+        ];
+
+
+        social.forEach(function (template, index) {
+
+            addStyle(
+                "social",
+                "Social " + (index + 1),
+                template.replace("{name}", toBold(name))
+            );
+
+        });
+
+
+        social.forEach(function (template, index) {
+
+            addStyle(
+                "social",
+                "Social Script " + (index + 1),
+                template.replace("{name}", toScript(name))
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       EXTRA FANCY
+       ========================================================= */
+
+    function createExtraFancyStyles(name) {
+
+        const styles = [
+
+            ["꧁༺ " + toBold(name) + " ༻꧂", "Fancy Royal"],
+            ["꧁༺ " + toScript(name) + " ༻꧂", "Fancy Script"],
+            ["꧁༺ " + toDouble(name) + " ༻꧂", "Fancy Double"],
+
+            ["★彡 " + toBold(name) + " 彡★", "Star Bold"],
+            ["★彡 " + toScript(name) + " 彡★", "Star Script"],
+
+            ["✦ " + toDouble(name) + " ✦", "Double Star"],
+            ["亗 " + toBold(name) + " 亗", "Warrior Bold"],
+            ["『 " + toScript(name) + " 』", "Frame Script"],
+            ["【 " + toDouble(name) + " 】", "Frame Double"],
+            ["༺ " + toBold(name) + " ༻", "Royal Bold"],
+            ["༒ " + toBold(name) + " ༒", "Dark Bold"],
+            ["♛ " + toScript(name) + " ♛", "King Script"],
+            ["♡ " + toScript(name) + " ♡", "Love Script"],
+            ["⚡ " + toBold(name) + " ⚡", "Lightning Bold"],
+            ["☠ " + toDouble(name) + " ☠", "Skull Double"],
+            ["✯ " + toScript(name) + " ✯", "Star Script"],
+            ["❖ " + toDouble(name) + " ❖", "Diamond Double"],
+            ["彡 " + toBold(name) + " 彡", "Anime Bold"],
+            ["ツ " + toScript(name) + " ツ", "Anime Script"],
+            ["乂 " + toDouble(name) + " 乂", "Battle Double"]
+        ];
+
+
+        styles.forEach(function (item, index) {
+
+            addStyle(
+                "fancy",
+                item[1] + " " + (index + 1),
+                item[0]
+            );
+
+        });
+    }
+
+
+    /* =========================================================
+       GENERATE 250+ STYLES
+       ========================================================= */
+
+    function generateAllStyles(name) {
+
+        generatedStyles = [];
+
+        createFancyStyles(name);
+        createDecorationStyles(name);
+        createBoxStyles(name);
+        createGamingStyles(name);
+        createAttitudeStyles(name);
+        createRoyalStyles(name);
+        createLoveStyles(name);
+        createCoolStyles(name);
+        createDarkStyles(name);
+        createCuteStyles(name);
+        createSocialStyles(name);
+        createExtraFancyStyles(name);
+
+
+        /*
+         * Safety net:
+         * Minimum 250 styles.
+         */
+
+        const seed = generatedStyles.slice();
+
+        let variantIndex = 1;
+
+        while (generatedStyles.length < 250 && seed.length) {
+
+            seed.forEach(function (style) {
+
+                if (generatedStyles.length >= 250) {
+                    return;
+                }
+
+                const variants = [
+
+                    "✦ " + style.value + " ✦",
+                    "★ " + style.value + " ★",
+                    "『 " + style.value + " 』",
+                    "亗 " + style.value + " 亗",
+                    "༺ " + style.value + " ༻"
+
+                ];
+
+
+                variants.forEach(function (value) {
+
+                    if (generatedStyles.length < 250) {
+
+                        addStyle(
+                            style.category,
+                            "Generated " + variantIndex++,
+                            value
+                        );
+
+                    }
+
+                });
+
+            });
+        }
+
+        return generatedStyles;
+    }
+
+
+    /* =========================================================
+       FILTER
+       ========================================================= */
+
+    function getFilteredStyles() {
+
+        if (activeFilter === "all") {
+            return generatedStyles;
+        }
+
+        return generatedStyles.filter(function (style) {
+            return style.category === activeFilter;
+        });
+    }
+
+
+    function updateFilterButtons() {
+
+        if (!styleFilters) return;
+
+        styleFilters
+            .querySelectorAll(".filter-button")
+            .forEach(function (button) {
+
+                button.classList.toggle(
+                    "active",
+                    (button.dataset.filter || "all") === activeFilter
+                );
+
+            });
+    }
+
+
+    /* =========================================================
+       RESULT CARD
+       =========================================================
+       
+       IMPORTANT:
+       Card ke andar sirf:
+
+              Styled Name
+
+              📋 Copy
+
+       Koi A / Bold Fancy / Gaming / number nahi.
+       ========================================================= */
+
+    function createResultCard(style) {
+
+        const card = document.createElement("article");
+
+        card.className = "result-card";
+
+
+        /* ONLY STYLED NAME */
+
+        const value = document.createElement("div");
+
+        value.className = "result-value";
+
+        value.textContent = style.value;
+
+        value.setAttribute(
+            "aria-label",
+            "Stylish name"
+        );
+
+
+        /* COPY BUTTON */
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+            "copy-result-button";
+
+        button.textContent =
+            "📋 Copy";
+
+        button.dataset.copy =
+            style.value;
+
+        button.setAttribute(
+            "aria-label",
+            "Copy stylish name"
+        );
+
+
+        card.appendChild(value);
+        card.appendChild(button);
+
+        return card;
+    }
+
+
+    /* =========================================================
+       RENDER RESULTS
+       ========================================================= */
+
+    function renderResults() {
+
+        if (!resultsContainer) return;
+
+        const styles =
+            getFilteredStyles();
+
         resultsContainer.innerHTML = "";
-    });
 
-    form.addEventListener("submit", event => {
-        event.preventDefault();
 
-        const value = nameInput.value.trim();
+        if (!styles.length) {
 
-        if (!value) {
-            showToast("Please enter your name");
-            nameInput.focus();
+            const empty =
+                document.createElement("div");
+
+            empty.className =
+                "no-results";
+
+
+            const strong =
+                document.createElement("strong");
+
+            strong.textContent =
+                "No styles found";
+
+
+            const p =
+                document.createElement("p");
+
+            p.textContent =
+                "Try another category.";
+
+
+            empty.appendChild(strong);
+            empty.appendChild(p);
+
+            resultsContainer.appendChild(empty);
+
             return;
         }
 
-        currentName = value;
 
-        generateButton.classList.add("generating");
+        const fragment =
+            document.createDocumentFragment();
 
-        setTimeout(() => {
-            generateButton.classList.remove("generating");
 
-            updatePreview();
-            renderResults();
-        }, 250);
-    });
+        styles.forEach(function (style) {
 
-    /*
-     * Copy buttons
-     */
-    resultsContainer.addEventListener("click", async event => {
-        const button = event.target.closest(".copy-result-button");
+            fragment.appendChild(
+                createResultCard(style)
+            );
 
-        if (!button) return;
-
-        const text = button.dataset.copy;
-
-        const originalHTML = button.innerHTML;
-
-        button.classList.add("copied");
-
-        button.innerHTML = `
-            <span class="copy-icon">✓</span>
-            <span>Copied</span>
-        `;
-
-        await copyText(text);
-
-        setTimeout(() => {
-            button.classList.remove("copied");
-            button.innerHTML = originalHTML;
-        }, 1400);
-    });
-
-    /*
-     * Filters
-     */
-    filterButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            filterButtons.forEach(item => {
-                item.classList.remove("active");
-            });
-
-            button.classList.add("active");
-
-            currentFilter = button.dataset.filter || "all";
-
-            if (currentName) {
-                renderResults();
-            }
         });
-    });
 
-    /*
-     * Mobile menu
-     */
-    function toggleMobileMenu() {
-        if (!mobileMenu || !mobileMenuButton) return;
 
-        const isOpen = mobileMenu.classList.toggle("open");
+        resultsContainer.appendChild(fragment);
 
-        mobileMenuButton.classList.toggle("open", isOpen);
 
-        mobileMenuButton.setAttribute(
-            "aria-expanded",
-            String(isOpen)
+        /*
+         * Section heading stays:
+         * Stylish Names
+         */
+
+        if (resultsTitle) {
+            resultsTitle.textContent =
+                "Stylish Names";
+        }
+    }
+
+
+    /* =========================================================
+       COPY
+       ========================================================= */
+
+    async function copyText(text) {
+
+        text = String(text || "");
+
+        if (!text) return;
+
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                await navigator.clipboard.writeText(text);
+
+            } else {
+
+                const textarea =
+                    document.createElement("textarea");
+
+                textarea.value =
+                    text;
+
+                textarea.style.position =
+                    "fixed";
+
+                textarea.style.left =
+                    "-9999px";
+
+                document.body.appendChild(
+                    textarea
+                );
+
+                textarea.focus();
+                textarea.select();
+
+                document.execCommand("copy");
+
+                textarea.remove();
+            }
+
+
+            showToast("Name copied!");
+
+        } catch (error) {
+
+            showToast(
+                "Copy failed. Try again."
+            );
+        }
+    }
+
+
+    /* =========================================================
+       GENERATE
+       ========================================================= */
+
+    function generateNames() {
+
+        if (!nameInput) return;
+
+
+        const name =
+            cleanName(nameInput.value);
+
+
+        if (!name) {
+
+            showToast(
+                "Please enter your name."
+            );
+
+            nameInput.focus();
+
+            return;
+        }
+
+
+        currentName =
+            name;
+
+        activeFilter =
+            "all";
+
+
+        generateAllStyles(
+            currentName
+        );
+
+
+        if (previewName) {
+
+            previewName.textContent =
+                currentName;
+        }
+
+
+        if (previewSection) {
+
+            previewSection.hidden =
+                false;
+        }
+
+
+        if (resultsSection) {
+
+            resultsSection.hidden =
+                false;
+        }
+
+
+        if (clearName) {
+
+            clearName.hidden =
+                false;
+        }
+
+
+        updateFilterButtons();
+
+        renderResults();
+
+
+        if (resultsSection) {
+
+            setTimeout(function () {
+
+                resultsSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }, 80);
+        }
+    }
+
+
+    /* =========================================================
+       FORM
+       ========================================================= */
+
+    if (nameForm) {
+
+        nameForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+                generateNames();
+            }
         );
     }
 
-    mobileMenuButton?.addEventListener("click", toggleMobileMenu);
 
-    bottomMenuButton?.addEventListener("click", toggleMobileMenu);
+    /* =========================================================
+       INPUT
+       ========================================================= */
 
-    mobileNavLinks.forEach(link => {
-        link.addEventListener("click", () => {
-            mobileMenu?.classList.remove("open");
-            mobileMenuButton?.classList.remove("open");
-            mobileMenuButton?.setAttribute("aria-expanded", "false");
+    if (nameInput) {
+
+        nameInput.addEventListener(
+            "input",
+            function () {
+
+                const value =
+                    cleanName(
+                        nameInput.value
+                    );
+
+                if (clearName) {
+
+                    clearName.hidden =
+                        value.length === 0;
+                }
+            }
+        );
+
+
+        nameInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    generateNames();
+                }
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CLEAR
+       ========================================================= */
+
+    if (clearName) {
+
+        clearName.addEventListener(
+            "click",
+            function () {
+
+                if (nameInput) {
+
+                    nameInput.value = "";
+
+                    nameInput.focus();
+                }
+
+
+                currentName = "";
+
+                generatedStyles = [];
+
+
+                clearName.hidden =
+                    true;
+
+
+                if (previewName) {
+
+                    previewName.textContent =
+                        "Your Name";
+                }
+
+
+                if (previewSection) {
+
+                    previewSection.hidden =
+                        true;
+                }
+
+
+                if (resultsSection) {
+
+                    resultsSection.hidden =
+                        true;
+                }
+            }
+        );
+    }
+
+
+    /* =========================================================
+       RESULT COPY BUTTON
+       ========================================================= */
+
+    if (resultsContainer) {
+
+        resultsContainer.addEventListener(
+            "click",
+            function (event) {
+
+                const button =
+                    event.target.closest(
+                        ".copy-result-button"
+                    );
+
+
+                if (!button) return;
+
+
+                const text =
+                    button.dataset.copy || "";
+
+
+                if (!text) return;
+
+
+                copyText(text);
+
+
+                button.textContent =
+                    "✓ Copied!";
+
+                button.classList.add(
+                    "copied"
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        button.textContent =
+                            "📋 Copy";
+
+                        button.classList.remove(
+                            "copied"
+                        );
+
+                    },
+                    1400
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       FILTER BUTTONS
+       ========================================================= */
+
+    if (styleFilters) {
+
+        styleFilters.addEventListener(
+            "click",
+            function (event) {
+
+                const button =
+                    event.target.closest(
+                        ".filter-button"
+                    );
+
+
+                if (!button) return;
+
+
+                activeFilter =
+                    button.dataset.filter ||
+                    "all";
+
+
+                updateFilterButtons();
+
+                renderResults();
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CATEGORY CARDS
+       ========================================================= */
+
+    document
+        .querySelectorAll(".category-card")
+        .forEach(function (card) {
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    const category =
+                        card.dataset.category;
+
+
+                    if (!category) {
+                        return;
+                    }
+
+
+                    if (!generatedStyles.length) {
+
+                        if (
+                            nameInput &&
+                            nameInput.value.trim()
+                        ) {
+
+                            generateNames();
+
+                        } else {
+
+                            if (nameInput) {
+                                nameInput.focus();
+                            }
+
+                            showToast(
+                                "Enter your name first."
+                            );
+
+                            return;
+                        }
+                    }
+
+
+                    activeFilter =
+                        category;
+
+
+                    updateFilterButtons();
+
+                    renderResults();
+
+
+                    if (resultsSection) {
+
+                        resultsSection.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }
+                }
+            );
         });
-    });
 
-    /*
-     * Trending style buttons
-     */
-    document.querySelectorAll(".use-style-button").forEach(button => {
-        button.addEventListener("click", () => {
-            const template = button.dataset.template || "{name}";
 
-            const name = nameInput.value.trim();
+    /* =========================================================
+       SYMBOL GRID
+       ========================================================= */
 
-            if (!name) {
-                showToast("Enter your name first");
-                nameInput.focus();
+    if (symbolsGrid) {
+
+        symbolsGrid.addEventListener(
+            "click",
+            function (event) {
+
+                const button =
+                    event.target.closest(
+                        ".symbol-card"
+                    );
+
+
+                if (!button) return;
+
+
+                const symbol =
+                    button.dataset.symbol ||
+                    "";
+
+
+                if (!symbol) return;
+
+
+                copyText(symbol);
+
+
+                const small =
+                    button.querySelector("small");
+
+
+                if (small) {
+
+                    const original =
+                        small.textContent;
+
+
+                    small.textContent =
+                        "Copied!";
+
+
+                    setTimeout(
+                        function () {
+
+                            small.textContent =
+                                original;
+
+                        },
+                        1200
+                    );
+                }
+            }
+        );
+    }
+
+
+    /* =========================================================
+       USE STYLE BUTTONS
+       ========================================================= */
+
+    document
+        .querySelectorAll(".use-style-button")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const template =
+                        button.dataset.template ||
+                        "";
+
+
+                    if (!template) return;
+
+                    if (!nameInput) return;
+
+
+                    const name =
+                        cleanName(
+                            nameInput.value
+                        );
+
+
+                    if (!name) {
+
+                        nameInput.focus();
+
+                        showToast(
+                            "Enter your name first."
+                        );
+
+                        return;
+                    }
+
+
+                    const styled =
+                        template.replace(
+                            /\{name\}/gi,
+                            name
+                        );
+
+
+                    copyText(styled);
+                }
+            );
+        });
+
+
+    /* =========================================================
+       REMOVE TOP STYLES + TOOLS
+       ========================================================= */
+
+    function removeStylesAndTools() {
+
+        document
+            .querySelectorAll(
+                "a, button"
+            )
+            .forEach(function (item) {
+
+                const text =
+                    item.textContent
+                        .replace(/\s+/g, " ")
+                        .trim()
+                        .toLowerCase();
+
+
+                if (
+                    text === "styles" ||
+                    text === "tools"
+                ) {
+
+                    item.remove();
+                }
+            });
+    }
+
+
+    /* =========================================================
+       REMOVE POPULAR STYLES SECTION
+       ========================================================= */
+
+    function removePopularStyles() {
+
+        document
+            .querySelectorAll(
+                "section, .section, .popular-styles, .styles-section"
+            )
+            .forEach(function (section) {
+
+                const heading =
+                    section.querySelector(
+                        "h1, h2, h3, .section-title, .section-heading"
+                    );
+
+
+                if (!heading) return;
+
+
+                const text =
+                    heading.textContent
+                        .trim()
+                        .toLowerCase();
+
+
+                if (
+                    text ===
+                    "popular styles"
+                ) {
+
+                    section.remove();
+                }
+            });
+    }
+
+
+    /* =========================================================
+       FINAL RESULT CARD CSS
+       ========================================================= */
+
+    function applyResultCardCSS() {
+
+        if (
+            document.getElementById(
+                "zname-result-card-fixes"
+            )
+        ) {
+            return;
+        }
+
+
+        const style =
+            document.createElement("style");
+
+
+        style.id =
+            "zname-result-card-fixes";
+
+
+        style.textContent = `
+
+            /* RESULT GRID */
+
+            #resultsContainer {
+                display: grid;
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+
+            /* RESULT CARD */
+
+            #resultsContainer .result-card {
+
+                min-width: 0;
+
+                display: flex !important;
+
+                flex-direction:
+                    column !important;
+
+                align-items:
+                    center !important;
+
+                justify-content:
+                    center !important;
+
+                gap: 18px !important;
+
+                padding: 24px !important;
+
+                background:
+                    #ffffff !important;
+
+                border:
+                    1px solid #e7e4ef !important;
+
+                border-radius:
+                    18px !important;
+
+                box-sizing:
+                    border-box !important;
+
+                overflow:
+                    hidden;
+            }
+
+
+            /* ONLY NAME */
+
+            #resultsContainer .result-value {
+
+                width: 100%;
+
+                min-height: 52px;
+
+                display: flex !important;
+
+                align-items:
+                    center !important;
+
+                justify-content:
+                    center !important;
+
+                text-align:
+                    center !important;
+
+                font-size:
+                    clamp(20px, 3vw, 28px) !important;
+
+                line-height:
+                    1.35 !important;
+
+                font-weight:
+                    600 !important;
+
+                color:
+                    #202033 !important;
+
+                overflow-wrap:
+                    anywhere;
+
+                word-break:
+                    break-word;
+            }
+
+
+            /* COPY BUTTON */
+
+            #resultsContainer
+            .copy-result-button {
+
+                width:
+                    100% !important;
+
+                min-height:
+                    58px !important;
+
+                display:
+                    flex !important;
+
+                align-items:
+                    center !important;
+
+                justify-content:
+                    center !important;
+
+                gap:
+                    7px !important;
+
+                border:
+                    1px solid #e1dcf5 !important;
+
+                border-radius:
+                    16px !important;
+
+                background:
+                    #f3f0ff !important;
+
+                color:
+                    #7358df !important;
+
+                font: inherit !important;
+
+                font-weight:
+                    700 !important;
+
+                font-size:
+                    16px !important;
+
+                cursor:
+                    pointer !important;
+
+                transition:
+                    transform .18s ease,
+                    background .18s ease,
+                    box-shadow .18s ease !important;
+            }
+
+
+            #resultsContainer
+            .copy-result-button:hover {
+
+                background:
+                    #ebe6ff !important;
+
+                box-shadow:
+                    0 8px 20px
+                    rgba(115, 88, 223, .12)
+                    !important;
+
+                transform:
+                    translateY(-1px);
+            }
+
+
+            #resultsContainer
+            .copy-result-button:active {
+
+                transform:
+                    scale(.98);
+            }
+
+
+            #resultsContainer
+            .copy-result-button.copied {
+
+                background:
+                    #ece9ff !important;
+            }
+
+
+            /* MOBILE */
+
+            @media (max-width: 700px) {
+
+                #resultsContainer {
+
+                    grid-template-columns:
+                        1fr;
+
+                    gap:
+                        14px;
+                }
+
+
+                #resultsContainer
+                .result-card {
+
+                    padding:
+                        22px 16px !important;
+
+                    gap:
+                        16px !important;
+                }
+
+
+                #resultsContainer
+                .result-value {
+
+                    min-height:
+                        48px;
+
+                    font-size:
+                        22px !important;
+                }
+
+
+                #resultsContainer
+                .copy-result-button {
+
+                    min-height:
+                        56px !important;
+                }
+            }
+
+        `;
+
+
+        document.head.appendChild(style);
+    }
+
+
+    /* =========================================================
+       MOBILE MENU
+       ========================================================= */
+
+    function closeMobileMenu() {
+
+        if (!mobileMenu) return;
+
+
+        mobileMenu.classList.remove(
+            "open"
+        );
+
+        mobileMenu.classList.remove(
+            "active"
+        );
+
+
+        if (mobileMenuButton) {
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+        }
+    }
+
+
+    function toggleMobileMenu() {
+
+        if (!mobileMenu) return;
+
+
+        const open =
+            mobileMenu.classList.toggle(
+                "open"
+            );
+
+
+        mobileMenu.classList.toggle(
+            "active",
+            open
+        );
+
+
+        if (mobileMenuButton) {
+
+            mobileMenuButton.setAttribute(
+                "aria-expanded",
+                String(open)
+            );
+        }
+    }
+
+
+    if (mobileMenuButton) {
+
+        mobileMenuButton.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+                toggleMobileMenu();
+            }
+        );
+    }
+
+
+    if (bottomMenuButton) {
+
+        bottomMenuButton.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+                toggleMobileMenu();
+            }
+        );
+    }
+
+
+    document
+        .querySelectorAll(".mobile-nav-link")
+        .forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                closeMobileMenu
+            );
+        });
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (!mobileMenu) return;
+
+
+            const inside =
+                mobileMenu.contains(
+                    event.target
+                );
+
+
+            const menuButton =
+                mobileMenuButton &&
+                mobileMenuButton.contains(
+                    event.target
+                );
+
+
+            const bottomButton =
+                bottomMenuButton &&
+                bottomMenuButton.contains(
+                    event.target
+                );
+
+
+            if (
+                !inside &&
+                !menuButton &&
+                !bottomButton
+            ) {
+
+                closeMobileMenu();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                closeMobileMenu();
+            }
+        }
+    );
+
+
+    /* =========================================================
+       SMOOTH INTERNAL LINKS
+       ========================================================= */
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            const link =
+                event.target.closest(
+                    'a[href^="#"]'
+                );
+
+
+            if (!link) return;
+
+
+            const href =
+                link.getAttribute("href");
+
+
+            if (
+                !href ||
+                href === "#"
+            ) {
                 return;
             }
 
-            const result = template.replace("{name}", name);
 
-            copyText(result);
+            let target;
 
-            showToast("Style copied!");
-        });
-    });
 
-    /*
-     * Symbol copy
-     */
-    document.querySelectorAll(".symbol-card").forEach(button => {
-        button.addEventListener("click", () => {
-            const symbol = button.dataset.symbol;
+            try {
 
-            if (!symbol) return;
+                target =
+                    document.querySelector(
+                        href
+                    );
 
-            copyText(symbol);
+            } catch (error) {
 
-            button.classList.add("copied");
+                return;
+            }
 
-            setTimeout(() => {
-                button.classList.remove("copied");
-            }, 700);
-        });
-    });
 
-    /*
-     * Category links that still exist elsewhere in the old HTML.
-     */
-    document.querySelectorAll(".category-card").forEach(card => {
-        card.addEventListener("click", () => {
-            const category = card.dataset.category;
+            if (!target) return;
 
-            if (!category) return;
 
-            const filter = document.querySelector(
-                `.filter-button[data-filter="${category}"]`
+            event.preventDefault();
+
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+
+            closeMobileMenu();
+        }
+    );
+
+
+    /* =========================================================
+       STARTUP
+       ========================================================= */
+
+    removeStylesAndTools();
+
+    removePopularStyles();
+
+    applyResultCardCSS();
+
+
+    if (previewSection) {
+
+        previewSection.hidden =
+            true;
+    }
+
+
+    if (resultsSection) {
+
+        resultsSection.hidden =
+            true;
+    }
+
+
+    if (clearName) {
+
+        clearName.hidden =
+            !(
+                nameInput &&
+                nameInput.value.trim()
             );
+    }
 
-            if (filter) {
-                filter.click();
 
-                document
-                    .getElementById("resultsSection")
-                    ?.scrollIntoView({
-                        behavior: "smooth"
-                    });
-            } else {
-                document
-                    .getElementById("generator")
-                    ?.scrollIntoView({
-                        behavior: "smooth"
-                    });
+    activeFilter =
+        "all";
+
+
+    updateFilterButtons();
+
+
+    /* =========================================================
+       PUBLIC API
+       ========================================================= */
+
+    window.ZNameStyle = {
+
+        generate:
+            generateNames,
+
+        copy:
+            copyText,
+
+        getStyles:
+            function () {
+                return generatedStyles.slice();
+            },
+
+        getCurrentName:
+            function () {
+                return currentName;
             }
-        });
-    });
+    };
 
-    /*
-     * Bottom navigation active state
-     */
-    document.querySelectorAll(".bottom-nav-item").forEach(item => {
-        item.addEventListener("click", () => {
-            document.querySelectorAll(".bottom-nav-item")
-                .forEach(nav => nav.classList.remove("active"));
 
-            if (item.tagName.toLowerCase() !== "button") {
-                item.classList.add("active");
-            }
-        });
-    });
+    console.log(
+        "Z-Name Style Generator Ready"
+    );
 
-    /*
-     * Bottom navigation active state
-     */
-    document.querySelectorAll(".bottom-nav-item").forEach(item => {
-        item.addEventListener("click", () => {
-            document.querySelectorAll(".bottom-nav-item")
-                .forEach(nav => nav.classList.remove("active"));
-
-            if (item.tagName.toLowerCase() !== "button") {
-                item.classList.add("active");
-            }
-        });
-    });
-
-    /*
-     * Initial state
-     */
-    updatePreview();
 });
