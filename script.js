@@ -3,10 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
     /* =========================================================
-       Z-NAME STYLE
-       CORRECTED SCRIPT.JS
-       PART 1
-       CORE + FONT ENGINE + STYLE GENERATOR
+       Z-STYLE NAME
+       NEW GENERATOR
+       PART 1 — CORE ENGINE
        ========================================================= */
 
 
@@ -102,13 +101,13 @@ document.addEventListener("DOMContentLoaded", function () {
         value = String(value || "");
 
         return value.charAt(0).toUpperCase() +
-               value.slice(1);
+            value.slice(1);
 
     }
 
 
     /* =========================================================
-       FONT MAPS
+       UNICODE FONT MAPS
        ========================================================= */
 
     const boldUpper = [
@@ -176,6 +175,81 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
+    const sansBoldUpper = [
+        "𝗔","𝗕","𝗖","𝗗","𝗘","𝗙","𝗚","𝗛","𝗜","𝗝",
+        "𝗞","𝗟","𝗠","𝗡","𝗢","𝗣","𝗤","𝗥","𝗦","𝗧",
+        "𝗨","𝗩","𝗪","𝗫","𝗬","𝗭"
+    ];
+
+    const sansBoldLower = [
+        "𝗮","𝗯","𝗰","𝗱","𝗲","𝗳","𝗴","𝗵","𝗶","𝗷",
+        "𝗸","𝗹","𝗺","𝗻","𝗼","𝗽","𝗾","𝗿","𝘀","𝘁",
+        "𝘂","𝘃","𝘄","𝘅","𝘆","𝘇"
+    ];
+
+
+    const sansItalicUpper = [
+        "𝘈","𝘉","𝘊","𝘋","𝘌","𝘍","𝘎","𝘏","𝘐","𝘑",
+        "𝘒","𝘓","𝘔","𝘕","𝘖","𝘗","𝘘","𝘙","𝘚","𝘛",
+        "𝘜","𝘝","𝘞","𝘟","𝘠","𝘡"
+    ];
+
+    const sansItalicLower = [
+        "𝘢","𝘣","𝘤","𝘥","𝘦","𝘧","𝘨","𝘩","𝘪","𝘫",
+        "𝘬","𝘭","𝘮","𝘯","𝘰","𝘱","𝘲","𝘳","𝘴","𝘵",
+        "𝘶","𝘷","𝘸","𝘹","𝘺","𝘻"
+    ];
+
+
+    const fullUpper = [
+        "Ａ","Ｂ","Ｃ","Ｄ","Ｅ","Ｆ","Ｇ","Ｈ","Ｉ","Ｊ",
+        "Ｋ","Ｌ","Ｍ","Ｎ","Ｏ","Ｐ","Ｑ","Ｒ","Ｓ","Ｔ",
+        "Ｕ","Ｖ","Ｗ","Ｘ","Ｙ","Ｚ"
+    ];
+
+    const fullLower = [
+        "ａ","ｂ","ｃ","ｄ","ｅ","ｆ","ｇ","ｈ","ｉ","ｊ",
+        "ｋ","ｌ","ｍ","ｎ","ｏ","ｐ","ｑ","ｒ","ｓ","ｔ",
+        "ｕ","ｖ","ｗ","ｘ","ｙ","ｚ"
+    ];
+
+
+    /* =========================================================
+       SMALL CAPS
+       ========================================================= */
+
+    const smallCaps = {
+
+        a:"ᴀ",
+        b:"ʙ",
+        c:"ᴄ",
+        d:"ᴅ",
+        e:"ᴇ",
+        f:"ғ",
+        g:"ɢ",
+        h:"ʜ",
+        i:"ɪ",
+        j:"ᴊ",
+        k:"ᴋ",
+        l:"ʟ",
+        m:"ᴍ",
+        n:"ɴ",
+        o:"ᴏ",
+        p:"ᴘ",
+        q:"ǫ",
+        r:"ʀ",
+        s:"s",
+        t:"ᴛ",
+        u:"ᴜ",
+        v:"ᴠ",
+        w:"ᴡ",
+        x:"x",
+        y:"ʏ",
+        z:"ᴢ"
+
+    };
+
+
     /* =========================================================
        FONT CONVERTER
        ========================================================= */
@@ -186,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
         lowerMap
     ) {
 
-        return String(text || "")
+        return String(text)
             .split("")
             .map(function (character) {
 
@@ -274,45 +348,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =========================================================
-       SMALL CAPS
-       ========================================================= */
+    function toSansBold(text) {
 
-    const smallCaps = {
+        return convertFont(
+            text,
+            sansBoldUpper,
+            sansBoldLower
+        );
 
-        a:"ᴀ",
-        b:"ʙ",
-        c:"ᴄ",
-        d:"ᴅ",
-        e:"ᴇ",
-        f:"ғ",
-        g:"ɢ",
-        h:"ʜ",
-        i:"ɪ",
-        j:"ᴊ",
-        k:"ᴋ",
-        l:"ʟ",
-        m:"ᴍ",
-        n:"ɴ",
-        o:"ᴏ",
-        p:"ᴘ",
-        q:"ǫ",
-        r:"ʀ",
-        s:"s",
-        t:"ᴛ",
-        u:"ᴜ",
-        v:"ᴠ",
-        w:"ᴡ",
-        x:"x",
-        y:"ʏ",
-        z:"ᴢ"
+    }
 
-    };
+
+    function toSansItalic(text) {
+
+        return convertFont(
+            text,
+            sansItalicUpper,
+            sansItalicLower
+        );
+
+    }
+
+
+    function toFullWidth(text) {
+
+        return convertFont(
+            text,
+            fullUpper,
+            fullLower
+        );
+
+    }
 
 
     function toSmallCaps(text) {
 
-        return String(text || "")
+        return String(text)
             .toLowerCase()
             .split("")
             .map(function (character) {
@@ -329,12 +400,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       BASIC DECORATION HELPERS
+       TEXT EFFECTS
        ========================================================= */
 
     function addStrike(text) {
 
-        return String(text || "")
+        return String(text)
             .split("")
             .map(function (character) {
 
@@ -348,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addUnderline(text) {
 
-        return String(text || "")
+        return String(text)
             .split("")
             .map(function (character) {
 
@@ -360,9 +431,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function addDoubleUnderline(text) {
+
+        return String(text)
+            .split("")
+            .map(function (character) {
+
+                return character + "̳";
+
+            })
+            .join("");
+
+    }
+
+
     function spaced(text) {
 
-        return String(text || "")
+        return String(text)
             .split("")
             .join(" ");
 
@@ -371,15 +456,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function dotted(text) {
 
-        return String(text || "")
+        return String(text)
             .split("")
             .join("・");
 
     }
 
 
+    function starSpaced(text) {
+
+        return String(text)
+            .split("")
+            .join("★");
+
+    }
+
+
+    function slashSpaced(text) {
+
+        return String(text)
+            .split("")
+            .join("乂");
+
+    }
+
+
     /* =========================================================
-       STYLE COLLECTION
+       STYLE STORAGE
        ========================================================= */
 
     function addStyle(
@@ -406,39 +509,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       FANCY FONT STYLES
+       CORE FANCY FONT STYLES
        ========================================================= */
 
     function createFancyStyles(name) {
 
         addStyle(
             "fancy",
-            "Bold",
+            "𝐁𝐨𝐥𝐝",
             toBold(name)
         );
 
         addStyle(
             "fancy",
-            "Italic",
+            "𝑰𝒕𝒂𝒍𝒊𝒄",
             toItalic(name)
         );
 
         addStyle(
             "fancy",
-            "Monospace",
+            "𝙼𝚘𝚗𝚘",
             toMono(name)
         );
 
         addStyle(
             "fancy",
-            "Double",
+            "𝔻𝕠𝕦𝕓𝕝𝕖",
             toDouble(name)
         );
 
         addStyle(
             "fancy",
-            "Elegant Script",
+            "𝓢𝓬𝓻𝓲𝓹𝓽",
             toScript(name)
+        );
+
+        addStyle(
+            "fancy",
+            "𝗦𝗮𝗻𝘀 𝗕𝗼𝗹𝗱",
+            toSansBold(name)
+        );
+
+        addStyle(
+            "fancy",
+            "𝘚𝘢𝘯𝘴 𝘐𝘵𝘢𝘭𝘪𝘤",
+            toSansItalic(name)
+        );
+
+        addStyle(
+            "fancy",
+            "Ｆｕｌｌｗｉｄｔｈ",
+            toFullWidth(name)
         );
 
         addStyle(
@@ -461,12 +582,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         addStyle(
             "fancy",
-            "Bold Dotted",
-            toBold(dotted(name))
-        );
-
-        addStyle(
-            "fancy",
             "Double Spaced",
             toDouble(spaced(name))
         );
@@ -479,14 +594,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         addStyle(
             "fancy",
-            "Underline",
-            addUnderline(name)
-        );
-
-        addStyle(
-            "fancy",
-            "Strike",
-            addStrike(name)
+            "Bold Dotted",
+            toBold(dotted(name))
         );
 
         addStyle(
@@ -497,70 +606,271 @@ document.addEventListener("DOMContentLoaded", function () {
 
         addStyle(
             "fancy",
+            "Bold Double Underline",
+            addDoubleUnderline(toBold(name))
+        );
+
+        addStyle(
+            "fancy",
             "Italic Underline",
             addUnderline(toItalic(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Double Underline",
+            addDoubleUnderline(toDouble(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Strike Bold",
+            addStrike(toBold(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Strike Script",
+            addStrike(toScript(name))
+        );
+
+        addStyle(
+            "fancy",
+            "Small Caps Spaced",
+            spaced(toSmallCaps(name))
         );
 
     }
 
 
     /* =========================================================
-       DECORATIONS
+       FANCY MIXED STYLES
+       ========================================================= */
+
+    function createMixedFancyStyles(name) {
+
+        const styles = [
+
+            toBold(name) + " ✦",
+
+            "✦ " + toBold(name),
+
+            toBold(name) + " ★",
+
+            "★ " + toBold(name),
+
+            toScript(name) + " ✧",
+
+            "✧ " + toScript(name),
+
+            toDouble(name) + " ❖",
+
+            "❖ " + toDouble(name),
+
+            toSansBold(name) + " ⚡",
+
+            "⚡ " + toSansBold(name),
+
+            toItalic(name) + " ✯",
+
+            "✯ " + toItalic(name),
+
+            toMono(name) + " ⟡",
+
+            "⟡ " + toMono(name),
+
+            toSmallCaps(name) + " 亗",
+
+            "亗 " + toSmallCaps(name),
+
+            "★彡 " + toBold(name) + " 彡★",
+
+            "✦彡 " + toScript(name) + " 彡✦",
+
+            "亗 " + toDouble(name) + " 亗",
+
+            "⚡ " + toBold(name) + " ⚡",
+
+            "♛ " + toScript(name) + " ♛",
+
+            "♡ " + toScript(name) + " ♡",
+
+            "☠ " + toDouble(name) + " ☠",
+
+            "༒ " + toBold(name) + " ༒",
+
+            "꧁ " + toScript(name) + " ꧂",
+
+            "『 " + toDouble(name) + " 』",
+
+            "【 " + toBold(name) + " 】",
+
+            "〆 " + toSansBold(name) + " 〆",
+
+            "乂 " + toDouble(name) + " 乂",
+
+            "ツ " + toScript(name) + " ツ",
+
+            "彡 " + toBold(name) + " 彡"
+
+        ];
+
+        styles.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "fancy",
+                    "Premium Fancy " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       DUPLICATE PROTECTION
+       ========================================================= */
+
+    function removeDuplicateStyles() {
+
+        const seen = new Set();
+
+        generatedStyles =
+            generatedStyles.filter(
+                function (style) {
+
+                    if (
+                        seen.has(style.value)
+                    ) {
+
+                        return false;
+
+                    }
+
+                    seen.add(style.value);
+
+                    return true;
+
+                }
+            );
+
+    }
+
+
+    /* =========================================================
+       PART 1 END
+       
+       IMPORTANT:
+       DO NOT ADD ANYTHING AFTER THIS.
+       DO NOT ADD "});"
+       
+       PART 2 WILL CONTINUE DIRECTLY HERE.
+       =========================================================
+        /* =========================================================
+       SYMBOL DECORATION SETS
        ========================================================= */
 
     const decorations = [
 
-        ["★","★"],
-        ["☆","☆"],
-        ["✦","✦"],
-        ["✧","✧"],
-        ["✪","✪"],
-        ["✯","✯"],
-        ["✰","✰"],
-        ["⚡","⚡"],
-        ["亗","亗"],
-        ["乂","乂"],
-        ["ツ","ツ"],
-        ["彡","彡"],
-        ["〆","〆"],
-        ["么","么"],
-        ["々","々"],
-        ["メ","メ"],
-        ["シ","シ"],
-        ["♛","♛"],
-        ["♕","♕"],
-        ["♔","♔"],
-        ["♚","♚"],
-        ["♡","♡"],
-        ["♥","♥"],
-        ["☠","☠"],
-        ["☾","☽"],
-        ["☽","☾"],
-        ["❖","❖"],
-        ["◆","◆"],
-        ["◇","◇"],
-        ["●","●"],
-        ["○","○"],
-        ["✿","✿"],
-        ["❀","❀"],
-        ["❁","❁"],
-        ["🌸","🌸"],
-        ["🔥","🔥"],
-        ["👑","👑"],
-        ["⚔","⚔"],
-        ["♠","♠"],
-        ["♣","♣"],
-        ["♦","♦"],
-        ["☯","☯"],
-        ["☮","☮"],
-        ["∞","∞"],
-        ["⚜","⚜"],
-        ["༺","༻"],
-        ["༒","༒"],
-        ["࿐","࿐"]
+        ["★", "★"],
+        ["☆", "☆"],
+        ["✦", "✦"],
+        ["✧", "✧"],
+        ["✪", "✪"],
+        ["✯", "✯"],
+        ["✰", "✰"],
+        ["⚡", "⚡"],
+        ["亗", "亗"],
+        ["乂", "乂"],
+        ["ツ", "ツ"],
+        ["彡", "彡"],
+        ["〆", "〆"],
+        ["么", "么"],
+        ["々", "々"],
+        ["メ", "メ"],
+        ["シ", "シ"],
+        ["乛", "乛"],
+        ["♛", "♛"],
+        ["♕", "♕"],
+        ["♔", "♔"],
+        ["♚", "♚"],
+        ["♡", "♡"],
+        ["♥", "♥"],
+        ["☠", "☠"],
+        ["☾", "☽"],
+        ["☽", "☾"],
+        ["❖", "❖"],
+        ["◆", "◆"],
+        ["◇", "◇"],
+        ["●", "●"],
+        ["○", "○"],
+        ["✿", "✿"],
+        ["❀", "❀"],
+        ["❁", "❁"],
+        ["🌸", "🌸"],
+        ["🔥", "🔥"],
+        ["👑", "👑"],
+        ["⚔", "⚔"],
+        ["♠", "♠"],
+        ["♣", "♣"],
+        ["♦", "♦"],
+        ["☯", "☯"],
+        ["☮", "☮"],
+        ["∞", "∞"],
+        ["⚜", "⚜"],
+        ["༺", "༻"],
+        ["༒", "༒"],
+        ["࿐", "࿐"]
 
     ];
 
+
+    /* =========================================================
+       BOX AND FRAME SETS
+       ========================================================= */
+
+    const boxes = [
+
+        ["『", "』"],
+        ["【", "】"],
+        ["〖", "〗"],
+        ["〘", "〙"],
+        ["〚", "〛"],
+        ["〈", "〉"],
+        ["《", "》"],
+        ["「", "」"],
+        ["〔", "〕"],
+        ["〝", "〞"],
+        ["⟦", "⟧"],
+        ["⟨", "⟩"],
+        ["❲", "❳"],
+        ["❬", "❭"],
+        ["꧁", "꧂"],
+        ["༺", "༻"],
+        ["༼", "༽"],
+        ["╰", "╯"],
+        ["╭", "╮"],
+        ["╔", "╗"],
+        ["╚", "╝"],
+        ["▌", "▐"],
+        ["◥", "◤"],
+        ["◢", "◣"],
+        ["⫷", "⫸"],
+        ["⧼", "⧽"],
+        ["⟪", "⟫"],
+        ["⦗", "⦘"],
+        ["⟬", "⟭"],
+        ["⸢", "⸣"]
+
+    ];
+
+
+    /* =========================================================
+       CREATE DECORATION STYLES
+       ========================================================= */
 
     function createDecorationStyles(name) {
 
@@ -572,7 +882,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Decorated " + (index + 1),
                     pair[0] +
                     " " +
-                    name +
+                    toBold(name) +
                     " " +
                     pair[1]
                 );
@@ -584,49 +894,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       BOX STYLES
+       CREATE FRAME STYLES
        ========================================================= */
-
-    const boxes = [
-
-        ["『","』"],
-        ["【","】"],
-        ["〖","〗"],
-        ["〘","〙"],
-        ["〚","〛"],
-        ["〈","〉"],
-        ["《","》"],
-        ["「","」"],
-        ["〔","〕"],
-        ["〝","〞"],
-        ["⟦","⟧"],
-        ["⟨","⟩"],
-        ["❲","❳"],
-        ["❬","❭"],
-        ["꧁","꧂"],
-        ["༺","༻"],
-        ["༼","༽"],
-        ["╰","╯"],
-        ["╭","╮"],
-        ["╔","╗"],
-        ["╚","╝"],
-        ["▌","▐"],
-        ["◥","◤"],
-        ["◢","◣"]
-
-    ];
-
 
     function createBoxStyles(name) {
 
         boxes.forEach(
             function (pair, index) {
 
+                const fontVersions = [
+
+                    toBold(name),
+                    toScript(name),
+                    toDouble(name),
+                    toSansBold(name)
+
+                ];
+
+                const styledName =
+                    fontVersions[
+                        index %
+                        fontVersions.length
+                    ];
+
                 addStyle(
                     "symbols",
                     "Frame " + (index + 1),
                     pair[0] +
-                    name +
+                    " " +
+                    styledName +
+                    " " +
                     pair[1]
                 );
 
@@ -642,80 +939,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function createGamingStyles(name) {
 
-        const prefixes = [
+        const gaming = [
 
-            "亗 ",
-            "乂 ",
-            "〆 ",
-            "么 ",
-            "メ ",
-            "シ ",
-            "ツ ",
-            "彡 ",
-            "々 ",
-            "⚔ ",
-            "☠ ",
-            "♠ ",
-            "⚡ ",
-            "🔥 ",
-            "🎯 ",
-            "👑 ",
-            "☢ ",
-            "☣ ",
-            "༒ ",
-            "꧁༺ ",
-            "『 ",
-            "【 ",
-            "◥ ",
-            "╰ "
-
-        ];
-
-        const suffixes = [
-
-            " 亗",
-            " 乂",
-            " 〆",
-            " 么",
-            " メ",
-            " シ",
-            " ツ",
-            " 彡",
-            " 々",
-            " ⚔",
-            " ☠",
-            " ♠",
-            " ⚡",
-            " 🔥",
-            " 🎯",
-            " 👑",
-            " ☢",
-            " ☣",
-            " ༒",
-            " ༻꧂",
-            " 』",
-            " 】",
-            " ◤",
-            " ╯"
+            "亗 " + toBold(name) + " 亗",
+            "乂 " + toBold(name) + " 乂",
+            "〆 " + toBold(name) + " 〆",
+            "么 " + toBold(name) + " 么",
+            "メ " + toBold(name) + " メ",
+            "シ " + toBold(name) + " シ",
+            "ツ " + toBold(name) + " ツ",
+            "彡 " + toBold(name) + " 彡",
+            "乛 " + toBold(name) + " 乛",
+            "々 " + toBold(name) + " 々",
+            "⚔ " + toDouble(name) + " ⚔",
+            "☠ " + toDouble(name) + " ☠",
+            "♠ " + toBold(name) + " ♠",
+            "⚡ " + toBold(name) + " ⚡",
+            "🔥 " + toBold(name) + " 🔥",
+            "🎯 " + toBold(name) + " 🎯",
+            "👑 " + toBold(name) + " 👑",
+            "☢ " + toDouble(name) + " ☢",
+            "☣ " + toDouble(name) + " ☣",
+            "༒ " + toBold(name) + " ༒",
+            "꧁༺ " + toBold(name) + " ༻꧂",
+            "『 " + toBold(name) + " 』",
+            "【 " + toBold(name) + " 】",
+            "◥ " + toBold(name) + " ◤",
+            "╰ " + toBold(name) + " ╯",
+            "亗『 " + toDouble(name) + " 』亗",
+            "乂【 " + toBold(name) + " 】乂",
+            "⚡亗 " + toBold(name) + " 亗⚡",
+            "☠亗 " + toDouble(name) + " 亗☠",
+            "༒亗 " + toBold(name) + " 亗༒",
+            "彡乂 " + toBold(name) + " 乂彡",
+            "メ〆 " + toDouble(name) + " 〆メ",
+            "꧁乂 " + toBold(name) + " 乂꧂",
+            "꧁亗 " + toDouble(name) + " 亗꧂",
+            "『⚔ " + toBold(name) + " ⚔』",
+            "【☠ " + toDouble(name) + " ☠】",
+            "◥⚡ " + toBold(name) + " ⚡◤",
+            "༺⚔ " + toBold(name) + " ⚔༻",
+            "亗⚡ " + toBold(name) + " ⚡亗",
+            "乂☠ " + toDouble(name) + " ☠乂"
 
         ];
 
+        gaming.forEach(
+            function (value, index) {
 
-        for (
-            let i = 0;
-            i < prefixes.length;
-            i++
-        ) {
+                addStyle(
+                    "gaming",
+                    "Gaming " + (index + 1),
+                    value
+                );
 
-            addStyle(
-                "gaming",
-                "Gaming " + (i + 1),
-                prefixes[i] +
-                name +
-                suffixes[i]
-            );
-
-        }
+            }
+        );
 
     }
 
@@ -728,49 +1007,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const attitude = [
 
-            "★彡 " + name + " 彡★",
-            "乂 " + name + " 乂",
-            "么 " + name + " 么",
-            "⚡ " + name + " ⚡",
-            "☠ " + name + " ☠",
-            "♛ " + name + " ♛",
-            "👑 " + name + " 👑",
-            "亗 " + name + " 亗",
-            "『 " + name + " 』",
-            "【 " + name + " 】",
-            "〆 " + name + " 〆",
-            "メ " + name + " メ",
-            "彡 " + name + " 彡",
-            "ツ " + name + " ツ",
-            "༒ " + name + " ༒",
-            "⚔ " + name + " ⚔",
-            "🔥 " + name + " 🔥",
-            "☢ " + name + " ☢",
-            "☣ " + name + " ☣",
-            "♠ " + name + " ♠",
-            "♣ " + name + " ♣",
-            "♦ " + name + " ♦",
-            "★ " + name + " ★",
-            "✦ " + name + " ✦",
-            "✯ " + name + " ✯",
-            "❖ " + name + " ❖",
-            "∞ " + name + " ∞",
-            "⚜ " + name + " ⚜",
-            "☯ " + name + " ☯",
-            "☮ " + name + " ☮",
-            "꧁༺ " + name + " ༻꧂",
-            "『亗 " + name + " 亗』",
-            "【乂 " + name + " 乂】",
-            "★亗 " + name + " 亗★",
-            "⚡亗 " + name + " 亗⚡",
-            "☠亗 " + name + " 亗☠",
-            "♛亗 " + name + " 亗♛",
-            "༒亗 " + name + " 亗༒",
-            "彡乂 " + name + " 乂彡",
-            "メ〆 " + name + " 〆メ"
+            "★彡 " + toBold(name) + " 彡★",
+            "乂 " + toBold(name) + " 乂",
+            "么 " + toDouble(name) + " 么",
+            "⚡ " + toBold(name) + " ⚡",
+            "☠ " + toDouble(name) + " ☠",
+            "♛ " + toScript(name) + " ♛",
+            "👑 " + toBold(name) + " 👑",
+            "亗 " + toBold(name) + " 亗",
+            "『 " + toDouble(name) + " 』",
+            "【 " + toBold(name) + " 】",
+            "〆 " + toBold(name) + " 〆",
+            "メ " + toDouble(name) + " メ",
+            "彡 " + toBold(name) + " 彡",
+            "ツ " + toBold(name) + " ツ",
+            "༒ " + toDouble(name) + " ༒",
+            "⚔ " + toBold(name) + " ⚔",
+            "🔥 " + toBold(name) + " 🔥",
+            "☢ " + toDouble(name) + " ☢",
+            "☣ " + toDouble(name) + " ☣",
+            "♠ " + toBold(name) + " ♠",
+            "♣ " + toBold(name) + " ♣",
+            "♦ " + toBold(name) + " ♦",
+            "★ " + toBold(name) + " ★",
+            "✦ " + toScript(name) + " ✦",
+            "✯ " + toDouble(name) + " ✯",
+            "❖ " + toBold(name) + " ❖",
+            "∞ " + toBold(name) + " ∞",
+            "⚜ " + toScript(name) + " ⚜",
+            "☯ " + toDouble(name) + " ☯",
+            "☮ " + toBold(name) + " ☮",
+            "꧁༺ " + toBold(name) + " ༻꧂",
+            "『亗 " + toBold(name) + " 亗』",
+            "【乂 " + toDouble(name) + " 乂】",
+            "★亗 " + toBold(name) + " 亗★",
+            "⚡亗 " + toBold(name) + " 亗⚡",
+            "☠亗 " + toDouble(name) + " 亗☠",
+            "♛亗 " + toScript(name) + " 亗♛",
+            "༒亗 " + toBold(name) + " 亗༒",
+            "彡乂 " + toBold(name) + " 乂彡",
+            "メ〆 " + toDouble(name) + " 〆メ"
 
         ];
-
 
         attitude.forEach(
             function (value, index) {
@@ -788,596 +1066,340 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       PART 1 END
+       ROYAL STYLES
+       ========================================================= */
+
+    function createRoyalStyles(name) {
+
+        const royal = [
+
+            "♛ " + toBold(name) + " ♛",
+            "♕ " + toScript(name) + " ♕",
+            "♔ " + toBold(name) + " ♔",
+            "♚ " + toDouble(name) + " ♚",
+            "👑 " + toBold(name) + " 👑",
+            "♛༺ " + toBold(name) + " ༻♛",
+            "꧁♛ " + toScript(name) + " ♛꧂",
+            "꧁♕ " + toBold(name) + " ♕꧂",
+            "『♛ " + toDouble(name) + " ♛』",
+            "【♔ " + toBold(name) + " ♔】",
+            "亗♛ " + toBold(name) + " ♛亗",
+            "༺♛ " + toScript(name) + " ♛༻",
+            "⚜ " + toBold(name) + " ⚜",
+            "⚜♛ " + toBold(name) + " ♛⚜",
+            "♛★ " + toBold(name) + " ★♛",
+            "♕✦ " + toScript(name) + " ✦♕",
+            "👑亗 " + toBold(name) + " 亗👑",
+            "♔༒ " + toDouble(name) + " ༒♔",
+            "♚⚡ " + toBold(name) + " ⚡♚",
+            "꧁༺♛ " + toBold(name) + " ♛༻꧂",
+            "╰♛ " + toScript(name) + " ♛╯",
+            "╭♕ " + toScript(name) + " ♕╮",
+            "『👑 " + toBold(name) + " 👑』",
+            "【👑 " + toBold(name) + " 👑】",
+            "★♛ " + toBold(name) + " ♛★",
+            "✦♕ " + toScript(name) + " ♕✦",
+            "❖♛ " + toDouble(name) + " ♛❖",
+            "༒♚ " + toBold(name) + " ♚༒",
+            "亗👑 " + toBold(name) + " 👑亗",
+            "♛∞ " + toScript(name) + " ∞♛"
+
+        ];
+
+        royal.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "royal",
+                    "Royal " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       LOVE STYLES
+       ========================================================= */
+
+    function createLoveStyles(name) {
+
+        const love = [
+
+            "♡ " + toScript(name) + " ♡",
+            "♥ " + toBold(name) + " ♥",
+            "❤ " + toBold(name) + " ❤",
+            "💕 " + toScript(name) + " 💕",
+            "💖 " + toBold(name) + " 💖",
+            "💗 " + toScript(name) + " 💗",
+            "💘 " + toBold(name) + " 💘",
+            "💝 " + toScript(name) + " 💝",
+            "❣ " + toBold(name) + " ❣",
+            "ღ " + toScript(name) + " ღ",
+            "♡彡 " + toScript(name) + " 彡♡",
+            "♥彡 " + toBold(name) + " 彡♥",
+            "꧁♡ " + toScript(name) + " ♡꧂",
+            "꧁♥ " + toBold(name) + " ♥꧂",
+            "『♡ " + toScript(name) + " ♡』",
+            "【♥ " + toBold(name) + " ♥】",
+            "♡亗 " + toBold(name) + " 亗♡",
+            "♥亗 " + toScript(name) + " 亗♥",
+            "༺♡ " + toScript(name) + " ♡༻",
+            "༺♥ " + toBold(name) + " ♥༻",
+            "★♡ " + toBold(name) + " ♡★",
+            "✦♥ " + toScript(name) + " ♥✦",
+            "❖♡ " + toBold(name) + " ♡❖",
+            "🌸♡ " + toScript(name) + " ♡🌸",
+            "🌹 " + toScript(name) + " 🌹",
+            "💞 " + toBold(name) + " 💞",
+            "💓 " + toScript(name) + " 💓",
+            "💟 " + toBold(name) + " 💟",
+            "💌 " + toScript(name) + " 💌",
+            "💕♡ " + toBold(name) + " ♡💕"
+
+        ];
+
+        love.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "love",
+                    "Love " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       COOL STYLES
+       ========================================================= */
+
+    function createCoolStyles(name) {
+
+        const cool = [
+
+            "★ " + toBold(name) + " ★",
+            "☆ " + toScript(name) + " ☆",
+            "✦ " + toBold(name) + " ✦",
+            "✧ " + toScript(name) + " ✧",
+            "✯ " + toDouble(name) + " ✯",
+            "✰ " + toBold(name) + " ✰",
+            "❖ " + toDouble(name) + " ❖",
+            "◆ " + toBold(name) + " ◆",
+            "◇ " + toScript(name) + " ◇",
+            "⚡ " + toBold(name) + " ⚡",
+            "∞ " + toDouble(name) + " ∞",
+            "☯ " + toBold(name) + " ☯",
+            "☮ " + toScript(name) + " ☮",
+            "⚜ " + toBold(name) + " ⚜",
+            "亗 " + toBold(name) + " 亗",
+            "乂 " + toDouble(name) + " 乂",
+            "ツ " + toBold(name) + " ツ",
+            "彡 " + toScript(name) + " 彡",
+            "メ " + toBold(name) + " メ",
+            "〆 " + toDouble(name) + " 〆",
+            "么 " + toBold(name) + " 么",
+            "々 " + toScript(name) + " 々",
+            "★彡 " + toBold(name) + " 彡★",
+            "✦彡 " + toScript(name) + " 彡✦",
+            "亗★ " + toBold(name) + " ★亗",
+            "⚡亗 " + toBold(name) + " 亗⚡",
+            "❖亗 " + toDouble(name) + " 亗❖",
+            "꧁ " + toScript(name) + " ꧂",
+            "༺ " + toBold(name) + " ༻",
+            "『 " + toDouble(name) + " 』"
+
+        ];
+
+        cool.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "cool",
+                    "Cool " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       DARK STYLES
+       ========================================================= */
+
+    function createDarkStyles(name) {
+
+        const dark = [
+
+            "☠ " + toDouble(name) + " ☠",
+            "💀 " + toDouble(name) + " 💀",
+            "☣ " + toDouble(name) + " ☣",
+            "☢ " + toBold(name) + " ☢",
+            "༒ " + toBold(name) + " ༒",
+            "♠ " + toDouble(name) + " ♠",
+            "♤ " + toBold(name) + " ♤",
+            "⚔ " + toBold(name) + " ⚔",
+            "🖤 " + toScript(name) + " 🖤",
+            "☾ " + toScript(name) + " ☽",
+            "☽ " + toScript(name) + " ☾",
+            "亗☠ " + toDouble(name) + " ☠亗",
+            "꧁☠ " + toDouble(name) + " ☠꧂",
+            "꧁༒ " + toBold(name) + " ༒꧂",
+            "『☠ " + toDouble(name) + " ☠』",
+            "【☠ " + toDouble(name) + " ☠】",
+            "༺☠ " + toDouble(name) + " ☠༻",
+            "༺༒ " + toBold(name) + " ༒༻",
+            "★☠ " + toDouble(name) + " ☠★",
+            "✦☠ " + toBold(name) + " ☠✦",
+            "⚔亗 " + toBold(name) + " 亗⚔",
+            "☢亗 " + toDouble(name) + " 亗☢",
+            "☣亗 " + toDouble(name) + " 亗☣",
+            "♠༒ " + toBold(name) + " ༒♠",
+            "☾༒ " + toScript(name) + " ༒☽"
+
+        ];
+
+        dark.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "dark",
+                    "Dark " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CUTE STYLES
+       ========================================================= */
+
+    function createCuteStyles(name) {
+
+        const cute = [
+
+            "🌸 " + toScript(name) + " 🌸",
+            "🌷 " + toScript(name) + " 🌷",
+            "🌺 " + toScript(name) + " 🌺",
+            "🌼 " + toScript(name) + " 🌼",
+            "🦋 " + toScript(name) + " 🦋",
+            "🐰 " + toBold(name) + " 🐰",
+            "🐻 " + toBold(name) + " 🐻",
+            "🐼 " + toBold(name) + " 🐼",
+            "🐨 " + toBold(name) + " 🐨",
+            "♡ " + toScript(name) + " ♡",
+            "ღ " + toScript(name) + " ღ",
+            "꒰ " + toScript(name) + " ꒱",
+            "꒰ა " + toScript(name) + " ໒꒱",
+            "୨♡୧ " + toScript(name) + " ୨♡୧",
+            "꧁♡ " + toScript(name) + " ♡꧂",
+            "『🌸 " + toScript(name) + " 🌸』",
+            "【🦋 " + toScript(name) + " 🦋】",
+            "♡彡 " + toScript(name) + " 彡♡",
+            "🌸彡 " + toScript(name) + " 彡🌸",
+            "🦋彡 " + toScript(name) + " 彡🦋",
+            "✿ " + toScript(name) + " ✿",
+            "❀ " + toScript(name) + " ❀",
+            "❁ " + toScript(name) + " ❁",
+            "✾ " + toScript(name) + " ✾",
+            "💗 " + toScript(name) + " 💗"
+
+        ];
+
+        cute.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "cute",
+                    "Cute " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       EXTRA PREMIUM STYLES
+       ========================================================= */
+
+    function createPremiumStyles(name) {
+
+        const premium = [
+
+            "꧁༺ " + toBold(name) + " ༻꧂",
+            "꧁༺ " + toScript(name) + " ༻꧂",
+            "꧁༺ " + toDouble(name) + " ༻꧂",
+            "★彡 " + toBold(name) + " 彡★",
+            "★彡 " + toScript(name) + " 彡★",
+            "✦ " + toDouble(name) + " ✦",
+            "亗 " + toBold(name) + " 亗",
+            "『 " + toScript(name) + " 』",
+            "【 " + toDouble(name) + " 】",
+            "༺ " + toBold(name) + " ༻",
+            "༒ " + toBold(name) + " ༒",
+            "♛ " + toScript(name) + " ♛",
+            "♡ " + toScript(name) + " ♡",
+            "⚡ " + toBold(name) + " ⚡",
+            "☠ " + toDouble(name) + " ☠",
+            "✯ " + toScript(name) + " ✯",
+            "❖ " + toDouble(name) + " ❖",
+            "彡 " + toBold(name) + " 彡",
+            "ツ " + toScript(name) + " ツ",
+            "乂 " + toDouble(name) + " 乂",
+            "꧁༒ " + toBold(name) + " ༒꧂",
+            "『亗 " + toBold(name) + " 亗』",
+            "【⚡ " + toBold(name) + " ⚡】",
+            "༺♛ " + toScript(name) + " ♛༻",
+            "★♛ " + toBold(name) + " ♛★",
+            "✦☠ " + toDouble(name) + " ☠✦",
+            "亗♡ " + toScript(name) + " ♡亗",
+            "⚡彡 " + toBold(name) + " 彡⚡",
+            "꧁👑 " + toBold(name) + " 👑꧂"
+
+        ];
+
+        premium.forEach(
+            function (value, index) {
+
+                addStyle(
+                    "fancy",
+                    "Premium Design " + (index + 1),
+                    value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       PART 2 END
        
        IMPORTANT:
-       DO NOT ADD ANYTHING AFTER THIS PART YET.
-       DO NOT TYPE });
-       
-       PART 2 WILL CONTINUE INSIDE THE SAME
-       DOMContentLoaded FUNCTION.
-       ========================================================= */
-       /* =========================================================
-   PART 2 — STYLE GENERATION + RESULTS
-   ========================================================= */
-
-function createRoyalStyles(name) {
-
-    const royal = [
-        "♛ " + name + " ♛",
-        "♕ " + name + " ♕",
-        "♔ " + name + " ♔",
-        "♚ " + name + " ♚",
-        "👑 " + name + " 👑",
-        "♛༺ " + name + " ༻♛",
-        "꧁♛ " + name + " ♛꧂",
-        "꧁♕ " + name + " ♕꧂",
-        "『♛ " + name + " ♛』",
-        "【♔ " + name + " ♔】",
-        "亗♛ " + name + " ♛亗",
-        "༺♛ " + name + " ♛༻",
-        "⚜ " + name + " ⚜",
-        "⚜♛ " + name + " ♛⚜",
-        "♛★ " + name + " ★♛",
-        "♕✦ " + name + " ✦♕",
-        "👑亗 " + name + " 亗👑",
-        "♔༒ " + name + " ༒♔",
-        "♚⚡ " + name + " ⚡♚",
-        "꧁༺♛ " + name + " ♛༻꧂",
-        "╰♛ " + name + " ♛╯",
-        "╭♕ " + name + " ♕╮",
-        "『👑 " + name + " 👑』",
-        "【👑 " + name + " 👑】",
-        "★♛ " + name + " ♛★",
-        "✦♕ " + name + " ♕✦",
-        "❖♛ " + name + " ♛❖",
-        "༒♚ " + name + " ♚༒",
-        "亗👑 " + name + " 👑亗",
-        "♛∞ " + name + " ∞♛"
-    ];
-
-    royal.forEach(function (value, index) {
-
-        addStyle(
-            "royal",
-            "Royal " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function createLoveStyles(name) {
-
-    const love = [
-        "♡ " + name + " ♡",
-        "♥ " + name + " ♥",
-        "❤ " + name + " ❤",
-        "💕 " + name + " 💕",
-        "💖 " + name + " 💖",
-        "💗 " + name + " 💗",
-        "💘 " + name + " 💘",
-        "💝 " + name + " 💝",
-        "❣ " + name + " ❣",
-        "ღ " + name + " ღ",
-        "♡彡 " + name + " 彡♡",
-        "♥彡 " + name + " 彡♥",
-        "꧁♡ " + name + " ♡꧂",
-        "꧁♥ " + name + " ♥꧂",
-        "『♡ " + name + " ♡』",
-        "【♥ " + name + " ♥】",
-        "♡亗 " + name + " 亗♡",
-        "♥亗 " + name + " 亗♥",
-        "༺♡ " + name + " ♡༻",
-        "༺♥ " + name + " ♥༻",
-        "★♡ " + name + " ♡★",
-        "✦♥ " + name + " ♥✦",
-        "❖♡ " + name + " ♡❖",
-        "🌸♡ " + name + " ♡🌸",
-        "🌹 " + name + " 🌹",
-        "💞 " + name + " 💞",
-        "💓 " + name + " 💓",
-        "💟 " + name + " 💟",
-        "💌 " + name + " 💌",
-        "💕♡ " + name + " ♡💕"
-    ];
-
-    love.forEach(function (value, index) {
-
-        addStyle(
-            "love",
-            "Love " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function createCoolStyles(name) {
-
-    const cool = [
-        "★ " + name + " ★",
-        "☆ " + name + " ☆",
-        "✦ " + name + " ✦",
-        "✧ " + name + " ✧",
-        "✯ " + name + " ✯",
-        "✰ " + name + " ✰",
-        "❖ " + name + " ❖",
-        "◆ " + name + " ◆",
-        "◇ " + name + " ◇",
-        "⚡ " + name + " ⚡",
-        "∞ " + name + " ∞",
-        "☯ " + name + " ☯",
-        "☮ " + name + " ☮",
-        "⚜ " + name + " ⚜",
-        "亗 " + name + " 亗",
-        "乂 " + name + " 乂",
-        "ツ " + name + " ツ",
-        "彡 " + name + " 彡",
-        "メ " + name + " メ",
-        "〆 " + name + " 〆",
-        "么 " + name + " 么",
-        "々 " + name + " 々",
-        "★彡 " + name + " 彡★",
-        "✦彡 " + name + " 彡✦",
-        "亗★ " + name + " ★亗",
-        "⚡亗 " + name + " 亗⚡",
-        "❖亗 " + name + " 亗❖",
-        "꧁ " + name + " ꧂",
-        "༺ " + name + " ༻",
-        "『 " + name + " 』"
-    ];
-
-    cool.forEach(function (value, index) {
-
-        addStyle(
-            "cool",
-            "Cool " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function createDarkStyles(name) {
-
-    const dark = [
-        "☠ " + name + " ☠",
-        "💀 " + name + " 💀",
-        "☣ " + name + " ☣",
-        "☢ " + name + " ☢",
-        "༒ " + name + " ༒",
-        "♠ " + name + " ♠",
-        "♤ " + name + " ♤",
-        "⚔ " + name + " ⚔",
-        "🖤 " + name + " 🖤",
-        "☾ " + name + " ☽",
-        "☽ " + name + " ☾",
-        "亗☠ " + name + " ☠亗",
-        "꧁☠ " + name + " ☠꧂",
-        "꧁༒ " + name + " ༒꧂",
-        "『☠ " + name + " ☠』",
-        "【☠ " + name + " ☠】",
-        "༺☠ " + name + " ☠༻",
-        "༺༒ " + name + " ༒༻",
-        "★☠ " + name + " ☠★",
-        "✦☠ " + name + " ☠✦",
-        "⚔亗 " + name + " 亗⚔",
-        "☢亗 " + name + " 亗☢",
-        "☣亗 " + name + " 亗☣",
-        "♠༒ " + name + " ༒♠",
-        "☾༒ " + name + " ༒☽"
-    ];
-
-    dark.forEach(function (value, index) {
-
-        addStyle(
-            "dark",
-            "Dark " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function createCuteStyles(name) {
-
-    const cute = [
-        "🌸 " + name + " 🌸",
-        "🌷 " + name + " 🌷",
-        "🌺 " + name + " 🌺",
-        "🌼 " + name + " 🌼",
-        "🦋 " + name + " 🦋",
-        "🐰 " + name + " 🐰",
-        "🐻 " + name + " 🐻",
-        "🐼 " + name + " 🐼",
-        "🐨 " + name + " 🐨",
-        "♡ " + name + " ♡",
-        "ღ " + name + " ღ",
-        "꒰ " + name + " ꒱",
-        "꒰ა " + name + " ໒꒱",
-        "୨♡୧ " + name + " ୨♡୧",
-        "꧁♡ " + name + " ♡꧂",
-        "『🌸 " + name + " 🌸』",
-        "【🦋 " + name + " 🦋】",
-        "♡彡 " + name + " 彡♡",
-        "🌸彡 " + name + " 彡🌸",
-        "🦋彡 " + name + " 彡🦋",
-        "✿ " + name + " ✿",
-        "❀ " + name + " ❀",
-        "❁ " + name + " ❁",
-        "✾ " + name + " ✾",
-        "💗 " + name + " 💗"
-    ];
-
-    cute.forEach(function (value, index) {
-
-        addStyle(
-            "cute",
-            "Cute " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function createExtraFancyStyles(name) {
-
-    const fancyDecorations = [
-        "꧁༺ " + toBold(name) + " ༻꧂",
-        "꧁༺ " + toScript(name) + " ༻꧂",
-        "꧁༺ " + toDouble(name) + " ༻꧂",
-        "★彡 " + toBold(name) + " 彡★",
-        "★彡 " + toScript(name) + " 彡★",
-        "✦ " + toDouble(name) + " ✦",
-        "亗 " + toBold(name) + " 亗",
-        "『 " + toScript(name) + " 』",
-        "【 " + toDouble(name) + " 】",
-        "༺ " + toBold(name) + " ༻",
-        "༒ " + toBold(name) + " ༒",
-        "♛ " + toScript(name) + " ♛",
-        "♡ " + toScript(name) + " ♡",
-        "⚡ " + toBold(name) + " ⚡",
-        "☠ " + toDouble(name) + " ☠",
-        "✯ " + toScript(name) + " ✯",
-        "❖ " + toDouble(name) + " ❖",
-        "彡 " + toBold(name) + " 彡",
-        "ツ " + toScript(name) + " ツ",
-        "乂 " + toDouble(name) + " 乂"
-    ];
-
-    fancyDecorations.forEach(function (value, index) {
-
-        addStyle(
-            "fancy",
-            "Fancy Design " + (index + 1),
-            value
-        );
-
-    });
-
-}
-
-
-function generateAllStyles(name) {
-
-    generatedStyles = [];
-
-    createFancyStyles(name);
-    createDecorationStyles(name);
-    createBoxStyles(name);
-    createGamingStyles(name);
-    createAttitudeStyles(name);
-    createRoyalStyles(name);
-    createLoveStyles(name);
-    createCoolStyles(name);
-    createDarkStyles(name);
-    createCuteStyles(name);
-    createExtraFancyStyles(name);
-
-    return generatedStyles;
-
-}
-
-
-function getFilteredStyles() {
-
-    if (activeFilter === "all") {
-        return generatedStyles;
-    }
-
-    return generatedStyles.filter(function (style) {
-        return style.category === activeFilter;
-    });
-
-}
-
-
-function capitalize(value) {
-
-    return String(value)
-        .charAt(0)
-        .toUpperCase() +
-        String(value).slice(1);
-
-}
-
-
-function createResultCard(style, index) {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "result-card";
-
-    card.dataset.category =
-        style.category;
-
-    card.innerHTML = `
-        <div class="result-card-top">
-            <span class="result-number">
-                ${String(index + 1).padStart(2, "0")}
-            </span>
-
-            <span class="result-category">
-                ${escapeHTML(style.category)}
-            </span>
-        </div>
-
-        <div class="result-style-name">
-            ${escapeHTML(style.title)}
-        </div>
-
-        <div class="result-value">
-            ${escapeHTML(style.value)}
-        </div>
-
-        <button
-            type="button"
-            class="copy-result-button"
-            data-copy="${escapeHTML(style.value)}"
-        >
-            📋 Copy
-        </button>
-    `;
-
-    return card;
-
-}
-
-
-function renderResults() {
-
-    if (!resultsContainer) {
-        return;
-    }
-
-    const styles =
-        getFilteredStyles();
-
-    resultsContainer.innerHTML = "";
-
-    if (!styles.length) {
-
-        resultsContainer.innerHTML = `
-            <div class="no-results">
-                <strong>No styles found</strong>
-                <p>Try another category.</p>
-            </div>
-        `;
-
-        return;
-
-    }
-
-    const fragment =
-        document.createDocumentFragment();
-
-    styles.forEach(function (style, index) {
-
-        fragment.appendChild(
-            createResultCard(
-                style,
-                index
-            )
-        );
-
-    });
-
-    resultsContainer.appendChild(
-        fragment
-    );
-
-    if (resultsTitle) {
-
-        resultsTitle.textContent =
-            activeFilter === "all"
-                ? "Stylish Names"
-                : capitalize(activeFilter) + " Names";
-
-    }
-
-}
-
-
-function generateNames() {
-
-    const name =
-        cleanName(
-            nameInput
-                ? nameInput.value
-                : ""
-        );
-
-    if (!name) {
-
-        showToast(
-            "Please enter your name."
-        );
-
-        if (nameInput) {
-            nameInput.focus();
-        }
-
-        return;
-
-    }
-
-    currentName = name;
-
-    activeFilter = "all";
-
-    generateAllStyles(
-        currentName
-    );
-
-    if (previewName) {
-        previewName.textContent =
-            currentName;
-    }
-
-    if (previewSection) {
-        previewSection.hidden = false;
-    }
-
-    if (resultsSection) {
-        resultsSection.hidden = false;
-    }
-
-    updateFilterButtons();
-
-    renderResults();
-
-    if (resultsSection) {
-
-        setTimeout(function () {
-
-            resultsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        }, 80);
-
-    }
-
-        }
+       DO NOT ADD "});"
+       PART 3 WILL CONTINUE DIRECTLY BELOW.
+       =========================================================
     /* =========================================================
-   PART 3 — EVENTS + COPY + FILTERS + MENU
+   PART 3 — EVENTS + COPY + FILTERS + MENU + FINAL
    ========================================================= */
-
-function updateFilterButtons() {
-
-    if (!styleFilters) {
-        return;
-    }
-
-    const buttons =
-        styleFilters.querySelectorAll(
-            ".filter-button"
-        );
-
-    buttons.forEach(function (button) {
-
-        button.classList.toggle(
-            "active",
-            button.dataset.filter === activeFilter
-        );
-
-    });
-
-}
-
-
-/* =========================================================
-   COPY FUNCTION
-   ========================================================= */
-
-async function copyText(text) {
-
-    try {
-
-        if (
-            navigator.clipboard &&
-            window.isSecureContext
-        ) {
-
-            await navigator.clipboard.writeText(text);
-
-        } else {
-
-            const textarea =
-                document.createElement("textarea");
-
-            textarea.value = text;
-
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
-
-            document.body.appendChild(textarea);
-
-            textarea.focus();
-            textarea.select();
-
-            document.execCommand("copy");
-
-            textarea.remove();
-
-        }
-
-        showToast("Name copied!");
-
-    } catch (error) {
-
-        showToast("Copy failed. Try again.");
-
-    }
-
-}
-
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-let toastTimer = null;
-
-function showToast(message) {
-
-    if (!toast) {
-        return;
-    }
-
-    if (toastMessage) {
-
-        toastMessage.textContent =
-            message;
-
-    }
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer =
-        setTimeout(function () {
-
-            toast.classList.remove("show");
-
-        }, 1800);
-
-}
 
 
 /* =========================================================
@@ -1464,10 +1486,26 @@ if (clearName) {
 
             clearName.hidden = true;
 
+            currentName = "";
+
+            generatedStyles = [];
+
             if (previewName) {
 
                 previewName.textContent =
                     "Your Name";
+
+            }
+
+            if (previewSection) {
+
+                previewSection.hidden = true;
+
+            }
+
+            if (resultsSection) {
+
+                resultsSection.hidden = true;
 
             }
 
@@ -1478,7 +1516,7 @@ if (clearName) {
 
 
 /* =========================================================
-   RESULT COPY BUTTONS
+   COPY RESULT BUTTONS
    ========================================================= */
 
 if (resultsContainer) {
@@ -1505,19 +1543,21 @@ if (resultsContainer) {
 
             copyText(text);
 
-            const originalText =
+            const original =
                 button.innerHTML;
 
             button.innerHTML =
                 "✓ Copied!";
 
-            button.classList.add("copied");
+            button.classList.add(
+                "copied"
+            );
 
             setTimeout(
                 function () {
 
                     button.innerHTML =
-                        originalText;
+                        original;
 
                     button.classList.remove(
                         "copied"
@@ -1552,9 +1592,15 @@ if (styleFilters) {
                 return;
             }
 
+            const filter =
+                button.dataset.filter;
+
+            if (!filter) {
+                return;
+            }
+
             activeFilter =
-                button.dataset.filter ||
-                "all";
+                filter;
 
             updateFilterButtons();
 
@@ -1673,7 +1719,9 @@ if (symbolsGrid) {
             copyText(symbol);
 
             const small =
-                button.querySelector("small");
+                button.querySelector(
+                    "small"
+                );
 
             if (small) {
 
@@ -1738,11 +1786,6 @@ useStyleButtons.forEach(
 
                     nameInput.focus();
 
-                    nameInput.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center"
-                    });
-
                     showToast(
                         "Enter your name first."
                     );
@@ -1753,15 +1796,11 @@ useStyleButtons.forEach(
 
                 const styled =
                     template.replace(
-                        "{name}",
+                        /\{name\}/gi,
                         name
                     );
 
                 copyText(styled);
-
-                showToast(
-                    "Style copied!"
-                );
 
             }
         );
@@ -1780,7 +1819,13 @@ function closeMobileMenu() {
         return;
     }
 
-    mobileMenu.classList.remove("open");
+    mobileMenu.classList.remove(
+        "open"
+    );
+
+    mobileMenu.classList.remove(
+        "active"
+    );
 
     if (mobileMenuButton) {
 
@@ -1801,7 +1846,14 @@ function toggleMobileMenu() {
     }
 
     const isOpen =
-        mobileMenu.classList.toggle("open");
+        mobileMenu.classList.toggle(
+            "open"
+        );
+
+    mobileMenu.classList.toggle(
+        "active",
+        isOpen
+    );
 
     if (mobileMenuButton) {
 
@@ -1819,7 +1871,9 @@ if (mobileMenuButton) {
 
     mobileMenuButton.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.stopPropagation();
 
             toggleMobileMenu();
 
@@ -1863,7 +1917,9 @@ if (bottomMenuButton) {
 
     bottomMenuButton.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.stopPropagation();
 
             toggleMobileMenu();
 
@@ -1885,20 +1941,27 @@ document.addEventListener(
             return;
         }
 
-        const clickedInsideMenu =
+        const insideMenu =
             mobileMenu.contains(
                 event.target
             );
 
-        const clickedMenuButton =
+        const menuButton =
             mobileMenuButton &&
             mobileMenuButton.contains(
                 event.target
             );
 
+        const bottomButton =
+            bottomMenuButton &&
+            bottomMenuButton.contains(
+                event.target
+            );
+
         if (
-            !clickedInsideMenu &&
-            !clickedMenuButton
+            !insideMenu &&
+            !menuButton &&
+            !bottomButton
         ) {
 
             closeMobileMenu();
@@ -1945,7 +2008,9 @@ document.addEventListener(
         }
 
         const href =
-            link.getAttribute("href");
+            link.getAttribute(
+                "href"
+            );
 
         if (
             !href ||
@@ -1956,8 +2021,20 @@ document.addEventListener(
 
         }
 
-        const target =
-            document.querySelector(href);
+        let target = null;
+
+        try {
+
+            target =
+                document.querySelector(
+                    href
+                );
+
+        } catch (error) {
+
+            return;
+
+        }
 
         if (!target) {
             return;
@@ -2011,14 +2088,22 @@ updateFilterButtons();
 
 
 /* =========================================================
-   GLOBAL API
+   PUBLIC API
    ========================================================= */
 
 window.ZNameStyle = {
 
-    generate: generateNames,
+    generate: function () {
 
-    copy: copyText,
+        generateNames();
+
+    },
+
+    copy: function (text) {
+
+        return copyText(text);
+
+    },
 
     getStyles: function () {
 
@@ -2040,5 +2125,12 @@ window.ZNameStyle = {
    ========================================================= */
 
 console.log(
-    "Z-Name Style: Generator ready."
+    "Z-Name Style Generator Ready"
 );
+
+
+/* =========================================================
+   END OF SCRIPT
+   ========================================================= */
+
+});
