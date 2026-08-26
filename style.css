@@ -489,7 +489,8 @@ a {
     min-height: 34px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    text-align: center;
     font-size: 22px;
     line-height: 1.35;
     word-break: break-word;
