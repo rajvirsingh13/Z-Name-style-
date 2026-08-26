@@ -930,15 +930,33 @@ function renderResults(filter = "all") {
                 result => result.category === filter
             );
 
-    filteredResults.forEach((result, index) => {
-        const card = createResultCard(result, index);
-        resultsContainer.appendChild(card);
-    });
-
     if (resultsTitle) {
         resultsTitle.textContent =
             `${filteredResults.length} Stylish Names`;
     }
+
+    // No results
+    if (!filteredResults.length) {
+        const emptyMessage =
+            document.createElement("div");
+
+        emptyMessage.className = "no-results";
+
+        emptyMessage.textContent =
+            "No stylish names found in this category.";
+
+        resultsContainer.appendChild(emptyMessage);
+
+        return;
+    }
+
+    // Render result cards
+    filteredResults.forEach((result, index) => {
+        const card =
+            createResultCard(result, index);
+
+        resultsContainer.appendChild(card);
+    });
 }
 
 
