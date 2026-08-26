@@ -698,19 +698,28 @@ const styleFunctions = [
    ========================================================= */
 
 function getCategory(index) {
+    /*
+     * Category assignment is used only for filtering.
+     *
+     * NOTE:
+     * The styleFunctions array contains many different
+     * decorative styles. These ranges are intentionally
+     * broad so every generated result always has a category.
+     */
+
     if (index < 17) {
         return "fancy";
     }
 
-    if (index < 95) {
+    if (index < 76) {
         return "gaming";
     }
 
-    if (index < 150) {
+    if (index < 140) {
         return "attitude";
     }
 
-    if (index < 205) {
+    if (index < 210) {
         return "symbols";
     }
 
@@ -732,12 +741,23 @@ function buildStyles(name) {
         try {
             styledName = styleFunctions[i](name);
         } catch (error) {
+            console.warn(
+                `Style ${i + 1} failed:`,
+                error
+            );
+
             styledName = name;
         }
 
         styledName = String(styledName).trim();
 
-        if (!styledName || used.has(styledName)) {
+        // Ignore empty styles
+        if (!styledName) {
+            continue;
+        }
+
+        // Remove duplicate generated names
+        if (used.has(styledName)) {
             continue;
         }
 
@@ -746,7 +766,11 @@ function buildStyles(name) {
         styles.push({
             id: styles.length + 1,
             value: styledName,
-            category: getCategory(styles.length)
+
+            // IMPORTANT:
+            // Use the original style-function index,
+            // NOT styles.length.
+            category: getCategory(i)
         });
     }
 
@@ -1053,16 +1077,47 @@ if (nameInput) {
 
 if (clearName) {
     clearName.addEventListener("click", () => {
+
+        // Clear input
         if (nameInput) {
             nameInput.value = "";
             nameInput.focus();
         }
 
+        // Clear stored name
+        currentName = "";
+
+        // Clear previous generated results
+        currentResults = [];
+
+        // Reset filter
+        currentFilter = "all";
+
+        // Hide clear button
         clearName.hidden = true;
 
+        // Reset preview
         if (previewName) {
             previewName.textContent = "Your Name";
         }
+
+        // Hide preview
+        if (previewSection) {
+            previewSection.hidden = true;
+        }
+
+        // Hide results
+        if (resultsSection) {
+            resultsSection.hidden = true;
+        }
+
+        // Clear result container
+        if (resultsContainer) {
+            resultsContainer.innerHTML = "";
+        }
+
+        // Reset filter buttons
+        updateFilterButtons("all");
     });
 }
 
