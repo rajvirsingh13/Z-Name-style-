@@ -1455,9 +1455,13 @@ if (previewSection) {
 
 if (styleFunctions.length < 200) {
     console.warn(
-        "Z-Name Style: Less than 200 style functions loaded."
+        `Z-Name Style: Only ${styleFunctions.length} style functions loaded.`
     );
 }
+
+console.log(
+    `Z-Name Style loaded successfully — ${styleFunctions.length} style patterns loaded.`
+);
 
 
 /* =========================================================
