@@ -951,16 +951,21 @@ function generateNames() {
         ? nameInput.value.trim()
         : "";
 
+    // Empty name check
     if (!value) {
         showToast("Please enter your name");
+
         if (nameInput) {
             nameInput.focus();
         }
+
         return;
     }
 
+    // Save current name
     currentName = value;
 
+    // Update preview
     if (previewSection) {
         previewSection.hidden = false;
     }
@@ -969,18 +974,29 @@ function generateNames() {
         previewName.textContent = value;
     }
 
+    // Generate all styles
+    currentResults = buildStyles(value);
+
+    // Check if styles were generated
+    if (!currentResults.length) {
+        showToast("No styles generated");
+        return;
+    }
+
+    // Show results
     if (resultsSection) {
         resultsSection.hidden = false;
     }
 
-    currentResults = buildStyles(value);
-
+    // Reset filter
     currentFilter = "all";
 
     updateFilterButtons("all");
 
+    // Render
     renderResults("all");
 
+    // Scroll to results
     if (resultsSection) {
         setTimeout(() => {
             resultsSection.scrollIntoView({
@@ -990,47 +1006,7 @@ function generateNames() {
         }, 80);
     }
 }
-
-
-/* =========================================================
-   FILTER BUTTONS
-   ========================================================= */
-
-function updateFilterButtons(activeFilter) {
-    if (!styleFilters) {
-        return;
-    }
-
-    const buttons =
-        styleFilters.querySelectorAll(".filter-button");
-
-    buttons.forEach(button => {
-        const filter = button.dataset.filter;
-
-        button.classList.toggle(
-            "active",
-            filter === activeFilter
-        );
-    });
-}
-
-
-if (styleFilters) {
-    styleFilters.addEventListener("click", event => {
-        const button =
-            event.target.closest(".filter-button");
-
-        if (!button) {
-            return;
-        }
-
-        const filter = button.dataset.filter || "all";
-
-        updateFilterButtons(filter);
-        renderResults(filter);
-    });
-}
-
+    
 
 /* =========================================================
    FORM
@@ -1057,10 +1033,14 @@ if (nameInput) {
             clearName.hidden = !hasValue;
         }
 
-        if (previewName && !previewSection.hidden) {
-            previewName.textContent =
-                nameInput.value.trim() || "Your Name";
-        }
+       if (
+    previewName &&
+    previewSection &&
+    !previewSection.hidden
+) {
+    previewName.textContent =
+        nameInput.value.trim() || "Your Name";
+       } 
     });
 
     nameInput.addEventListener("keydown", event => {
