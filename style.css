@@ -83,22 +83,16 @@ a {
     gap: 10px;
 }
 
-.brand-mark {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
+.brand-logo {
+    width: 42px !important;
+    height: 42px !important;
+    max-width: 42px !important;
+    max-height: 42px !important;
+
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
     border-radius: 12px;
-
-    background-image: url("logo.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    color: transparent;
-    font-size: 0;
-
-    box-shadow: 0 10px 25px rgba(109, 93, 252, 0.28);
 }
 
 .brand-text {
