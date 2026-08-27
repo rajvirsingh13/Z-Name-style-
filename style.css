@@ -89,9 +89,15 @@ a {
     display: grid;
     place-items: center;
     border-radius: 12px;
-    color: white;
-    font-weight: 800;
-    background: linear-gradient(135deg, #6555f5, #755cff);
+
+    background-image: url("logo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: transparent;
+    font-size: 0;
+
     box-shadow: 0 10px 25px rgba(109, 93, 252, 0.28);
 }
 
