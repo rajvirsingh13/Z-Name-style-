@@ -1,7 +1,7 @@
 /* =========================================================
    Z-NAME STYLE
-   Main JavaScript
-   300+ Stylish Name Generator
+   Full Working Script
+   320+ Stylish Name Generator
    ========================================================= */
 
 "use strict";
@@ -19,22 +19,22 @@ const previewSection = document.getElementById("previewSection");
 const previewName = document.getElementById("previewName");
 
 const resultsSection = document.getElementById("resultsSection");
-const resultsTitle = document.getElementById("resultsTitle");
 const resultsContainer = document.getElementById("resultsContainer");
+const resultsTitle = document.getElementById("resultsTitle");
 
 const styleFilters = document.getElementById("styleFilters");
-const symbolsGrid = document.getElementById("symbolsGrid");
-
-const mobileMenuButton = document.getElementById("mobileMenuButton");
-const mobileMenu = document.getElementById("mobileMenu");
-const bottomMenuButton = document.getElementById("bottomMenuButton");
 
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 
+const mobileMenuButton = document.getElementById("mobileMenuButton");
+const mobileMenu = document.getElementById("mobileMenu");
+
+const bottomMenuButton = document.getElementById("bottomMenuButton");
+
 
 /* =========================================================
-   GLOBAL STATE
+   CURRENT STATE
    ========================================================= */
 
 let currentName = "";
@@ -43,757 +43,761 @@ let toastTimer = null;
 
 
 /* =========================================================
-   STYLE DATABASE
-   =========================================================
-   Every style contains:
-   - name     = internal style name
-   - category = filter category
-   - template = function which receives user's name
-   ========================================================= */
-
-const styles = [];
-
-
-/* =========================================================
    HELPER
    ========================================================= */
 
-function addStyle(category, template) {
-    styles.push({
-        category: category,
-        template: template
+function cleanName(value) {
+    return value
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 30);
+}
+
+
+function escapeHTML(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   UNICODE FANCY LETTER MAPS
+   ========================================================= */
+
+const fonts = {
+
+    bold: {
+        A: "𝐀", B: "𝐁", C: "𝐂", D: "𝐃", E: "𝐄",
+        F: "𝐅", G: "𝐆", H: "𝐇", I: "𝐈", J: "𝐉",
+        K: "𝐊", L: "𝐋", M: "𝐌", N: "𝐍", O: "𝐎",
+        P: "𝐏", Q: "𝐐", R: "𝐑", S: "𝐒", T: "𝐓",
+        U: "𝐔", V: "𝐕", W: "𝐖", X: "𝐗", Y: "𝐘",
+        Z: "𝐙"
+    },
+
+    italic: {
+        A: "𝘈", B: "𝘉", C: "𝘊", D: "𝘋", E: "𝘌",
+        F: "𝘍", G: "𝘎", H: "𝘏", I: "𝘐", J: "𝘑",
+        K: "𝘒", L: "𝘓", M: "𝘔", N: "𝘕", O: "𝘖",
+        P: "𝘗", Q: "𝘘", R: "𝘙", S: "𝘚", T: "𝘛",
+        U: "𝘜", V: "𝘝", W: "𝘞", X: "𝘟", Y: "𝘠",
+        Z: "𝘡"
+    },
+
+    boldItalic: {
+        A: "𝑨", B: "𝑩", C: "𝑪", D: "𝑫", E: "𝑬",
+        F: "𝑭", G: "𝑮", H: "𝑯", I: "𝑰", J: "𝑱",
+        K: "𝑲", L: "𝑳", M: "𝑴", N: "𝑵", O: "𝑶",
+        P: "𝑷", Q: "𝑸", R: "𝑹", S: "𝑺", T: "𝑻",
+        U: "𝑼", V: "𝑽", W: "𝑾", X: "𝑿", Y: "𝒀",
+        Z: "𝒁"
+    },
+
+    script: {
+        A: "𝒜", B: "ℬ", C: "𝒞", D: "𝒟", E: "ℰ",
+        F: "ℱ", G: "𝒢", H: "ℋ", I: "ℐ", J: "𝒥",
+        K: "𝒦", L: "ℒ", M: "ℳ", N: "𝒩", O: "𝒪",
+        P: "𝒫", Q: "𝒬", R: "ℛ", S: "𝒮", T: "𝒯",
+        U: "𝒰", V: "𝒱", W: "𝒲", X: "𝒳", Y: "𝒴",
+        Z: "𝒵"
+    },
+
+    boldScript: {
+        A: "𝓐", B: "𝓑", C: "𝓒", D: "𝓓", E: "𝓔",
+        F: "𝓕", G: "𝓖", H: "𝓗", I: "𝓘", J: "𝓙",
+        K: "𝓚", L: "𝓛", M: "𝓜", N: "𝓝", O: "𝓞",
+        P: "𝓟", Q: "𝓠", R: "𝓡", S: "𝓢", T: "𝓣",
+        U: "𝓤", V: "𝓥", W: "𝓦", X: "𝓧", Y: "𝓨",
+        Z: "𝓩"
+    },
+
+    fraktur: {
+        A: "𝔄", B: "𝔅", C: "ℭ", D: "𝔇", E: "𝔈",
+        F: "𝔉", G: "𝔊", H: "ℌ", I: "ℑ", J: "𝔍",
+        K: "𝔎", L: "𝔏", M: "𝔐", N: "𝔑", O: "𝔒",
+        P: "𝔓", Q: "𝔔", R: "ℜ", S: "𝔖", T: "𝔗",
+        U: "𝔘", V: "𝔙", W: "𝔚", X: "𝔛", Y: "𝔜",
+        Z: "ℨ"
+    },
+
+    boldFraktur: {
+        A: "𝕬", B: "𝕭", C: "𝕮", D: "𝕯", E: "𝕰",
+        F: "𝕱", G: "𝕲", H: "𝕳", I: "𝕴", J: "𝕵",
+        K: "𝕶", L: "𝕷", M: "𝕸", N: "𝕹", O: "𝕺",
+        P: "𝕻", Q: "𝕼", R: "𝕽", S: "𝕾", T: "𝕿",
+        U: "𝖀", V: "𝖁", W: "𝖂", X: "𝖃", Y: "𝖄",
+        Z: "𝖅"
+    },
+
+    double: {
+        A: "𝔸", B: "𝔹", C: "ℂ", D: "𝔻", E: "𝔼",
+        F: "𝔽", G: "𝔾", H: "ℍ", I: "𝕀", J: "𝕁",
+        K: "𝕂", L: "𝕃", M: "𝕄", N: "ℕ", O: "𝕆",
+        P: "ℙ", Q: "ℚ", R: "ℝ", S: "𝕊", T: "𝕋",
+        U: "𝕌", V: "𝕍", W: "𝕎", X: "𝕏", Y: "𝕐",
+        Z: "ℤ"
+    },
+
+    mono: {
+        A: "𝙰", B: "𝙱", C: "𝙲", D: "𝙳", E: "𝙴",
+        F: "𝙵", G: "𝙶", H: "𝙷", I: "𝙸", J: "𝙹",
+        K: "𝙺", L: "𝙻", M: "𝙼", N: "𝙽", O: "𝙾",
+        P: "𝙿", Q: "𝚀", R: "𝚁", S: "𝚂", T: "𝚃",
+        U: "𝚄", V: "𝚅", W: "𝚆", X: "𝚇", Y: "𝚈",
+        Z: "𝚉"
+    },
+
+    sans: {
+        A: "𝖠", B: "𝖡", C: "𝖢", D: "𝖣", E: "𝖤",
+        F: "𝖥", G: "𝖦", H: "𝖧", I: "𝖨", J: "𝖩",
+        K: "𝖪", L: "𝖫", M: "𝖬", N: "𝖭", O: "𝖮",
+        P: "𝖯", Q: "𝖰", R: "𝖱", S: "𝖲", T: "𝖳",
+        U: "𝖴", V: "𝖵", W: "𝖶", X: "𝖷", Y: "𝖸",
+        Z: "𝖹"
+    },
+
+    boldSans: {
+        A: "𝗔", B: "𝗕", C: "𝗖", D: "𝗗", E: "𝗘",
+        F: "𝗙", G: "𝗚", H: "𝗛", I: "𝗜", J: "𝗝",
+        K: "𝗞", L: "𝗟", M: "𝗠", N: "𝗡", O: "𝗢",
+        P: "𝗣", Q: "𝗤", R: "𝗥", S: "𝗦", T: "𝗧",
+        U: "𝗨", V: "𝗩", W: "𝗪", X: "𝗫", Y: "𝗬",
+        Z: "𝗭"
+    },
+
+    smallCaps: {
+        A: "ᴀ", B: "ʙ", C: "ᴄ", D: "ᴅ", E: "ᴇ",
+        F: "ғ", G: "ɢ", H: "ʜ", I: "ɪ", J: "ᴊ",
+        K: "ᴋ", L: "ʟ", M: "ᴍ", N: "ɴ", O: "ᴏ",
+        P: "ᴘ", Q: "ǫ", R: "ʀ", S: "s", T: "ᴛ",
+        U: "ᴜ", V: "ᴠ", W: "ᴡ", X: "x", Y: "ʏ",
+        Z: "ᴢ"
+    }
+
+};
+
+
+/* =========================================================
+   FONT FUNCTION
+   ========================================================= */
+
+function convertFont(text, font) {
+
+    const map = fonts[font];
+
+    if (!map) {
+        return text;
+    }
+
+    return [...text].map(char => {
+
+        const upper = char.toUpperCase();
+
+        if (map[upper]) {
+            return map[upper];
+        }
+
+        return char;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   EXTRA TEXT EFFECTS
+   ========================================================= */
+
+function spaced(text) {
+    return [...text].join(" ");
+}
+
+function wide(text) {
+    return [...text].join("  ");
+}
+
+function dotted(text) {
+    return [...text].join("•");
+}
+
+function underlined(text) {
+    return [...text].join("̲");
+}
+
+function strike(text) {
+    return [...text].join("̶");
+}
+
+function slash(text) {
+    return [...text].join("̷");
+}
+
+function doubleUnderline(text) {
+    return [...text].join("̳");
+}
+
+
+/* =========================================================
+   STYLE DATABASE
+   ========================================================= */
+
+const styleTemplates = [
+
+    /* ---------------- FANCY ---------------- */
+
+    { category: "fancy", make: n => convertFont(n, "bold") },
+    { category: "fancy", make: n => convertFont(n, "italic") },
+    { category: "fancy", make: n => convertFont(n, "boldItalic") },
+    { category: "fancy", make: n => convertFont(n, "script") },
+    { category: "fancy", make: n => convertFont(n, "boldScript") },
+    { category: "fancy", make: n => convertFont(n, "fraktur") },
+    { category: "fancy", make: n => convertFont(n, "boldFraktur") },
+    { category: "fancy", make: n => convertFont(n, "double") },
+    { category: "fancy", make: n => convertFont(n, "mono") },
+    { category: "fancy", make: n => convertFont(n, "sans") },
+    { category: "fancy", make: n => convertFont(n, "boldSans") },
+    { category: "fancy", make: n => convertFont(n, "smallCaps") },
+
+    { category: "fancy", make: n => `『${n}』` },
+    { category: "fancy", make: n => `【${n}】` },
+    { category: "fancy", make: n => `〖${n}〗` },
+    { category: "fancy", make: n => `〔${n}〕` },
+    { category: "fancy", make: n => `〈${n}〉` },
+    { category: "fancy", make: n => `《${n}》` },
+    { category: "fancy", make: n => `「${n}」` },
+    { category: "fancy", make: n => `【★ ${n} ★】` },
+    { category: "fancy", make: n => `✧ ${n} ✧` },
+    { category: "fancy", make: n => `✦ ${n} ✦` },
+    { category: "fancy", make: n => `✧･ﾟ: ${n} :ﾟ･✧` },
+    { category: "fancy", make: n => `｡･ﾟ･ ${n} ･ﾟ･｡` },
+    { category: "fancy", make: n => `°˖✧ ${n} ✧˖°` },
+    { category: "fancy", make: n => `⋆｡°✩ ${n} ✩°｡⋆` },
+    { category: "fancy", make: n => `༺ ${n} ༻` },
+    { category: "fancy", make: n => `༒ ${n} ༒` },
+    { category: "fancy", make: n => `꧁ ${n} ꧂` },
+    { category: "fancy", make: n => `꧁༺ ${n} ༻꧂` },
+    { category: "fancy", make: n => `꧁༒ ${n} ༒꧂` },
+
+    /* ---------------- GAMING ---------------- */
+
+    { category: "gaming", make: n => `亗 ${n} 亗` },
+    { category: "gaming", make: n => `亗『${n}』亗` },
+    { category: "gaming", make: n => `亗〆${n}〆亗` },
+    { category: "gaming", make: n => `乂 ${n} 乂` },
+    { category: "gaming", make: n => `乂『${n}』乂` },
+    { category: "gaming", make: n => `乂 ${n} 乂` },
+    { category: "gaming", make: n => `〆 ${n} 〆` },
+    { category: "gaming", make: n => `メ ${n} メ` },
+    { category: "gaming", make: n => `彡 ${n} 彡` },
+    { category: "gaming", make: n => `ツ ${n} ツ` },
+    { category: "gaming", make: n => `々 ${n} 々` },
+    { category: "gaming", make: n => `乄 ${n} 乄` },
+    { category: "gaming", make: n => `シ ${n} シ` },
+    { category: "gaming", make: n => `ミ ${n} ミ` },
+    { category: "gaming", make: n => `⚡${n}⚡` },
+    { category: "gaming", make: n => `☠ ${n} ☠` },
+    { category: "gaming", make: n => `☠︎ ${n} ☠︎` },
+    { category: "gaming", make: n => `♛ ${n} ♛` },
+    { category: "gaming", make: n => `♕ ${n} ♕` },
+    { category: "gaming", make: n => `♚ ${n} ♚` },
+    { category: "gaming", make: n => `★ ${n} ★` },
+    { category: "gaming", make: n => `★彡 ${n} 彡★` },
+    { category: "gaming", make: n => `★彡[${n}]彡★` },
+    { category: "gaming", make: n => `乂★ ${n} ★乂` },
+    { category: "gaming", make: n => `亗★ ${n} ★亗` },
+    { category: "gaming", make: n => `『★』${n}『★』` },
+    { category: "gaming", make: n => `⚔ ${n} ⚔` },
+    { category: "gaming", make: n => `⚔︎『${n}』⚔︎` },
+    { category: "gaming", make: n => `☯ ${n} ☯` },
+    { category: "gaming", make: n => `☬ ${n} ☬` },
+
+    /* ---------------- ATTITUDE ---------------- */
+
+    { category: "attitude", make: n => `😎 ${n} 😎` },
+    { category: "attitude", make: n => `😈 ${n} 😈` },
+    { category: "attitude", make: n => `🔥 ${n} 🔥` },
+    { category: "attitude", make: n => `💀 ${n} 💀` },
+    { category: "attitude", make: n => `👑 ${n} 👑` },
+    { category: "attitude", make: n => `🖤 ${n} 🖤` },
+    { category: "attitude", make: n => `⚡ ${n} ⚡` },
+    { category: "attitude", make: n => `💥 ${n} 💥` },
+    { category: "attitude", make: n => `🚬 ${n} 🚬` },
+    { category: "attitude", make: n => `😏 ${n} 😏` },
+    { category: "attitude", make: n => `🗿 ${n} 🗿` },
+    { category: "attitude", make: n => `👿 ${n} 👿` },
+    { category: "attitude", make: n => `☠️ ${n} ☠️` },
+    { category: "attitude", make: n => `♠ ${n} ♠` },
+    { category: "attitude", make: n => `♠️ ${n} ♠️` },
+    { category: "attitude", make: n => `♣ ${n} ♣` },
+    { category: "attitude", make: n => `♦ ${n} ♦` },
+    { category: "attitude", make: n => `♥ ${n} ♥` },
+    { category: "attitude", make: n => `⚡〆${n}〆⚡` },
+    { category: "attitude", make: n => `😈〆${n}〆😈` },
+    { category: "attitude", make: n => `🔥〆${n}〆🔥` },
+    { category: "attitude", make: n => `☠︎〆${n}〆☠︎` },
+    { category: "attitude", make: n => `♛〆${n}〆♛` },
+    { category: "attitude", make: n => `👑〆${n}〆👑` },
+    { category: "attitude", make: n => `『😎 ${n} 😎』` },
+    { category: "attitude", make: n => `『🔥 ${n} 🔥』` },
+    { category: "attitude", make: n => `『😈 ${n} 😈』` },
+    { category: "attitude", make: n => `『👑 ${n} 👑』` },
+    { category: "attitude", make: n => `『☠ ${n} ☠』` },
+    { category: "attitude", make: n => `『💀 ${n} 💀』` },
+
+    /* ---------------- SYMBOLS ---------------- */
+
+    { category: "symbols", make: n => `♡ ${n} ♡` },
+    { category: "symbols", make: n => `♥ ${n} ♥` },
+    { category: "symbols", make: n => `❤ ${n} ❤` },
+    { category: "symbols", make: n => `❥ ${n} ❥` },
+    { category: "symbols", make: n => `ღ ${n} ღ` },
+    { category: "symbols", make: n => `❣ ${n} ❣` },
+    { category: "symbols", make: n => `❦ ${n} ❦` },
+    { category: "symbols", make: n => `☾ ${n} ☽` },
+    { category: "symbols", make: n => `☽ ${n} ☾` },
+    { category: "symbols", make: n => `☀ ${n} ☀` },
+    { category: "symbols", make: n => `☁ ${n} ☁` },
+    { category: "symbols", make: n => `☘ ${n} ☘` },
+    { category: "symbols", make: n => `✿ ${n} ✿` },
+    { category: "symbols", make: n => `❀ ${n} ❀` },
+    { category: "symbols", make: n => `✾ ${n} ✾` },
+    { category: "symbols", make: n => `✺ ${n} ✺` },
+    { category: "symbols", make: n => `✹ ${n} ✹` },
+    { category: "symbols", make: n => `✧ ${n} ✧` },
+    { category: "symbols", make: n => `✦ ${n} ✦` },
+    { category: "symbols", make: n => `✪ ${n} ✪` },
+    { category: "symbols", make: n => `✯ ${n} ✯` },
+    { category: "symbols", make: n => `✰ ${n} ✰` },
+    { category: "symbols", make: n => `★ ${n} ★` },
+    { category: "symbols", make: n => `☆ ${n} ☆` },
+    { category: "symbols", make: n => `☯ ${n} ☯` },
+    { category: "symbols", make: n => `☮ ${n} ☮` },
+    { category: "symbols", make: n => `☬ ${n} ☬` },
+    { category: "symbols", make: n => `࿐ ${n} ࿐` },
+    { category: "symbols", make: n => `༺ ${n} ༻` },
+    { category: "symbols", make: n => `༒ ${n} ༒` },
+
+];
+
+
+/* =========================================================
+   ADD MANY FONT + SYMBOL COMBINATIONS
+   ========================================================= */
+
+const fontNames = [
+    "bold",
+    "italic",
+    "boldItalic",
+    "script",
+    "boldScript",
+    "fraktur",
+    "boldFraktur",
+    "double",
+    "mono",
+    "sans",
+    "boldSans",
+    "smallCaps"
+];
+
+const wrappers = [
+
+    ["꧁", "꧂"],
+    ["༺", "༻"],
+    ["༒", "༒"],
+    ["亗", "亗"],
+    ["乂", "乂"],
+    ["〆", "〆"],
+    ["メ", "メ"],
+    ["彡", "彡"],
+    ["ツ", "ツ"],
+    ["『", "』"],
+    ["【", "】"],
+    ["〖", "〗"],
+    ["〔", "〕"],
+    ["〈", "〉"],
+    ["《", "》"],
+    ["「", "」"],
+    ["★", "★"],
+    ["☆", "☆"],
+    ["✦", "✦"],
+    ["✧", "✧"],
+    ["♛", "♛"],
+    ["♕", "♕"],
+    ["☠", "☠"],
+    ["⚡", "⚡"],
+    ["☯", "☯"],
+    ["♡", "♡"],
+    ["♥", "♥"],
+    ["ღ", "ღ"],
+    ["❥", "❥"]
+];
+
+
+/* =========================================================
+   GENERATE FONT COMBINATIONS
+   ========================================================= */
+
+fontNames.forEach((fontName, fontIndex) => {
+
+    wrappers.forEach((wrapper, wrapperIndex) => {
+
+        let category = "fancy";
+
+        if (
+            wrapperIndex % 5 === 0 ||
+            wrapperIndex % 5 === 1 ||
+            wrapperIndex % 5 === 2
+        ) {
+            category = "gaming";
+        }
+
+        if (wrapperIndex >= 20 && wrapperIndex <= 29) {
+            category = "symbols";
+        }
+
+        styleTemplates.push({
+            category: category,
+            make: function(name) {
+
+                const styled = convertFont(name, fontName);
+
+                return `${wrapper[0]}${styled}${wrapper[1]}`;
+
+            }
+        });
+
     });
-}
-
-
-/* =========================================================
-   BASIC DECORATIVE STYLES
-   ========================================================= */
-
-const decorativeStyles = [
-    ["fancy", "꧁༺ {name} ༻꧂"],
-    ["fancy", "꧁༺ {name} ༻꧂"],
-    ["fancy", "꧁ {name} ꧂"],
-    ["fancy", "『 {name} 』"],
-    ["fancy", "『{name}』"],
-    ["fancy", "【 {name} 】"],
-    ["fancy", "【{name}】"],
-    ["fancy", "〖 {name} 〗"],
-    ["fancy", "〘 {name} 〙"],
-    ["fancy", "〚 {name} 〛"],
-    ["fancy", "《 {name} 》"],
-    ["fancy", "〈 {name} 〉"],
-    ["fancy", "「 {name} 」"],
-    ["fancy", "『 {name} 』"],
-    ["fancy", "╰☆☆ {name} ☆☆╮"],
-    ["fancy", "╰┈➤ {name}"],
-    ["fancy", "╰☆☆ {name} ☆☆╮"],
-    ["fancy", "•°¯`•• {name} ••´¯°•"],
-    ["fancy", "•´¯`•. {name} .•´¯`•"],
-    ["fancy", "¸,ø¤º°`°º¤ø,¸ {name} ¸,ø¤º°`°º¤ø,¸"],
-    ["fancy", "°°°·.°·..·°¯°·..· {name} ·..·°¯°·.°·..·°°°"],
-    ["fancy", "◦•●◉✿ {name} ✿◉●•◦"],
-    ["fancy", "✿ {name} ✿"],
-    ["fancy", "❀ {name} ❀"],
-    ["fancy", "✾ {name} ✾"],
-    ["fancy", "❁ {name} ❁"],
-    ["fancy", "✽ {name} ✽"],
-    ["fancy", "✼ {name} ✼"],
-    ["fancy", "✺ {name} ✺"],
-    ["fancy", "✹ {name} ✹"],
-    ["fancy", "✷ {name} ✷"],
-    ["fancy", "✶ {name} ✶"],
-    ["fancy", "✦ {name} ✦"],
-    ["fancy", "✧ {name} ✧"],
-    ["fancy", "★ {name} ★"],
-    ["fancy", "☆ {name} ☆"],
-    ["fancy", "★★ {name} ★★"],
-    ["fancy", "☆☆ {name} ☆☆"],
-    ["fancy", "✰ {name} ✰"],
-    ["fancy", "✪ {name} ✪"],
-    ["fancy", "✫ {name} ✫"],
-    ["fancy", "✬ {name} ✬"],
-    ["fancy", "✭ {name} ✭"],
-    ["fancy", "✮ {name} ✮"],
-    ["fancy", "✯ {name} ✯"],
-    ["fancy", "✰✰ {name} ✰✰"],
-    ["fancy", "★彡 {name} 彡★"],
-    ["fancy", "☆彡 {name} 彡☆"],
-    ["fancy", "彡★ {name} ★彡"],
-    ["fancy", "彡☆ {name} ☆彡"]
-];
-
-decorativeStyles.forEach(([category, template]) => {
-    addStyle(category, name => template.replace("{name}", name));
-});
-
-
-/* =========================================================
-   GAMING STYLES
-   ========================================================= */
-
-const gamingTemplates = [
-    "亗 {name} 亗",
-    "乂 {name} 乂",
-    "乂• {name} •乂",
-    "乂 {name} メ",
-    "メ {name} 乂",
-    "〆 {name} 〆",
-    "々 {name} 々",
-    "彡 {name} 彡",
-    "ツ {name} ツ",
-    "シ {name} シ",
-    "么 {name} 么",
-    "ฬ {name} ฬ",
-    "乛 {name} 乛",
-    "乄 {name} 乄",
-    "乂丨 {name} 丨乂",
-    "『亗』{name}『亗』",
-    "『乂』{name}『乂』",
-    "『ツ』{name}『ツ』",
-    "亗丨{name}丨亗",
-    "乂丨{name}丨乂",
-    "〆丨{name}丨〆",
-    "メ丨{name}丨メ",
-    "々丨{name}丨々",
-    "⚡ {name} ⚡",
-    "⚔ {name} ⚔",
-    "☠ {name} ☠",
-    "☠︎ {name} ☠︎",
-    "♛ {name} ♛",
-    "♚ {name} ♚",
-    "♜ {name} ♜",
-    "⚡︎ {name} ⚡︎",
-    "☯ {name} ☯",
-    "☣ {name} ☣",
-    "☢ {name} ☢",
-    "⛧ {name} ⛧",
-    "✘ {name} ✘",
-    "✖ {name} ✖",
-    "❌ {name} ❌",
-    "✓ {name} ✓",
-    "✔ {name} ✔",
-    "⫷ {name} ⫸",
-    "⟦ {name} ⟧",
-    "⟬ {name} ⟭",
-    "⟪ {name} ⟫",
-    "⟮ {name} ⟯",
-    "⧼ {name} ⧽",
-    "◥ {name} ◤",
-    "◢ {name} ◣",
-    "◤ {name} ◥",
-    "◣ {name} ◢",
-    "╰‿╯ {name} ╰‿╯",
-    "乂⚡ {name} ⚡乂",
-    "亗⚡ {name} ⚡亗",
-    "〆⚔ {name} ⚔〆",
-    "メ☠ {name} ☠メ",
-    "ツ彡 {name} 彡ツ",
-    "乂彡 {name} 彡乂",
-    "亗彡 {name} 彡亗",
-    "么彡 {name} 彡么",
-    "『⚡』{name}『⚡』",
-    "『☠』{name}『☠』",
-    "『♛』{name}『♛』",
-    "『亗』{name}『亗』",
-    "《亗》{name}《亗》",
-    "【亗】{name}【亗】",
-    "【乂】{name}【乂】",
-    "【⚡】{name}【⚡】",
-    "〘亗〙{name}〘亗〙",
-    "〘乂〙{name}〘乂〙",
-    "༺⚔ {name} ⚔༻",
-    "༺☠ {name} ☠༻",
-    "༺亗 {name} 亗༻",
-    "乂༺ {name} ༻乂",
-    "亗༺ {name} ༻亗"
-];
-
-gamingTemplates.forEach(template => {
-    addStyle("gaming", name => template.replace("{name}", name));
-});
-
-
-/* =========================================================
-   ATTITUDE STYLES
-   ========================================================= */
-
-const attitudeTemplates = [
-    "😎 {name} 😎",
-    "😈 {name} 😈",
-    "👑 {name} 👑",
-    "💀 {name} 💀",
-    "🔥 {name} 🔥",
-    "⚡ {name} ⚡",
-    "💯 {name} 💯",
-    "🖤 {name} 🖤",
-    "😎🔥 {name} 🔥😎",
-    "👑🔥 {name} 🔥👑",
-    "😈🔥 {name} 🔥😈",
-    "💀🔥 {name} 🔥💀",
-    "⚡😎 {name} 😎⚡",
-    "☠️ {name} ☠️",
-    "👿 {name} 👿",
-    "😏 {name} 😏",
-    "🗿 {name} 🗿",
-    "🖤⚡ {name} ⚡🖤",
-    "🔥⚡ {name} ⚡🔥",
-    "👑⚡ {name} ⚡👑",
-    "💀⚡ {name} ⚡💀",
-    "😈⚡ {name} ⚡😈",
-    "💥 {name} 💥",
-    "⚔️ {name} ⚔️",
-    "🏆 {name} 🏆",
-    "🥶 {name} 🥶",
-    "🦁 {name} 🦁",
-    "🐯 {name} 🐯",
-    "🐺 {name} 🐺",
-    "🦅 {name} 🦅",
-    "👑 {name} ♛",
-    "♛ {name} 👑",
-    "♚ {name} ♚",
-    "♛ {name} ♛",
-    "☬ {name} ☬",
-    "⚜ {name} ⚜",
-    "⚜️ {name} ⚜️",
-    "♠ {name} ♠",
-    "♠️ {name} ♠️",
-    "♣ {name} ♣",
-    "♦ {name} ♦",
-    "♥ {name} ♥",
-    "🖤👑 {name} 👑🖤",
-    "🔥👑 {name} 👑🔥",
-    "😈👑 {name} 👑😈",
-    "💀👑 {name} 👑💀",
-    "⚡👑 {name} 👑⚡",
-    "☠️👑 {name} 👑☠️",
-    "🦁👑 {name} 👑🦁",
-    "🐺🔥 {name} 🔥🐺",
-    "🦅⚡ {name} ⚡🦅",
-    "😎✌ {name} ✌😎",
-    "😎☠ {name} ☠😎",
-    "😈☠ {name} ☠😈",
-    "💀☠ {name} ☠💀",
-    "🔥☠ {name} ☠🔥",
-    "👑☠ {name} ☠👑",
-    "⚡☠ {name} ☠⚡",
-    "🖤☠ {name} ☠🖤",
-    "❖ {name} ❖",
-    "◆ {name} ◆",
-    "◇ {name} ◇",
-    "◈ {name} ◈",
-    "◉ {name} ◉",
-    "● {name} ●",
-    "◐ {name} ◐",
-    "◑ {name} ◑",
-    "◒ {name} ◒",
-    "◓ {name} ◓"
-];
-
-attitudeTemplates.forEach(template => {
-    addStyle("attitude", name => template.replace("{name}", name));
-});
-
-
-/* =========================================================
-   SYMBOL STYLES
-   ========================================================= */
-
-const symbolTemplates = [
-    "★ {name} ★",
-    "☆ {name} ☆",
-    "✦ {name} ✦",
-    "✧ {name} ✧",
-    "✪ {name} ✪",
-    "✫ {name} ✫",
-    "✬ {name} ✬",
-    "✭ {name} ✭",
-    "✮ {name} ✮",
-    "✯ {name} ✯",
-    "✰ {name} ✰",
-    "✵ {name} ✵",
-    "✶ {name} ✶",
-    "✷ {name} ✷",
-    "✸ {name} ✸",
-    "✹ {name} ✹",
-    "✺ {name} ✺",
-    "✻ {name} ✻",
-    "✼ {name} ✼",
-    "✽ {name} ✽",
-    "✾ {name} ✾",
-    "❀ {name} ❀",
-    "❁ {name} ❁",
-    "❂ {name} ❂",
-    "❃ {name} ❃",
-    "❈ {name} ❈",
-    "❉ {name} ❉",
-    "❊ {name} ❊",
-    "❋ {name} ❋",
-    "❖ {name} ❖",
-    "◆ {name} ◆",
-    "◇ {name} ◇",
-    "◈ {name} ◈",
-    "◉ {name} ◉",
-    "● {name} ●",
-    "○ {name} ○",
-    "◎ {name} ◎",
-    "◌ {name} ◌",
-    "◍ {name} ◍",
-    "◐ {name} ◐",
-    "◑ {name} ◑",
-    "◒ {name} ◒",
-    "◓ {name} ◓",
-    "☀ {name} ☀",
-    "☾ {name} ☾",
-    "☽ {name} ☽",
-    "☯ {name} ☯",
-    "☮ {name} ☮",
-    "☘ {name} ☘",
-    "☠ {name} ☠",
-    "⚜ {name} ⚜",
-    "⚡ {name} ⚡",
-    "⚔ {name} ⚔",
-    "♛ {name} ♛",
-    "♕ {name} ♕",
-    "♚ {name} ♚",
-    "♔ {name} ♔",
-    "♜ {name} ♜",
-    "♞ {name} ♞",
-    "♟ {name} ♟",
-    "♥ {name} ♥",
-    "♡ {name} ♡",
-    "❤ {name} ❤",
-    "❣ {name} ❣",
-    "ღ {name} ღ",
-    "ツ {name} ツ",
-    "シ {name} シ",
-    "彡 {name} 彡",
-    "々 {name} 々",
-    "〆 {name} 〆",
-    "乂 {name} 乂",
-    "亗 {name} 亗",
-    "么 {name} 么",
-    "メ {name} メ"
-];
-
-symbolTemplates.forEach(template => {
-    addStyle("symbols", name => template.replace("{name}", name));
-});
-
-
-/* =========================================================
-   UNICODE FONTS
-   =========================================================
-   These functions convert normal Latin letters into Unicode
-   mathematical characters.
-   ========================================================= */
-
-const normalUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const normalLower = "abcdefghijklmnopqrstuvwxyz";
-
-const unicodeFonts = [
-
-    {
-        category: "fancy",
-        upper: "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙",
-        lower: "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳"
-    },
-
-    {
-        category: "fancy",
-        upper: "𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁",
-        lower: "𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛"
-    },
-
-    {
-        category: "fancy",
-        upper: "𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩",
-        lower: "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃"
-    },
-
-    {
-        category: "fancy",
-        upper: "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ",
-        lower: "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷"
-    },
-
-    {
-        category: "fancy",
-        upper: "𝕬𝕭𝕮𝕯𝕰𝕱𝕲𝕳𝕴𝕵𝕶𝕷𝕸𝕹𝕺𝕻𝕼𝕽𝕾𝕿𝖀𝖁𝖂𝖃𝖄𝖅",
-        lower: "𝖆𝖇𝖈𝖉𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟"
-    },
-
-    {
-        category: "fancy",
-        upper: "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉",
-        lower: "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣"
-    },
-
-    {
-        category: "gaming",
-        upper: "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ",
-        lower: "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
-    }
-
-];
-
-
-/* =========================================================
-   UNICODE CONVERTER
-   ========================================================= */
-
-function convertUnicode(text, upper, lower) {
-
-    let output = "";
-
-    for (const char of text) {
-
-        const upperIndex = normalUpper.indexOf(char);
-
-        if (upperIndex !== -1) {
-            output += Array.from(upper)[upperIndex] || char;
-            continue;
-        }
-
-        const lowerIndex = normalLower.indexOf(char);
-
-        if (lowerIndex !== -1) {
-            output += Array.from(lower)[lowerIndex] || char;
-            continue;
-        }
-
-        output += char;
-    }
-
-    return output;
-}
-
-
-/* =========================================================
-   ADD UNICODE FONT STYLES
-   ========================================================= */
-
-unicodeFonts.forEach(font => {
-
-    addStyle(
-        font.category,
-        name => convertUnicode(name, font.upper, font.lower)
-    );
-
-    addStyle(
-        font.category,
-        name => "★ " + convertUnicode(name, font.upper, font.lower) + " ★"
-    );
-
-    addStyle(
-        font.category,
-        name => "『" + convertUnicode(name, font.upper, font.lower) + "』"
-    );
-
-    addStyle(
-        font.category,
-        name => "亗 " + convertUnicode(name, font.upper, font.lower) + " 亗"
-    );
-
-    addStyle(
-        font.category,
-        name => "꧁" + convertUnicode(name, font.upper, font.lower) + "꧂"
-    );
-
-    addStyle(
-        font.category,
-        name => "彡" + convertUnicode(name, font.upper, font.lower) + "彡"
-    );
 
 });
 
 
 /* =========================================================
-   SPECIAL CHARACTER STYLES
+   SPECIAL SPACING STYLES
    ========================================================= */
 
 const specialStyles = [
 
     {
         category: "fancy",
-        fn: name => addCombining(name, "\u0305")
+        make: n => spaced(n)
     },
 
     {
         category: "fancy",
-        fn: name => addCombining(name, "\u0336")
+        make: n => wide(n)
     },
 
     {
         category: "fancy",
-        fn: name => addCombining(name, "\u0332")
+        make: n => dotted(n)
     },
 
     {
         category: "fancy",
-        fn: name => addCombining(name, "\u035E")
+        make: n => underlined(n)
+    },
+
+    {
+        category: "fancy",
+        make: n => doubleUnderline(n)
+    },
+
+    {
+        category: "fancy",
+        make: n => strike(n)
+    },
+
+    {
+        category: "fancy",
+        make: n => slash(n)
+    },
+
+    {
+        category: "fancy",
+        make: n => `• ${spaced(n)} •`
+    },
+
+    {
+        category: "fancy",
+        make: n => `· ${spaced(n)} ·`
+    },
+
+    {
+        category: "fancy",
+        make: n => `⋆ ${spaced(n)} ⋆`
     },
 
     {
         category: "symbols",
-        fn: name => addCombining(name, "\u0308")
+        make: n => `✿ ${spaced(n)} ✿`
     },
 
     {
         category: "symbols",
-        fn: name => addCombining(name, "\u0307")
+        make: n => `♡ ${spaced(n)} ♡`
     },
 
     {
-        category: "symbols",
-        fn: name => addCombining(name, "\u0323")
+        category: "gaming",
+        make: n => `亗 ${spaced(n)} 亗`
+    },
+
+    {
+        category: "gaming",
+        make: n => `乂 ${spaced(n)} 乂`
+    },
+
+    {
+        category: "attitude",
+        make: n => `😈 ${spaced(n)} 😈`
+    },
+
+    {
+        category: "attitude",
+        make: n => `🔥 ${spaced(n)} 🔥`
     }
 
 ];
 
+styleTemplates.push(...specialStyles);
 
-function addCombining(text, mark) {
 
-    return Array.from(text)
-        .map(char => {
+/* =========================================================
+   EXTRA PREFIX / SUFFIX COMBINATIONS
+   ========================================================= */
 
-            if (char === " ") {
-                return " ";
+const extraPrefixes = [
+    "★",
+    "☆",
+    "✦",
+    "✧",
+    "✪",
+    "✯",
+    "♛",
+    "♕",
+    "♚",
+    "⚡",
+    "☠",
+    "☯",
+    "☬",
+    "亗",
+    "乂",
+    "〆",
+    "メ",
+    "彡",
+    "ツ",
+    "༒",
+    "꧁",
+    "♡",
+    "♥",
+    "ღ",
+    "❥",
+    "❦",
+    "✿",
+    "❀",
+    "🔥",
+    "😈",
+    "👑",
+    "💀"
+];
+
+extraPrefixes.forEach((symbol, index) => {
+
+    styleTemplates.push({
+        category:
+            index % 4 === 0
+                ? "gaming"
+                : index % 4 === 1
+                    ? "symbols"
+                    : index % 4 === 2
+                        ? "attitude"
+                        : "fancy",
+
+        make: n => `${symbol} ${n} ${symbol}`
+    });
+
+});
+
+
+/* =========================================================
+   MORE COMBINATIONS
+   ========================================================= */
+
+const combinations = [
+
+    ["★彡", "彡★"],
+    ["꧁༺", "༻꧂"],
+    ["꧁༒", "༒꧂"],
+    ["亗『", "』亗"],
+    ["乂『", "』乂"],
+    ["〆『", "』〆"],
+    ["メ『", "』メ"],
+    ["彡『", "』彡"],
+    ["ツ『", "』ツ"],
+    ["♛『", "』♛"],
+    ["♕『", "』♕"],
+    ["☠『", "』☠"],
+    ["⚡『", "』⚡"],
+    ["☯『", "』☯"],
+    ["♡『", "』♡"],
+    ["♥『", "』♥"],
+    ["ღ『", "』ღ"],
+    ["✦『", "』✦"],
+    ["✧『", "』✧"],
+    ["✿『", "』✿"],
+    ["🔥『", "』🔥"],
+    ["😈『", "』😈"],
+    ["👑『", "』👑"],
+    ["💀『", "』💀"]
+];
+
+combinations.forEach((combo, index) => {
+
+    fontNames.forEach((fontName) => {
+
+        styleTemplates.push({
+
+            category:
+                index % 4 === 0
+                    ? "gaming"
+                    : index % 4 === 1
+                        ? "attitude"
+                        : index % 4 === 2
+                            ? "symbols"
+                            : "fancy",
+
+            make: function(name) {
+
+                const styledName = convertFont(name, fontName);
+
+                return `${combo[0]}${styledName}${combo[1]}`;
+
             }
 
-            return char + mark;
-        })
-        .join("");
-
-}
-
-
-specialStyles.forEach(style => {
-    addStyle(style.category, style.fn);
-});
-
-
-/* =========================================================
-   EXTRA PREFIX / SUFFIX STYLES
-   ========================================================= */
-
-const prefixSuffix = [
-
-    ["fancy", "×", "×"],
-    ["fancy", "•", "•"],
-    ["fancy", "·", "·"],
-    ["fancy", "°", "°"],
-    ["fancy", "˙", "˙"],
-    ["fancy", "｡", "｡"],
-    ["fancy", "﹏", "﹏"],
-    ["fancy", "〜", "〜"],
-    ["fancy", "〰", "〰"],
-    ["fancy", "≛", "≛"],
-    ["fancy", "⊱", "⊰"],
-    ["fancy", "⊰", "⊱"],
-    ["fancy", "༺", "༻"],
-    ["fancy", "༼", "༽"],
-    ["fancy", "乂", "乂"],
-    ["gaming", "亗", "亗"],
-    ["gaming", "乂", "乂"],
-    ["gaming", "メ", "メ"],
-    ["gaming", "ツ", "ツ"],
-    ["gaming", "〆", "〆"],
-    ["gaming", "々", "々"],
-    ["gaming", "彡", "彡"],
-    ["gaming", "么", "么"],
-    ["attitude", "👑", "👑"],
-    ["attitude", "😎", "😎"],
-    ["attitude", "😈", "😈"],
-    ["attitude", "🔥", "🔥"],
-    ["attitude", "💀", "💀"],
-    ["attitude", "⚡", "⚡"],
-    ["attitude", "🖤", "🖤"],
-    ["attitude", "💯", "💯"],
-    ["symbols", "★", "★"],
-    ["symbols", "☆", "☆"],
-    ["symbols", "✦", "✦"],
-    ["symbols", "✧", "✧"],
-    ["symbols", "❖", "❖"],
-    ["symbols", "◆", "◆"],
-    ["symbols", "◇", "◇"],
-    ["symbols", "♡", "♡"],
-    ["symbols", "♥", "♥"],
-    ["symbols", "♛", "♛"],
-    ["symbols", "♚", "♚"],
-    ["symbols", "⚜", "⚜"],
-    ["symbols", "☯", "☯"],
-    ["symbols", "☮", "☮"]
-];
-
-
-prefixSuffix.forEach(([category, prefix, suffix]) => {
-
-    addStyle(
-        category,
-        name => `${prefix} ${name} ${suffix}`
-    );
-
-});
-
-
-/* =========================================================
-   MAKE SURE WE HAVE 300+ STYLES
-   ========================================================= */
-
-function buildAdditionalStyles() {
-
-    const patterns = [
-
-        ["fancy", "꧁༺ {name} ༻꧂"],
-        ["fancy", "★彡 {name} 彡★"],
-        ["fancy", "☆彡 {name} 彡☆"],
-        ["fancy", "『 {name} 』"],
-        ["fancy", "【 {name} 】"],
-        ["fancy", "《 {name} 》"],
-        ["fancy", "〈 {name} 〉"],
-        ["fancy", "「 {name} 」"],
-        ["fancy", "〖 {name} 〗"],
-        ["fancy", "〘 {name} 〙"],
-
-        ["gaming", "亗 {name} 亗"],
-        ["gaming", "乂 {name} 乂"],
-        ["gaming", "〆 {name} 〆"],
-        ["gaming", "メ {name} メ"],
-        ["gaming", "ツ {name} ツ"],
-        ["gaming", "々 {name} 々"],
-        ["gaming", "彡 {name} 彡"],
-        ["gaming", "么 {name} 么"],
-
-        ["attitude", "👑 {name} 👑"],
-        ["attitude", "🔥 {name} 🔥"],
-        ["attitude", "😎 {name} 😎"],
-        ["attitude", "😈 {name} 😈"],
-        ["attitude", "💀 {name} 💀"],
-        ["attitude", "⚡ {name} ⚡"],
-        ["attitude", "🖤 {name} 🖤"],
-
-        ["symbols", "★ {name} ★"],
-        ["symbols", "☆ {name} ☆"],
-        ["symbols", "✦ {name} ✦"],
-        ["symbols", "✧ {name} ✧"],
-        ["symbols", "❖ {name} ❖"],
-        ["symbols", "◆ {name} ◆"],
-        ["symbols", "◇ {name} ◇"],
-        ["symbols", "♡ {name} ♡"],
-        ["symbols", "♥ {name} ♥"],
-        ["symbols", "♛ {name} ♛"]
-    ];
-
-
-    let index = 0;
-
-    while (styles.length < 340) {
-
-        const pattern = patterns[index % patterns.length];
-
-        const category = pattern[0];
-        const template = pattern[1];
-
-        const variations = [
-            template,
-            template.replace(/ /g, ""),
-            template.replace("{name}", "【{name}】"),
-            template.replace("{name}", "『{name}』"),
-            template.replace("{name}", "〆{name}"),
-            template.replace("{name}", "乂{name}"),
-            template.replace("{name}", "★{name}★")
-        ];
-
-        const selected =
-            variations[Math.floor(index / patterns.length) % variations.length];
-
-        addStyle(
-            category,
-            name => selected.replace("{name}", name)
-        );
-
-        index++;
-    }
-}
-
-
-buildAdditionalStyles();
-
-
-/* =========================================================
-   REMOVE EXACT DUPLICATES
-   ========================================================= */
-
-function getUniqueStyles() {
-
-    const seen = new Set();
-    const unique = [];
-
-    styles.forEach(style => {
-
-        const key = style.category + "|" + style.template.toString();
-
-        if (!seen.has(key)) {
-            seen.add(key);
-            unique.push(style);
-        }
+        });
 
     });
 
-    return unique;
-}
+});
 
 
 /* =========================================================
-   FINAL STYLE LIST
+   CREATE UNIQUE STYLE LIST
    ========================================================= */
 
-const allStyles = getUniqueStyles();
+function buildStyles(name) {
 
+    const unique = new Map();
 
-/* =========================================================
-   GENERATE STYLES FOR NAME
-   ========================================================= */
-
-function generateStyles(name) {
-
-    return allStyles.map((style, index) => {
-
-        let result = "";
+    styleTemplates.forEach(style => {
 
         try {
-            result = style.template(name);
+
+            const result = style.make(name);
+
+            if (!result) {
+                return;
+            }
+
+            const cleanResult = String(result).trim();
+
+            if (!cleanResult) {
+                return;
+            }
+
+            if (!unique.has(cleanResult)) {
+
+                unique.set(cleanResult, {
+                    text: cleanResult,
+                    category: style.category
+                });
+
+            }
+
         } catch (error) {
-            result = name;
+
+            console.warn("Style error:", error);
+
         }
 
-        return {
-            id: index + 1,
-            category: style.category,
-            text: result
-        };
-
     });
+
+    return Array.from(unique.values());
+}
+
+
+/* =========================================================
+   COPY FUNCTION
+   ========================================================= */
+
+async function copyText(text) {
+
+    try {
+
+        if (navigator.clipboard && window.isSecureContext) {
+
+            await navigator.clipboard.writeText(text);
+
+        } else {
+
+            const textarea = document.createElement("textarea");
+
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.left = "-9999px";
+
+            document.body.appendChild(textarea);
+
+            textarea.focus();
+            textarea.select();
+
+            document.execCommand("copy");
+
+            textarea.remove();
+
+        }
+
+        showToast("Copied!");
+
+        return true;
+
+    } catch (error) {
+
+        console.error("Copy failed:", error);
+
+        showToast("Copy failed");
+
+        return false;
+
+    }
 
 }
 
 
 /* =========================================================
-   FILTER STYLES
+   TOAST
    ========================================================= */
 
-function getFilteredStyles() {
+function showToast(message) {
 
-    const generated = generateStyles(currentName);
-
-    if (currentFilter === "all") {
-        return generated;
+    if (!toast) {
+        return;
     }
 
-    return generated.filter(style => {
-        return style.category === currentFilter;
-    });
+    toastMessage.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 1800);
 
 }
 
@@ -802,40 +806,53 @@ function getFilteredStyles() {
    RENDER RESULTS
    ========================================================= */
 
-function renderResults() {
+function renderResults(styles) {
 
-    if (!resultsContainer || !currentName) {
+    if (!resultsContainer) {
         return;
     }
 
-    const filteredStyles = getFilteredStyles();
-
     resultsContainer.innerHTML = "";
+
+    if (!styles.length) {
+
+        resultsContainer.innerHTML = `
+            <div class="result-card">
+                <div class="result-name">
+                    No styles found
+                </div>
+            </div>
+        `;
+
+        return;
+    }
 
     const fragment = document.createDocumentFragment();
 
-    filteredStyles.forEach((style, index) => {
+    styles.forEach((style, index) => {
 
         const card = document.createElement("article");
+
         card.className = "result-card";
 
-        card.style.animationDelay = `${Math.min(index * 0.015, 0.35)}s`;
+        card.style.animationDelay = `${Math.min(index * 0.018, 0.35)}s`;
 
-        const nameElement = document.createElement("div");
-        nameElement.className = "result-name";
-        nameElement.textContent = style.text;
+        const nameDiv = document.createElement("div");
+
+        nameDiv.className = "result-name";
+
+        nameDiv.textContent = style.text;
 
         const copyButton = document.createElement("button");
 
         copyButton.type = "button";
+
         copyButton.className = "copy-result-button";
 
         copyButton.innerHTML = `
             <span class="copy-icon">📋</span>
             <span>Copy</span>
         `;
-
-        copyButton.dataset.copy = style.text;
 
         copyButton.addEventListener("click", async () => {
 
@@ -850,8 +867,6 @@ function renderResults() {
                     <span>Copied!</span>
                 `;
 
-                showToast("Copied!");
-
                 setTimeout(() => {
 
                     copyButton.classList.remove("copied");
@@ -862,11 +877,12 @@ function renderResults() {
                     `;
 
                 }, 1400);
+
             }
 
         });
 
-        card.appendChild(nameElement);
+        card.appendChild(nameDiv);
         card.appendChild(copyButton);
 
         fragment.appendChild(card);
@@ -874,6 +890,35 @@ function renderResults() {
     });
 
     resultsContainer.appendChild(fragment);
+
+}
+
+
+/* =========================================================
+   FILTER RESULTS
+   ========================================================= */
+
+function applyFilter() {
+
+    if (!currentName) {
+        return;
+    }
+
+    const allStyles = buildStyles(currentName);
+
+    let filteredStyles = allStyles;
+
+    if (currentFilter !== "all") {
+
+        filteredStyles = allStyles.filter(style => {
+
+            return style.category === currentFilter;
+
+        });
+
+    }
+
+    renderResults(filteredStyles);
 
     updateResultsTitle(filteredStyles.length);
 
@@ -890,101 +935,75 @@ function updateResultsTitle(count) {
         return;
     }
 
-    const filterName =
-        currentFilter === "all"
-            ? "Stylish Names"
-            : `${capitalize(currentFilter)} Names`;
-
-    resultsTitle.textContent =
-        `${filterName} (${count})`;
+    resultsTitle.textContent = `Stylish Names (${count})`;
 
 }
 
 
 /* =========================================================
-   CAPITALIZE
+   GENERATE
    ========================================================= */
 
-function capitalize(text) {
+function generateNames() {
 
-    if (!text) {
-        return "";
-    }
-
-    return text.charAt(0).toUpperCase() + text.slice(1);
-
-}
-
-
-/* =========================================================
-   GENERATE BUTTON
-   ========================================================= */
-
-function generateName() {
-
-    if (!nameInput) {
-        return;
-    }
-
-    const value = nameInput.value.trim();
+    const value = cleanName(nameInput.value);
 
     if (!value) {
 
-        showToast("Please enter your name.");
-
         nameInput.focus();
 
+        showToast("Please enter your name");
+
         return;
+
     }
 
     currentName = value;
 
-    /* LIVE PREVIEW */
+    currentFilter = "all";
 
-    if (previewSection) {
-        previewSection.hidden = false;
-    }
+    /* Update preview */
 
     if (previewName) {
         previewName.textContent = value;
     }
 
-    /* RESULTS */
+    if (previewSection) {
+        previewSection.hidden = false;
+    }
+
+    /* Build all styles */
+
+    const styles = buildStyles(value);
+
+    /* Show results */
 
     if (resultsSection) {
         resultsSection.hidden = false;
     }
 
-    currentFilter = "all";
+    /* Reset filter buttons */
 
-    updateFilterButtons();
+    if (styleFilters) {
 
-    renderResults();
+        const buttons = styleFilters.querySelectorAll(".filter-button");
 
-    /* Button animation */
+        buttons.forEach(button => {
 
-    if (generateButton) {
+            button.classList.toggle(
+                "active",
+                button.dataset.filter === "all"
+            );
 
-        generateButton.classList.add("generating");
-
-        const originalHTML = generateButton.innerHTML;
-
-        generateButton.innerHTML = `
-            <span>✓</span>
-            Generated!
-        `;
-
-        setTimeout(() => {
-
-            generateButton.classList.remove("generating");
-
-            generateButton.innerHTML = originalHTML;
-
-        }, 900);
+        });
 
     }
 
-    /* Scroll toward results */
+    renderResults(styles);
+
+    updateResultsTitle(styles.length);
+
+    /* Scroll to results */
 
     setTimeout(() => {
 
@@ -997,7 +1016,7 @@ function generateName() {
 
         }
 
-    }, 120);
+    }, 80);
 
 }
 
@@ -1012,7 +1031,7 @@ if (nameForm) {
 
         event.preventDefault();
 
-        generateName();
+        generateNames();
 
     });
 
@@ -1020,40 +1039,47 @@ if (nameForm) {
 
 
 /* =========================================================
-   LIVE PREVIEW
-   =========================================================
-   HTML/CSS already says LIVE PREVIEW,
-   so preview updates while user types.
+   LIVE INPUT
    ========================================================= */
 
 if (nameInput) {
 
     nameInput.addEventListener("input", () => {
 
-        const value = nameInput.value.trim();
+        nameInput.value = nameInput.value.slice(0, 30);
 
         if (clearName) {
-            clearName.hidden = value.length === 0;
+
+            clearName.hidden = nameInput.value.length === 0;
+
         }
 
-        if (previewName) {
+        /*
+         * Live preview while typing.
+         * Results are generated only when user presses Generate.
+         */
+
+        if (previewName && nameInput.value.trim()) {
 
             previewName.textContent =
-                value || "Your Name";
+                cleanName(nameInput.value);
 
         }
 
-        if (!value) {
+    });
 
-            if (previewSection) {
-                previewSection.hidden = true;
-            }
 
-        } else {
+    /*
+     * Press Enter to generate
+     */
 
-            if (previewSection) {
-                previewSection.hidden = false;
-            }
+    nameInput.addEventListener("keydown", event => {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            generateNames();
 
         }
 
@@ -1076,23 +1102,11 @@ if (clearName) {
 
         clearName.hidden = true;
 
+        nameInput.focus();
+
         if (previewName) {
             previewName.textContent = "Your Name";
         }
-
-        if (previewSection) {
-            previewSection.hidden = true;
-        }
-
-        if (resultsSection) {
-            resultsSection.hidden = true;
-        }
-
-        if (resultsContainer) {
-            resultsContainer.innerHTML = "";
-        }
-
-        nameInput.focus();
 
     });
 
@@ -1103,51 +1117,31 @@ if (clearName) {
    FILTER BUTTONS
    ========================================================= */
 
-function updateFilterButtons() {
-
-    if (!styleFilters) {
-        return;
-    }
-
-    const buttons =
-        styleFilters.querySelectorAll(".filter-button");
-
-    buttons.forEach(button => {
-
-        const filter = button.dataset.filter;
-
-        button.classList.toggle(
-            "active",
-            filter === currentFilter
-        );
-
-    });
-
-}
-
-
 if (styleFilters) {
 
     styleFilters.addEventListener("click", event => {
 
-        const button =
-            event.target.closest(".filter-button");
+        const button = event.target.closest(".filter-button");
 
         if (!button) {
             return;
         }
 
-        if (!currentName) {
-            showToast("Generate a name first.");
-            return;
-        }
+        currentFilter = button.dataset.filter || "all";
 
-        currentFilter =
-            button.dataset.filter || "all";
+        const buttons =
+            styleFilters.querySelectorAll(".filter-button");
 
-        updateFilterButtons();
+        buttons.forEach(btn => {
 
-        renderResults();
+            btn.classList.toggle(
+                "active",
+                btn === button
+            );
+
+        });
+
+        applyFilter();
 
     });
 
@@ -1155,206 +1149,106 @@ if (styleFilters) {
 
 
 /* =========================================================
-   COPY FUNCTION
+   SYMBOL COPY
    ========================================================= */
 
-async function copyText(text) {
+const symbolCards =
+    document.querySelectorAll(".symbol-card");
 
-    if (!text) {
-        return false;
-    }
+symbolCards.forEach(card => {
 
-    try {
+    card.addEventListener("click", async () => {
 
-        if (
-            navigator.clipboard &&
-            window.isSecureContext
-        ) {
-
-            await navigator.clipboard.writeText(text);
-
-            return true;
-
-        }
-
-        /* Fallback for older browsers */
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        textarea.style.top = "0";
-        textarea.style.opacity = "0";
-
-        document.body.appendChild(textarea);
-
-        textarea.focus();
-        textarea.select();
-
-        const success =
-            document.execCommand("copy");
-
-        textarea.remove();
-
-        return success;
-
-    } catch (error) {
-
-        console.error(
-            "Copy failed:",
-            error
-        );
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================================================
-   SYMBOL CARDS
-   ========================================================= */
-
-if (symbolsGrid) {
-
-    symbolsGrid.addEventListener("click", async event => {
-
-        const card =
-            event.target.closest(".symbol-card");
-
-        if (!card) {
-            return;
-        }
-
-        const symbol =
-            card.dataset.symbol;
+        const symbol = card.dataset.symbol;
 
         if (!symbol) {
             return;
         }
 
-        const copied =
-            await copyText(symbol);
+        const copied = await copyText(symbol);
 
-        if (!copied) {
-            showToast("Copy failed.");
-            return;
-        }
+        if (copied) {
 
-        card.classList.add("copied");
+            card.classList.add("copied");
 
-        const small =
-            card.querySelector("small");
+            const small = card.querySelector("small");
 
-        if (small) {
-
-            const originalText =
-                small.textContent;
-
-            small.textContent = "Copied!";
+            if (small) {
+                small.textContent = "Copied!";
+            }
 
             setTimeout(() => {
 
-                small.textContent =
-                    originalText;
+                card.classList.remove("copied");
+
+                if (small) {
+                    small.textContent = "Copy";
+                }
 
             }, 1200);
 
         }
 
-        showToast("Symbol copied!");
-
-        setTimeout(() => {
-
-            card.classList.remove("copied");
-
-        }, 1200);
-
     });
 
-}
+});
 
 
 /* =========================================================
    TRENDING STYLE BUTTONS
    ========================================================= */
 
-document.addEventListener("click", event => {
+const useStyleButtons =
+    document.querySelectorAll(".use-style-button");
 
-    const button =
-        event.target.closest(".use-style-button");
+useStyleButtons.forEach(button => {
 
-    if (!button) {
-        return;
-    }
+    button.addEventListener("click", () => {
 
-    const template =
-        button.dataset.template;
+        const template = button.dataset.template;
 
-    if (!template) {
-        return;
-    }
+        if (!template) {
+            return;
+        }
 
-    if (!nameInput) {
-        return;
-    }
+        /*
+         * If user has already entered a name,
+         * use that name.
+         *
+         * Otherwise use the current input.
+         */
 
-    const existingName =
-        nameInput.value.trim();
+        const entered =
+            cleanName(nameInput.value) ||
+            currentName ||
+            "Your Name";
 
-    const name =
-        existingName || "Your Name";
+        const styled =
+            template.replace(/\{name\}/gi, entered);
 
-    const styledName =
-        template.replace(
-            "{name}",
-            name
-        );
+        copyText(styled);
 
-    nameInput.value = name;
+        /* Put template name into input */
 
-    currentName = name;
+        if (nameInput) {
 
-    if (clearName) {
-        clearName.hidden = false;
-    }
+            nameInput.value = entered;
 
-    if (previewSection) {
-        previewSection.hidden = false;
-    }
+            if (clearName) {
+                clearName.hidden = false;
+            }
 
-    if (previewName) {
-        previewName.textContent = styledName;
-    }
+        }
 
-    if (resultsSection) {
-        resultsSection.hidden = false;
-    }
+        currentName = entered;
 
-    currentFilter = "all";
+        /*
+         * Generate complete results also.
+         */
 
-    updateFilterButtons();
+        generateNames();
 
-    renderResults();
-
-    showToast("Style selected!");
-
-    if (resultsSection) {
-
-        setTimeout(() => {
-
-            resultsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        }, 100);
-
-    }
+    });
 
 });
 
@@ -1362,6 +1256,24 @@ document.addEventListener("click", event => {
 /* =========================================================
    MOBILE MENU
    ========================================================= */
+
+function closeMobileMenu() {
+
+    if (!mobileMenu || !mobileMenuButton) {
+        return;
+    }
+
+    mobileMenu.classList.remove("open");
+
+    mobileMenuButton.classList.remove("open");
+
+    mobileMenuButton.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+}
+
 
 function toggleMobileMenu() {
 
@@ -1395,44 +1307,39 @@ if (mobileMenuButton) {
 }
 
 
-/* =========================================================
-   CLOSE MOBILE MENU AFTER LINK CLICK
-   ========================================================= */
+/* Close mobile menu after navigation */
 
-if (mobileMenu) {
+document
+    .querySelectorAll(".mobile-nav-link")
+    .forEach(link => {
 
-    mobileMenu.addEventListener("click", event => {
+        link.addEventListener("click", () => {
 
-        const link =
-            event.target.closest(".mobile-nav-link");
+            closeMobileMenu();
 
-        if (!link) {
-            return;
-        }
-
-        closeMobileMenu();
+        });
 
     });
 
-}
 
+/* Close menu when clicking outside */
 
-function closeMobileMenu() {
+document.addEventListener("click", event => {
 
     if (!mobileMenu || !mobileMenuButton) {
         return;
     }
 
-    mobileMenu.classList.remove("open");
+    if (
+        !mobileMenu.contains(event.target) &&
+        !mobileMenuButton.contains(event.target)
+    ) {
 
-    mobileMenuButton.classList.remove("open");
+        closeMobileMenu();
 
-    mobileMenuButton.setAttribute(
-        "aria-expanded",
-        "false"
-    );
+    }
 
-}
+});
 
 
 /* =========================================================
@@ -1441,83 +1348,34 @@ function closeMobileMenu() {
 
 if (bottomMenuButton) {
 
-    bottomMenuButton.addEventListener(
-        "click",
-        () => {
+    bottomMenuButton.addEventListener("click", () => {
 
-            toggleMobileMenu();
+        toggleMobileMenu();
 
-        }
-    );
+    });
 
 }
 
 
 /* =========================================================
-   CLOSE MENU ON OUTSIDE CLICK
-   ========================================================= */
-
-document.addEventListener("click", event => {
-
-    if (
-        !mobileMenu ||
-        !mobileMenuButton
-    ) {
-        return;
-    }
-
-    if (
-        !mobileMenu.contains(event.target) &&
-        !mobileMenuButton.contains(event.target) &&
-        !(
-            bottomMenuButton &&
-            bottomMenuButton.contains(event.target)
-        )
-    ) {
-
-        closeMobileMenu();
-
-    }
-
-});
-
-
-/* =========================================================
-   CLOSE MENU WITH ESCAPE
-   ========================================================= */
-
-document.addEventListener("keydown", event => {
-
-    if (event.key === "Escape") {
-
-        closeMobileMenu();
-
-    }
-
-});
-
-
-/* =========================================================
-   MOBILE BOTTOM NAV
+   BOTTOM NAV ACTIVE STATE
    ========================================================= */
 
 const bottomNavItems =
-    document.querySelectorAll(
-        ".bottom-nav-item"
-    );
+    document.querySelectorAll(".bottom-nav-item");
 
 bottomNavItems.forEach(item => {
 
-    item.addEventListener("click", event => {
+    if (item.tagName.toLowerCase() === "button") {
+        return;
+    }
 
-        if (
-            item.id === "bottomMenuButton"
-        ) {
-            return;
-        }
+    item.addEventListener("click", () => {
 
         bottomNavItems.forEach(nav => {
+
             nav.classList.remove("active");
+
         });
 
         item.classList.add("active");
@@ -1539,7 +1397,9 @@ navLinks.forEach(link => {
     link.addEventListener("click", () => {
 
         navLinks.forEach(nav => {
+
             nav.classList.remove("active");
+
         });
 
         link.classList.add("active");
@@ -1550,133 +1410,11 @@ navLinks.forEach(link => {
 
 
 /* =========================================================
-   MOBILE NAV ACTIVE STATE
-   ========================================================= */
-
-const mobileNavLinks =
-    document.querySelectorAll(
-        ".mobile-nav-link"
-    );
-
-mobileNavLinks.forEach(link => {
-
-    link.addEventListener("click", () => {
-
-        mobileNavLinks.forEach(nav => {
-            nav.classList.remove("active");
-        });
-
-        link.classList.add("active");
-
-    });
-
-});
-
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-function showToast(message) {
-
-    if (!toast || !toastMessage) {
-        return;
-    }
-
-    toastMessage.textContent = message;
-
-    toast.classList.remove("show");
-
-    /* Force reflow so repeated toast works */
-
-    void toast.offsetWidth;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-
-        toast.classList.remove("show");
-
-    }, 1800);
-
-}
-
-
-/* =========================================================
-   INPUT ENTER SUPPORT
-   ========================================================= */
-
-if (nameInput) {
-
-    nameInput.addEventListener("keydown", event => {
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            event.preventDefault();
-
-            generateName();
-
-        }
-
-    });
-
-}
-
-
-/* =========================================================
-   INPUT PASTE CLEANUP
-   ========================================================= */
-
-if (nameInput) {
-
-    nameInput.addEventListener("paste", () => {
-
-        setTimeout(() => {
-
-            const value =
-                nameInput.value;
-
-            if (value.length > 30) {
-
-                nameInput.value =
-                    value.substring(0, 30);
-
-            }
-
-            const trimmed =
-                nameInput.value.trim();
-
-            if (clearName) {
-                clearName.hidden =
-                    trimmed.length === 0;
-            }
-
-            if (previewName) {
-
-                previewName.textContent =
-                    trimmed || "Your Name";
-
-            }
-
-        }, 0);
-
-    });
-
-}
-
-
-/* =========================================================
-   FAQ ACCESSIBILITY / SINGLE OPEN ITEM
+   FAQ
    ========================================================= */
 
 const faqItems =
-    document.querySelectorAll(
-        ".faq-item"
-    );
+    document.querySelectorAll(".faq-item");
 
 faqItems.forEach(item => {
 
@@ -1688,12 +1426,9 @@ faqItems.forEach(item => {
 
         faqItems.forEach(other => {
 
-            if (
-                other !== item &&
-                other.open
-            ) {
+            if (other !== item) {
 
-                other.open = false;
+                other.removeAttribute("open");
 
             }
 
@@ -1705,37 +1440,59 @@ faqItems.forEach(item => {
 
 
 /* =========================================================
-   INITIAL STATE
+   HASH NAVIGATION
    ========================================================= */
 
-if (clearName && nameInput) {
+window.addEventListener("hashchange", () => {
 
-    clearName.hidden =
-        nameInput.value.trim().length === 0;
+    closeMobileMenu();
 
-}
-
-if (previewName) {
-    previewName.textContent = "Your Name";
-}
-
-if (previewSection) {
-    previewSection.hidden = true;
-}
-
-if (resultsSection) {
-    resultsSection.hidden = true;
-}
-
-updateFilterButtons();
+});
 
 
 /* =========================================================
-   DEBUG INFORMATION
-   =========================================================
-   Open browser console to see number of available styles.
+   PAGE LOAD
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    if (clearName && nameInput) {
+
+        clearName.hidden =
+            nameInput.value.trim().length === 0;
+
+    }
+
+    /*
+     * Make sure result sections remain hidden
+     * until the user generates a name.
+     */
+
+    if (previewSection) {
+        previewSection.hidden = true;
+    }
+
+    if (resultsSection) {
+        resultsSection.hidden = true;
+    }
+
+});
+
+
+/* =========================================================
+   DEBUG / STYLE COUNT
    ========================================================= */
 
 console.log(
-    `Z-Name Style loaded successfully: ${allStyles.length}+ styles available.`
+    "Z-Name Style loaded successfully."
 );
+
+console.log(
+    "Available style templates:",
+    styleTemplates.length
+);
+
+
+/* =========================================================
+   END
+   ========================================================= */
